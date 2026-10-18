@@ -24,6 +24,7 @@
   --m-tile-text: #2a2416;
   --m-tile-radius: 0px;
   --m-tile-tint: 32%;
+  --m-fit-chars: 9;
   --m-corner-bg: #cdb95e;
   --m-gap: 2px;
   --m-radius: 6px;
@@ -31,12 +32,14 @@
   --m-font-display: 'Special Elite', 'Courier Prime', monospace;
   --m-font-tile: 'Courier Prime', 'Courier New', monospace;
   --m-logo-gradient: linear-gradient(180deg, #fffbe0, #f2df73);
+  --m-ink-go: #5a4510;
+  --m-ink-vacation: #2f5a12;
+  --m-ink-jail: #7a1f1f;
 }
-.mono-root[data-theme="backrooms"] .tile-name { text-shadow: none; font-weight: 700; font-size: calc(var(--S) * .155); }
+.mono-root[data-theme="backrooms"] .tile-name { text-shadow: none; font-weight: 700; font-size: calc(var(--S) * .155 * var(--fit, 1)); }
 .mono-root[data-theme="backrooms"] .tile-price { background: rgba(42, 36, 22, .15); border-color: rgba(42, 36, 22, .25); }
 .mono-root[data-theme="backrooms"] .tile-treasure .tile-name { color: #7a4a12; }
 .mono-root[data-theme="backrooms"] .tile-surprise .tile-name { color: #7a2a5a; }
-.mono-root[data-theme="backrooms"] .corner-label { color: #2a2416 !important; }
 .mono-root[data-theme="backrooms"] .board-center { color: #2a2416; }
 .mono-root[data-theme="backrooms"] .stage-wait, .mono-root[data-theme="backrooms"] .center-log { color: #4d4326; }
 .mono-root[data-theme="backrooms"] .center-log li:last-child { color: #2a2416; }

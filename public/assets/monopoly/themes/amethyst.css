@@ -33,5 +33,5 @@
 .mono-root[data-theme="amethyst"] .btn-primary:hover:not(:disabled) { background: linear-gradient(180deg, #9a5bf0, #7353f0); color: #fff; }
 .mono-root[data-theme="amethyst"] .board-grid { padding: 4px; }
 .mono-root[data-theme="amethyst"] .tile { border-radius: 8px; }
-.mono-root[data-theme="amethyst"] .tile-name { font-weight: 600; font-size: calc(var(--S) * .2); letter-spacing: .02em; }
+.mono-root[data-theme="amethyst"] .tile-name { font-weight: 600; font-size: calc(var(--S) * .2 * var(--fit, 1)); letter-spacing: .02em; }
 .mono-root[data-theme="amethyst"] .logo-main { letter-spacing: .04em; font-weight: 700; }

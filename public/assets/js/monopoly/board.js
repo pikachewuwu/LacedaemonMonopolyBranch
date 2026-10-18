@@ -83,7 +83,11 @@ export class Board {
     const price = isOwnable(tile) ? money(this.map, tile.price) : tile.type === 'tax' ? (tile.percent ? `${tile.percent}%` : money(this.map, tile.amount)) : '';
     const priceEl = price ? h('span.tile-price', price) : null;
     const levels = h('span.tile-levels');
-    const card = h('span.tile-card', flag, h('span.tile-glow'), icon, h('span.tile-name', tile.name), levels, priceEl);
+    // lange wörter kleiner setzen statt mitten im wort umzubrechen
+    const longest = Math.max(...tile.name.split(/[\s-]+/).map(w => w.length));
+    const name = h('span.tile-name', { '--chars': longest }, tile.name);
+    if (/\s/.test(tile.name)) el.classList.add('has-space');
+    const card = h('span.tile-card', flag, h('span.tile-glow'), icon, name, levels, priceEl);
     el.append(card, h('span.tile-mortgage', 'Mortgaged'));
     return { el, tile, priceEl, levels, price };
   }

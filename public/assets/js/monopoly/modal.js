@@ -16,7 +16,7 @@ export function openModal({ title, className = '', body, onClose }) {
   const backdrop = h('div.modal-backdrop', { onmousedown: e => { if (e.target === backdrop) close(); } }, panel);
   const onKey = e => { if (e.key === 'Escape') close(); };
   document.addEventListener('keydown', onKey);
-  document.querySelector('.mono-root')?.append(backdrop) ?? document.body.append(backdrop);
+  (document.querySelector('.mono-root') ?? document.body).append(backdrop);
   current = { backdrop, onKey, onClose, panel };
   requestAnimationFrame(() => backdrop.classList.add('is-open'));
   panel.querySelector('button:not(.modal-x), input, select')?.focus({ preventScroll: true });

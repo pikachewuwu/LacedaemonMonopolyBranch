@@ -39,7 +39,7 @@ export const TILE_ICONS = {
   linux: svg(`<ellipse cx="16" cy="18" rx="8" ry="10" fill="#1c1c1c"/><ellipse cx="16" cy="20.3" rx="5.2" ry="6.8" fill="#f4f4f4"/>
     <circle cx="13.6" cy="11.4" r="1.7" fill="#fff"/><circle cx="18.4" cy="11.4" r="1.7" fill="#fff"/><circle cx="13.9" cy="11.7" r=".85" fill="#111"/><circle cx="18.1" cy="11.7" r=".85" fill="#111"/>
     <path d="M14 14.2h4l-2 2.3z" fill="#f5b528"/><path d="M8.6 27.6c1.6-2.1 4-2.2 5.5-.4M23.4 27.6c-1.6-2.1-4-2.2-5.5-.4" stroke="#f5b528" stroke-width="2.6" stroke-linecap="round" fill="none"/>`),
-  mac: svg(`<g fill="none" stroke="#e6e8ee" stroke-width="2.2"><rect x="12.2" y="12.2" width="7.6" height="7.6"/>
+  mac: svg(`<g fill="none" stroke="currentColor" stroke-width="2.2"><rect x="12.2" y="12.2" width="7.6" height="7.6"/>
     <path d="M12.2 12.2V8.8a3.4 3.4 0 1 0-3.4 3.4zM19.8 12.2V8.8a3.4 3.4 0 1 1 3.4 3.4zM19.8 19.8h3.4a3.4 3.4 0 1 1-3.4 3.4zM12.2 19.8v3.4a3.4 3.4 0 1 1-3.4-3.4z"/></g>`),
   uwuntu: svg(`<circle cx="16" cy="16" r="12.5" fill="#e95420"/><g stroke="#fff" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path d="M9.4 12.8l3.4 2.2-3.4 2.2M22.6 12.8l-3.4 2.2 3.4 2.2"/><path d="M12.2 20.4c1.1 1.5 2.5 1.5 3.8 0 1.3 1.5 2.7 1.5 3.8 0"/></g>

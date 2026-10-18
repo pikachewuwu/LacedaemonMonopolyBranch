@@ -27,6 +27,10 @@
   --m-tile-text: #f1ece3;
   --m-tile-radius: 7px;
   --m-tile-tint: 34%;
+  --m-fit-chars: 10;
+  --m-ink-go: var(--m-accent-2);
+  --m-ink-vacation: #8fe36f;
+  --m-ink-jail: #ff9b9e;
   --m-corner-bg: #121b26;
   --m-gap: 3px;
   --m-radius: 14px;
@@ -253,7 +257,7 @@ body.in-room .mono-root { min-height: 100dvh; }
 
 /* ---- Brett ---------------------------------------------------------------- */
 
-.board-area { min-width: 0; min-height: 0; container-type: size; display: grid; place-items: center; }
+.board-area { min-width: 0; min-height: 0; padding: 0; container-type: size; display: grid; place-items: center; }
 .board-fit { width: min(100cqw, 100cqh); aspect-ratio: 1; }
 .board {
   --n: 9; --k: 1.6;
@@ -273,7 +277,7 @@ body.in-room .mono-root { min-height: 100dvh; }
   padding: 3cqw; background: var(--m-board-bg); background-image: var(--m-board-art); overflow: hidden; min-height: 0; z-index: 1;
   font-family: var(--m-font-ui);
 }
-.center-brand { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; opacity: .075; gap: 1cqw; }
+.center-brand { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; opacity: .055; gap: 1cqw; }
 .center-logo { font: 800 7.2cqw/1 var(--m-font-display); letter-spacing: .12em; background: var(--m-logo-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .center-map { font-size: 2cqw; letter-spacing: .6em; text-transform: uppercase; }
 .preview-center .center-logo { font-size: 6cqw; opacity: .9; }
@@ -303,11 +307,13 @@ body.in-room .mono-root { min-height: 100dvh; }
 .edge-top .tile-flag { top: auto; bottom: 0; transform: translate(-50%, 38%); }
 .tile-flag svg, .tile-icon svg { width: 100%; height: 100%; }
 .tile-name {
-  font-size: calc(var(--S) * .175); font-weight: 650; line-height: 1.02; text-align: center; letter-spacing: .01em;
-  overflow-wrap: anywhere; hyphens: auto; max-width: 100%; text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  /* längstes wort bestimmt die schriftgröße, damit nichts mitten im wort bricht */
+  --fit: min(1, calc(var(--m-fit-chars) / var(--chars, 1)));
+  font-size: calc(var(--S) * .175 * var(--fit, 1)); font-weight: 650; line-height: 1.02; text-align: center; letter-spacing: .01em;
+  overflow-wrap: break-word; max-width: 100%; text-shadow: 0 1px 2px rgba(0,0,0,.35);
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
-.tile-icon { width: calc(var(--S) * .52); height: calc(var(--S) * .52); flex: none; margin-top: calc(var(--S) * -.18); filter: drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+.tile-icon { color: var(--m-tile-text); width: calc(var(--S) * .52); height: calc(var(--S) * .52); flex: none; margin-top: calc(var(--S) * -.18); filter: drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
 .edge-top .tile-icon { margin-top: 0; margin-bottom: calc(var(--S) * -.18); }
 .tile-treasure .tile-name { color: #ffcf66; }
 .tile-surprise .tile-name { color: #ff9ad5; }
@@ -338,13 +344,13 @@ body.in-room .mono-root { min-height: 100dvh; }
 .corner-art { width: calc(var(--L) * .56); height: calc(var(--L) * .56); filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
 .corner-art svg { width: 100%; height: 100%; }
 .corner-label { font: 800 calc(var(--L) * .14)/1 var(--m-font-tile); text-align: center; text-transform: none; letter-spacing: .02em; }
-.corner-go .corner-label { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: calc(var(--L) * .15); color: var(--m-accent-2); }
+.corner-go .corner-label { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: calc(var(--L) * .15); color: var(--m-ink-go); }
 .corner-go { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--m-accent) 22%, var(--m-corner-bg)), var(--m-corner-bg) 70%); }
 .corner-go .corner-inner::after { content: '➜'; position: absolute; right: 8%; top: 8%; font-size: calc(var(--L) * .15); line-height: 1; color: var(--m-accent); }
 .corner-vacation { background: radial-gradient(circle at 50% 30%, rgba(95, 207, 61, .2), var(--m-corner-bg) 70%); }
-.corner-vacation .corner-label { color: #8fe36f; }
+.corner-vacation .corner-label { color: var(--m-ink-vacation); }
 .corner-goToPrison { background: radial-gradient(circle at 50% 40%, rgba(229, 72, 77, .18), var(--m-corner-bg) 70%); }
-.corner-goToPrison .corner-label { color: #ff9b9e; }
+.corner-goToPrison .corner-label { color: var(--m-ink-jail); }
 .corner-prison { overflow: hidden; }
 .corner-visit { position: absolute; top: 6%; right: 6%; font: 700 calc(var(--L) * .1)/1 var(--m-font-tile); color: var(--m-muted); writing-mode: horizontal-tb; }
 .prison-cell { position: absolute; left: 0; bottom: 0; width: 72%; height: 72%; border-top-right-radius: calc(var(--L) * .1); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; box-shadow: 0 0 0 max(1.5px, calc(var(--L) * .02)) rgba(0,0,0,.4); }
@@ -486,10 +492,10 @@ body.in-room .mono-root { min-height: 100dvh; }
 .deed-set-item.is-this { color: var(--m-text); border-color: var(--group); }
 .deed-rent { width: calc(100% - 44px); margin: 12px 22px 0; border-collapse: collapse; font-size: .9rem; }
 .deed-rent td { padding: 6px 4px; border-bottom: 1px solid var(--m-border); }
-.deed-rent td:first-child { display: flex; align-items: center; gap: 8px; }
+.deed-label { display: flex; align-items: center; gap: 8px; }
 .deed-rent td:last-child { text-align: right; font-weight: 700; }
 .deed-rent tr.is-now td { color: var(--m-accent-2); }
-.deed-rent tr.is-now td:first-child::before { content: '▸'; color: var(--m-accent); }
+.deed-rent tr.is-now .deed-label::before { content: '▸'; color: var(--m-accent); }
 .deed-levels { display: inline-flex; gap: 2px; }
 .deed-levels .level { width: 6px; height: 9px; border-radius: 2px; background: var(--m-good); display: inline-block; }
 .deed-levels .level-full { font-size: .9rem; color: #ffd45c; }
@@ -549,7 +555,7 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 @media (max-width: 1050px) {
   body.in-room { overflow: auto; }
   .room-layout { height: auto; grid-template-columns: 1fr 1fr; grid-template-areas: 'board board' 'left right'; }
-  .board-area { grid-area: board; container-type: inline-size; }
+  .board-area { grid-area: board; container-type: inline-size; display: block; }
   .board-fit { width: min(100cqw, 92dvh); }
   .side-left { grid-area: left; overflow: visible; }
   .side-right { grid-area: right; overflow: visible; }

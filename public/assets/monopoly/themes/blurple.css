@@ -34,8 +34,8 @@
 .mono-root[data-theme="blurple"] .btn-primary { background: #5865f2; color: #fff; box-shadow: none; }
 .mono-root[data-theme="blurple"] .btn-primary:hover:not(:disabled) { background: #4752c4; color: #fff; }
 .mono-root[data-theme="blurple"] .panel { backdrop-filter: none; box-shadow: none; }
-.mono-root[data-theme="blurple"] .tile-name { font-size: calc(var(--S) * .15); font-weight: 700; }
-.mono-root[data-theme="blurple"] .tile-name::before { content: '#'; opacity: .45; margin-right: 1px; }
+.mono-root[data-theme="blurple"] .tile-name { font-size: calc(var(--S) * .15 * var(--fit, 1)); font-weight: 700; }
+.mono-root[data-theme="blurple"] .tile-city:not(.has-space) .tile-name::before { content: '#'; opacity: .45; margin-right: 1px; }
 .mono-root[data-theme="blurple"] .tile-airport .tile-name::before,
 .mono-root[data-theme="blurple"] .tile-company .tile-name::before,
 .mono-root[data-theme="blurple"] .tile-tax .tile-name::before,

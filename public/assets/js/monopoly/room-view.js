@@ -511,7 +511,13 @@ export class RoomView {
     this.status.replaceChildren(h('span.status-text', room.you.role === 'player' ? 'Waiting for players' : 'Join the game'));
     const key = JSON.stringify([room.you, room.participants.map(p => [p.id, p.appearance, p.team]), room.settings.maxPlayers, room.settings.canBotsJoin, room.settings.teams, this.ctx.identity?.name]);
     renderIf(this.stage, key, () => {
-      if (room.you.role !== 'player') return this.joinPanel();
+      if (room.you.role !== 'player') {
+        // auf kleinen brettern passt die figurenwahl nicht in die mitte
+        if (this.boardArea.clientWidth < 560) {
+          return h('div.lobby-stage', h('button.btn.btn-primary.btn-lg', { onclick: () => openModal({ title: 'Join game', className: 'modal-join', body: this.joinPanel() }) }, 'Join game'));
+        }
+        return this.joinPanel();
+      }
       const enough = room.participants.length >= 2;
       return h('div.lobby-stage',
         h('p.stage-wait', room.you.isHost ? (enough ? 'Everyone here? Start the game.' : 'Invite friends or add a bot to start.') : 'Waiting for the host to start the game…'),
@@ -552,7 +558,7 @@ export class RoomView {
             }
           }
           this.ctx.appearance = look;
-          await this.ask('room:join', { roomId: this.roomId, appearance: look });
+          if (await this.ask('room:join', { roomId: this.roomId, appearance: look })) closeModal();
         } }, 'Join game')
         : h('p.faint', full ? 'The room is full.' : 'The game has already started. You are watching.'),
       room.settings.onlyUsers && !this.ctx.member ? h('p.hint', 'Only logged-in users can join this room.') : null,

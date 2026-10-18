@@ -5,6 +5,8 @@ import { FLAGS, TILE_ICONS, UI, artwork, pawnSvg } from './icons.js';
 import { duration, groupTiles, inkOn, isOwnable, money, pardonName, word } from './format.js';
 import { closeModal, openModal } from './modal.js';
 
+const capital = text => text.charAt(0).toUpperCase() + text.slice(1);
+
 // ---- grundstückskarte --------------------------------------------------------
 
 export function tileDialog(view, index) {
@@ -53,10 +55,10 @@ export function tileDialog(view, index) {
         return h('span.deed-set-item', { class: i === index ? 'is-this' : '', '--owner': o?.appearance?.color ?? 'transparent', title: o ? `${map.tiles[i].name}: ${o.name}` : `${map.tiles[i].name}: for sale` }, map.tiles[i].name);
       })) : null,
       h('table.deed-rent', h('tbody', rows.map(([label, value, k, now]) => h('tr', { class: now ? 'is-now' : '' },
-        h('td', tile.type === 'city' && k > 0 ? h('span.deed-levels', k === 5 ? h('i.level-full', '★') : Array.from({ length: k }, () => h('i.level'))) : null, label),
+        h('td', h('span.deed-label', tile.type === 'city' && k > 0 ? h('span.deed-levels', k === 5 ? h('i.level-full', '★') : Array.from({ length: k }, () => h('i.level'))) : null, label)),
         h('td.num', value))))),
       h('dl.deed-facts',
-        tile.type === 'city' ? [h('dt', `${word(map, 'house', 'House')} cost`), h('dd', money(map, tile.house))] : null,
+        tile.type === 'city' ? [h('dt', `${capital(word(map, 'house', 'house'))} cost`), h('dd', money(map, tile.house))] : null,
         h('dt', 'Mortgage value'), h('dd', money(map, half)),
         h('dt', 'Owner'), h('dd', owner ? h('span.deed-owner', h('span.mini-pawn', { html: pawnSvg(owner.appearance?.shape, owner.appearance?.color) }), owner.name) : 'For sale'),
         state?.mortgaged ? [h('dt', 'Status'), h('dd.bad', 'Mortgaged: no rent')] : null,

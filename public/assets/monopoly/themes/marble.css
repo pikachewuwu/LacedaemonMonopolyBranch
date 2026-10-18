@@ -29,11 +29,13 @@
   --m-gap: 2px;
   --m-shadow: 0 20px 50px rgba(90, 70, 40, .22);
   --m-logo-gradient: linear-gradient(180deg, #e6c27a 0%, #b88a3a 60%, #7a5520 100%);
+  --m-ink-go: #8a5a14;
+  --m-ink-vacation: #2f7a22;
+  --m-ink-jail: #a3262b;
 }
 .mono-page:has(.mono-root[data-theme="marble"]) { background: #efe9df; }
 .mono-root[data-theme="marble"] .tile-name { text-shadow: none; }
 .mono-root[data-theme="marble"] .tile-price { background: rgba(42, 32, 23, .07); border-color: rgba(42, 32, 23, .12); }
-.mono-root[data-theme="marble"] .corner-go .corner-label { color: #8a5a14; }
 .mono-root[data-theme="marble"] .corner-visit { color: #6f5f4c; }
 .mono-root[data-theme="marble"] .center-brand { opacity: .2; }
 .mono-root[data-theme="marble"] .game-card { color: #fff; }
