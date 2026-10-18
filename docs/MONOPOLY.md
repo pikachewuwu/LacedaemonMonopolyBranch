@@ -22,6 +22,7 @@ Wer den Raum öffnet, ist Host: Er stellt die Regeln ein, fügt Bots hinzu und s
 - **Gleiches WLAN:** in `.env` `HOST=0.0.0.0` setzen und den Server neu starten. Freunde öffnen `http://<deine-IP>:3000/play/<raumcode>` (die IP zeigt `ipconfig` unter Windows). Windows fragt beim ersten Start, ob Node.js im Netzwerk erreichbar sein darf: erlauben.
 - **Übers Internet, schnell:** einen Tunnel starten, z. B. `cloudflared tunnel --url http://localhost:3000`, und den angezeigten `https://…trycloudflare.com`-Link mit `/play/<raumcode>` weitergeben.
 - **Tailscale (nur für eingeladene Freunde):** auf dem Host-PC Tailscale installieren und anmelden, Server starten, dann `tailscale serve --bg 3000`. Der Link `https://<pc-name>.<tailnet>.ts.net/play/<raumcode>` funktioniert für alle im eigenen Tailnet (Freunde über „Share“ bzw. „Invite users“ in der Tailscale-Admin-Konsole einladen). Für Freunde ohne Tailscale: `tailscale funnel --bg 3000` macht denselben Link öffentlich.
+- **Kostenlos im Internet zum Testen (Render):** auf https://render.com mit GitHub anmelden, *New → Blueprint*, dieses Repository und den Branch `claude/cool-heisenberg-0vkqp2` wählen; `render.yaml` stellt alles ein. Danach läuft das Spiel unter `https://lacedaemon-….onrender.com/pages/monopoly.html`. Kostenlose Instanzen schlafen nach 15 Minuten ohne Besucher ein (der erste Aufruf dauert dann etwa eine Minute) und vergessen dabei laufende Partien.
 - **Dauerhaft:** auf dem Linux-Server mit `NODE_ENV=production` hinter HTTPS betreiben.
 
 ### Discord-Login

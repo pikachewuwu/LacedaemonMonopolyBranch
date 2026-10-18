@@ -1,0 +1,19 @@
+# Render-Blueprint zum Testen: kostenloser Web-Service direkt aus diesem Branch.
+# Kostenlose Instanzen schlafen nach 15 Minuten ohne Besucher ein; laufende Partien
+# und die SQLite-Datei gehen dabei verloren.
+services:
+  - type: web
+    name: lacedaemon
+    runtime: node
+    plan: free
+    branch: claude/cool-heisenberg-0vkqp2
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
