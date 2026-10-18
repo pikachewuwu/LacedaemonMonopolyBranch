@@ -139,4 +139,4 @@ Die SQLite-Integrationstests benötigen `npm install`. Die Modulsyntax kann dar�
 
 ## Sicherheit
 
-In dieser frühen Entwicklungsfassung sind Schreibendpunkte noch nicht durch Login geschützt; **nicht unverändert öffentlich ins Internet stellen**. Vor Deployment gehören Authentifizierung, Autorisierung, Rate-Limits, HTTPS, sichere Session-Cookies und regelmäßige Backups dazu.
+Schreibendpunkte sind noch nicht durch Login geschützt. Für einen öffentlichen Testserver deshalb **`SITE_PASSWORD` setzen** (sperrt die ganze Seite, siehe [docs/MONOPOLY.md](docs/MONOPOLY.md)) und `NODE_ENV=production`. Vor Deployment gehören Authentifizierung, Autorisierung, Rate-Limits, HTTPS, sichere Session-Cookies und regelmäßige Backups dazu.

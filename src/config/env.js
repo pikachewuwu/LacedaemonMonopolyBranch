@@ -21,6 +21,7 @@ export function getConfig() {
     dbClient,
     sqliteFile: process.env.SQLITE_FILE ?? './data/lacedaemon.sqlite',
     databaseUrl: process.env.DATABASE_URL,
+    sitePassword: process.env.SITE_PASSWORD ?? '',
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID ?? '',
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',

@@ -17,3 +17,6 @@ services:
         value: production
       - key: HOST
         value: 0.0.0.0
+      # Render fragt beim Anlegen nach dem Passwort, das deine Freunde eingeben
+      - key: SITE_PASSWORD
+        sync: false

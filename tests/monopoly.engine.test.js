@@ -293,3 +293,14 @@ test('bots spielen ganze partien ohne fehler zu ende', () => {
     assert.ok(g.winner.playerIds.length >= 1);
   }
 });
+
+test('ungültige zahlen aus dem client werden abgelehnt', () => {
+  const g = newGame();
+  g.tiles[1].owner = 'a';
+  g.tiles[3].owner = 'a';
+  for (const tile of ['constructor', -1, 1.5, 99, '1']) {
+    assert.throws(() => g.act('a', { type: 'upgrade', tile }), /Invalid action|Unknown/);
+  }
+  assert.throws(() => g.act('a', { type: 'constructor' }), /Unknown action/);
+  assert.throws(() => g.act('a', { type: 'toString' }), /Unknown action/);
+});

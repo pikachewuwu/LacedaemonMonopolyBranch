@@ -18,6 +18,7 @@ import { makeRoomManager } from './modules/monopoly/lobbies/rooms.js';
 import { makeMonopolyRepository } from './modules/monopoly/monopoly.repository.js';
 import { monopolyRoutes, saveFinishedGame } from './modules/monopoly/monopoly.routes.js';
 import { notFound, errorHandler } from './middleware/error-handler.js';
+import { makeAccessGate } from './middleware/access.js';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
 
@@ -35,6 +36,11 @@ export function createApp(db, config = {}) {
       },
     },
   }));
+  // hinter dem proxy des hosters (render & co.) die echte ip für die sperre nach fehlversuchen
+  if (config.nodeEnv === 'production') app.set('trust proxy', 1);
+  const access = makeAccessGate(config.sitePassword, { secure: config.nodeEnv === 'production' });
+  app.use(access.routes);
+  app.use(access.middleware);
   app.use(express.json({ limit: '32kb' }));
 
   const catalogService = makeCatalogService(makeCatalogRepository(db));
@@ -44,7 +50,7 @@ export function createApp(db, config = {}) {
   const monopolyRepository = makeMonopolyRepository(db);
   const rooms = makeRoomManager({ maps, onFinished: saveFinishedGame(monopolyRepository) });
   // server.js hängt den websocket an dieselben objekte
-  app.locals.monopoly = { auth, maps, rooms };
+  app.locals.monopoly = { auth, maps, rooms, access };
 
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api/catalog', catalogRoutes(catalogService));

@@ -191,8 +191,13 @@ export class MonopolyGame {
     const p = this.player(playerId);
     if (!p) throw new GameError('You are not playing in this game');
     if (p.bankrupt) throw new GameError('You are bankrupt');
-    const handler = ACTIONS[action?.type];
+    const handler = Object.hasOwn(ACTIONS, action?.type ?? '') ? ACTIONS[action.type] : null;
     if (!handler) throw new GameError('Unknown action');
+    // zahlen aus dem client: nur ganze, nicht negative zahlen im erlaubten bereich
+    for (const key of ['tile', 'amount', 'id']) {
+      if (key in action && !(Number.isInteger(action[key]) && action[key] >= 0 && action[key] <= 1e9)) throw new GameError('Invalid action');
+    }
+    if ('tile' in action && action.tile >= this.info.size) throw new GameError('Invalid action');
     handler.call(this, p, action);
     this.version++;
     return this.drainEvents();

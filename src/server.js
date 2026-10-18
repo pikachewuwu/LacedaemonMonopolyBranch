@@ -10,7 +10,11 @@ async function start() {
   const config = getConfig();
   const db = await openDatabase(config);
   try {
-    await seedDemoData(db);
+    // beispieldaten nur lokal, nie auf einem öffentlichen server
+    if (config.nodeEnv !== 'production') await seedDemoData(db);
+    if (config.nodeEnv === 'production' && !config.sitePassword && !config.discord.guildId) {
+      console.warn('WARNUNG: Öffentlicher Server ohne SITE_PASSWORD oder DISCORD_GUILD_ID. Jeder mit dem Link kann rein.');
+    }
     const app = createApp(db, config);
     const server = app.listen(config.port, config.host, () => {
       console.log(`Lacedaemon gestartet: http://${config.host}:${server.address().port}`);

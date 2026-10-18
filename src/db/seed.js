@@ -1,11 +1,11 @@
 //füllt test DB mit test Daten
 
 const exampleBalances = [
-  ['Felix', 12412364],
-  ['Patrick', 12162677],
-  ['Sophia', 9103328],
-  ['Ari', 1510229],
-  ['Julian', 957490],
+  ['Demo-Mitglied 1', 12412364],
+  ['Demo-Mitglied 2', 12162677],
+  ['Demo-Mitglied 3', 9103328],
+  ['Demo-Mitglied 4', 1510229],
+  ['Demo-Mitglied 5', 957490],
 ];
 
 export async function seedDemoData(db) {

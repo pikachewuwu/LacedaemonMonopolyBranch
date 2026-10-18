@@ -21,7 +21,11 @@ export async function resolveIdentity(handshake, auth) {
   return { id, name: guestName(handshake.auth?.name), memberId: null, avatarUrl: null };
 }
 
-export function attachMonopolySocket(httpServer, { rooms, auth }) {
+const EVENT_BURST = 40;
+const EVENTS_PER_SECOND = 15;
+const ROOMS_PER_10_MIN = 6;
+
+export function attachMonopolySocket(httpServer, { rooms, auth, access }) {
   const io = new Server(httpServer, { serveClient: true, maxHttpBufferSize: 64_000 });
   const roomSockets = new Map();
 
@@ -32,6 +36,8 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
   });
 
   io.use(async (socket, next) => {
+    // dieselbe zugangssperre wie für die seiten
+    if (access && !access.allowed(socket.handshake.headers.cookie)) return next(new Error('Access denied'));
     try {
       socket.data.identity = await resolveIdentity(socket.handshake, auth);
       next();
@@ -44,6 +50,8 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
     const identity = socket.data.identity;
     let roomId = null;
     let chatBudget = { tokens: 6, at: Date.now() };
+    let eventBudget = { tokens: EVENT_BURST, at: Date.now() };
+    const roomsCreated = [];
 
     function track(id) {
       if (roomId && roomId !== id) detach();
@@ -82,6 +90,12 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
     function on(event, handler) {
       socket.on(event, async (payload, ack) => {
         const reply = typeof ack === 'function' ? ack : () => {};
+        // grobe bremse gegen skripte, die den server fluten
+        const now = Date.now();
+        eventBudget = { tokens: Math.min(EVENT_BURST, eventBudget.tokens + ((now - eventBudget.at) / 1000) * EVENTS_PER_SECOND), at: now };
+        if (eventBudget.tokens < 1) return reply({ error: 'Slow down a little' });
+        eventBudget.tokens--;
+        if (payload !== undefined && (payload === null || typeof payload !== 'object' || Array.isArray(payload))) return reply({ error: 'Invalid request' });
         try {
           reply({ ok: true, ...(await handler(payload ?? {})) });
         } catch (error) {
@@ -96,6 +110,10 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
     on('rooms:list', () => ({ rooms: rooms.listPublic() }));
 
     on('room:create', ({ settings }) => {
+      const now = Date.now();
+      while (roomsCreated.length && now - roomsCreated[0] > 10 * 60_000) roomsCreated.shift();
+      if (roomsCreated.length >= ROOMS_PER_10_MIN) throw new GameError('You created a lot of rooms. Try again in a few minutes');
+      roomsCreated.push(now);
       const room = rooms.create(settings ?? {});
       return { roomId: room.id };
     });
