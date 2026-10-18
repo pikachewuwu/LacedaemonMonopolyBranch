@@ -30,7 +30,8 @@ export const savedName = () => storage(NAME_KEY) ?? '';
 export const saveName = name => storage(NAME_KEY, name);
 
 export function connect(name, handlers) {
-  const socket = io({ auth: { guestToken: guestToken(), name }, transports: ['websocket', 'polling'] });
+  // standard-reihenfolge: erst http, dann websocket. klappt auch hinter proxys und tunneln
+  const socket = io({ auth: { guestToken: guestToken(), name } });
   socket.on('hello', handlers.hello);
   socket.on('room:state', handlers.state);
   socket.on('connect', () => handlers.status?.('online'));

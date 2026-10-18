@@ -30,6 +30,8 @@ export function createApp(db, config = {}) {
         // discord-avatare und der monopoly-websocket
         'img-src': ["'self'", 'data:', 'https://cdn.discordapp.com'],
         'connect-src': ["'self'", 'ws:', 'wss:'],
+        // ohne https (z.b. im heimnetz per ip) würde der browser sonst alle dateien per https anfragen
+        'upgrade-insecure-requests': config.nodeEnv === 'production' ? [] : null,
       },
     },
   }));

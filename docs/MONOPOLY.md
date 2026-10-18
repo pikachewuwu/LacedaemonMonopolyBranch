@@ -17,6 +17,12 @@ Dann **http://localhost:3000/pages/monopoly.html** öffnen (oder im Portal auf �
 
 Wer den Raum öffnet, ist Host: Er stellt die Regeln ein, fügt Bots hinzu und startet.
 
+### Mit Freunden spielen
+
+- **Gleiches WLAN:** in `.env` `HOST=0.0.0.0` setzen und den Server neu starten. Freunde öffnen `http://<deine-IP>:3000/play/<raumcode>` (die IP zeigt `ipconfig` unter Windows). Windows fragt beim ersten Start, ob Node.js im Netzwerk erreichbar sein darf: erlauben.
+- **Übers Internet, schnell:** einen Tunnel starten, z. B. `cloudflared tunnel --url http://localhost:3000`, und den angezeigten `https://…trycloudflare.com`-Link mit `/play/<raumcode>` weitergeben.
+- **Dauerhaft:** auf dem Linux-Server mit `NODE_ENV=production` hinter HTTPS betreiben.
+
 ### Discord-Login
 
 Ohne Konfiguration spielt jeder mit einem Gast-Namen (der Browser merkt sich ein zufälliges Token, damit man nach einem Neuladen seinen Platz behält). Für den Discord-Login:
