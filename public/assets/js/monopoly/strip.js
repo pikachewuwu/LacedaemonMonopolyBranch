@@ -71,14 +71,17 @@ export class BoardStrip {
   }
 
   /** Sicht auf den spieler am zug schieben; nur wenn sich die position geändert hat. */
-  focusTurn(game) {
+  focusTurn(game, { force = false } = {}) {
     if (!this.map) return;
     const player = game?.players?.find(p => p.id === game.turn?.playerId);
     if (!player) return;
     const key = `${player.id}:${player.position}`;
-    if (this.focused === key) return;
+    if (!force && this.focused === key) return;
     this.focused = key;
-    this.focusIndex(player.position);
+    // erst nach dem layout messen, sonst ist die breite noch 0
+    const run = () => this.focusIndex(player.position);
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(run);
+    else run();
   }
 
   focusIndex(index) {

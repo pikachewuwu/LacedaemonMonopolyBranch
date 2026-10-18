@@ -97,7 +97,7 @@ export class RoomView {
     else this.board.grid.append(this.board.center);
     this.strip.el.hidden = !this.lineView;
     this.lineBtn.classList.toggle('is-on', Boolean(this.lineView));
-    if (this.lineView) this.strip.focusTurn(this.room?.game);
+    if (this.lineView) this.strip.focusTurn(this.room?.game, { force: true });
   }
 
   setTab(tab) {

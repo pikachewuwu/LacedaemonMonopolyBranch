@@ -691,7 +691,7 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 /* ---- zeilen-ansicht: das ganze brett in einer reihe ---- */
 .board-area.is-line { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 10px; padding: 10px 14px; }
 .board-area.is-line .board-fit { display: none; }
-.board-area.is-line .board-center { width: 100%; background: transparent; background-image: none; padding: 0; gap: 8px; overflow: visible; }
+.board-area.is-line .board-center { width: 100%; flex: 0 0 auto; justify-content: flex-start; background: transparent; background-image: none; padding: 0; gap: 8px; overflow: visible; }
 .board-area.is-line .board-center .center-brand { display: none; }
 .board-area.is-line .center-status { font-size: 1rem; min-height: 0; }
 .board-area.is-line .center-stage { gap: 8px; }
@@ -700,7 +700,7 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 .board-area.is-line .center-card { position: static; left: auto; top: auto; transform: none; display: none; }
 .board-area.is-line .center-card.is-shown { display: block; opacity: 1; }
 .board-strip { display: none; min-height: 0; flex: 1; }
-.board-area.is-line .board-strip { display: flex; align-items: center; }
+.board-area.is-line .board-strip { display: flex; flex: 1; align-items: center; min-height: 0; }
 .strip-track { display: flex; gap: 6px; list-style: none; margin: 0; padding: 4px 2px 10px; overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; width: 100%; align-items: stretch; scrollbar-width: thin; }
 .strip-tile { flex: 0 0 auto; width: 92px; min-height: 82px; display: flex; flex-direction: column; gap: 3px; padding: 6px 7px; border-radius: 10px; border: 1px solid var(--m-border); border-left: 4px solid var(--group, var(--m-border)); background: var(--m-tile-bg-2); color: var(--m-text); font: 600 .72rem var(--m-font-ui); cursor: pointer; text-align: left; }
 .strip-tile.is-owned { border-left-color: var(--owner, var(--group)); background: color-mix(in srgb, var(--owner) 20%, var(--m-tile-bg-2)); }
