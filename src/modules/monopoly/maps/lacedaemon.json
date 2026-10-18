@@ -1,0 +1,149 @@
+{
+  "id": "lacedaemon",
+  "name": "Lacedaemon",
+  "description": "The server board: channels for streets, operating systems for airports, the Backrooms for prison.",
+  "words": {
+    "currency": "🐉",
+    "currencyPosition": "after",
+    "house": "upgrade",
+    "houses": "upgrades",
+    "hotel": "full-stack",
+    "hotels": "full-stacks",
+    "prison": "the Backrooms",
+    "treasure": "Treasure",
+    "surprise": "Surprise",
+    "pardon": {
+      "treasure": "Pardon card",
+      "surprise": "Exit card"
+    }
+  },
+  "rewards": {
+    "pass": 200,
+    "land": 300
+  },
+  "prison": {
+    "fine": 50,
+    "turns": 3
+  },
+  "vacation": {
+    "turns": 1
+  },
+  "groups": {
+    "brazil": { "color": "#2fb463", "flag": "block", "placeholder": "Brazil" },
+    "israel": { "color": "#e5484d", "flag": "orbit", "placeholder": "Israel" },
+    "italy": { "color": "#f2f4f8", "flag": "rps", "placeholder": "Italy" },
+    "germany": { "color": "#79678a", "flag": "debate", "placeholder": "Germany" },
+    "china": { "color": "#b5d334", "flag": "lizard", "placeholder": "China" },
+    "france": { "color": "#f7c948", "flag": "bolt", "placeholder": "France" },
+    "england": { "color": "#ff8a3d", "flag": "sheriff", "placeholder": "England" },
+    "usa": { "color": "#3d7bff", "flag": "helmet", "placeholder": "USA" }
+  },
+  "tiles": [
+    { "type": "corner", "corner": "go", "name": "=collect" },
+    { "type": "city", "name": "Rust", "group": "brazil", "price": 60, "house": 50, "rent": [2, 10, 30, 90, 150, 240] },
+    { "type": "treasure", "name": "Treasure" },
+    { "type": "city", "name": "Minecraft", "group": "brazil", "price": 60, "house": 50, "rent": [4, 20, 60, 190, 330, 460] },
+    { "type": "tax", "name": "Server Donation", "percent": 10, "icon": "donation" },
+    { "type": "airport", "name": "Windows", "price": 200, "rent": [25, 50, 100, 200], "icon": "windows" },
+    { "type": "city", "name": "text-comms", "group": "israel", "price": 100, "house": 50, "rent": [6, 30, 90, 260, 380, 540] },
+    { "type": "city", "name": "Moon Base", "group": "israel", "price": 110, "house": 50, "rent": [6, 30, 90, 280, 400, 560] },
+    { "type": "surprise", "name": "Surprise" },
+    { "type": "city", "name": "Star Gate", "group": "israel", "price": 120, "house": 50, "rent": [8, 40, 110, 300, 460, 610] },
+    { "type": "corner", "corner": "prison", "name": "In the Backrooms", "visiting": "Passing by" },
+    { "type": "city", "name": "Scissors", "group": "italy", "price": 130, "house": 100, "rent": [10, 50, 140, 440, 600, 740] },
+    { "type": "company", "name": "Server Provider", "price": 150, "multipliers": [4, 10, 20], "icon": "server" },
+    { "type": "city", "name": "Paper", "group": "italy", "price": 140, "house": 100, "rent": [10, 50, 160, 460, 630, 760] },
+    { "type": "city", "name": "Rock", "group": "italy", "price": 160, "house": 100, "rent": [12, 60, 180, 500, 700, 900] },
+    { "type": "airport", "name": "Linux", "price": 200, "rent": [25, 50, 100, 200], "icon": "linux" },
+    { "type": "city", "name": "Consilium", "group": "germany", "price": 180, "house": 100, "rent": [14, 70, 190, 540, 760, 950] },
+    { "type": "treasure", "name": "Treasure" },
+    { "type": "city", "name": "Debate", "group": "germany", "price": 190, "house": 100, "rent": [15, 70, 210, 560, 760, 960] },
+    { "type": "city", "name": "Debait", "group": "germany", "price": 200, "house": 100, "rent": [15, 80, 220, 600, 780, 1000] },
+    { "type": "corner", "corner": "vacation", "name": "Touch Grass" },
+    { "type": "city", "name": "hissssss", "group": "china", "price": 210, "house": 150, "rent": [18, 90, 240, 680, 850, 1000] },
+    { "type": "surprise", "name": "Surprise" },
+    { "type": "city", "name": "forum", "group": "china", "price": 220, "house": 150, "rent": [20, 90, 260, 710, 900, 1100] },
+    { "type": "city", "name": "lizard-news", "group": "china", "price": 240, "house": 150, "rent": [20, 100, 290, 740, 920, 1100] },
+    { "type": "airport", "name": "Mac", "price": 200, "rent": [25, 50, 100, 200], "icon": "mac" },
+    { "type": "city", "name": "electrolize", "group": "france", "price": 260, "house": 150, "rent": [20, 100, 320, 800, 950, 1100] },
+    { "type": "company", "name": "Internet Provider", "price": 150, "multipliers": [4, 10, 20], "icon": "internet" },
+    { "type": "city", "name": "elekrep", "group": "france", "price": 270, "house": 150, "rent": [20, 120, 350, 825, 1000, 1150] },
+    { "type": "city", "name": "hakayati", "group": "france", "price": 280, "house": 150, "rent": [25, 120, 350, 850, 1000, 1200] },
+    { "type": "corner", "corner": "goToPrison", "name": "Go to Backrooms" },
+    { "type": "city", "name": "The Ugly", "group": "england", "price": 290, "house": 200, "rent": [25, 120, 380, 850, 1050, 1250] },
+    { "type": "city", "name": "The Bad", "group": "england", "price": 300, "house": 200, "rent": [26, 140, 400, 950, 1150, 1300] },
+    { "type": "treasure", "name": "Treasure" },
+    { "type": "city", "name": "The Good", "group": "england", "price": 320, "house": 200, "rent": [30, 140, 440, 1000, 1200, 1400] },
+    { "type": "airport", "name": "Uwuntu", "price": 200, "rent": [25, 50, 100, 200], "icon": "uwuntu" },
+    { "type": "surprise", "name": "Surprise" },
+    { "type": "city", "name": "lacedaemon", "group": "usa", "price": 360, "house": 200, "rent": [35, 180, 550, 1150, 1350, 1525] },
+    { "type": "tax", "name": "Server Bill", "amount": 75, "icon": "bill" },
+    { "type": "city", "name": "securo", "group": "usa", "price": 400, "house": 200, "rent": [50, 200, 600, 1400, 1700, 2000] }
+  ],
+  "cards": {
+    "treasure": [
+      { "text": "Collect Available =collect.", "effect": { "type": "moveTo", "tile": 0 } },
+      { "text": "You collected a Blitzcheck. Collect 200🐉.", "effect": { "type": "money", "amount": 200 } },
+      { "text": "You cheated on the Minecraft Server. Pay 50🐉.", "effect": { "type": "money", "amount": -50 } },
+      { "text": "From playing in the casino you earned 50🐉.", "effect": { "type": "money", "amount": 50 } },
+      { "text": "Go to the Backrooms.", "effect": { "type": "prison" } },
+      { "text": "You won russian-roulette. Collect 50🐉 from every player for equipment.", "effect": { "type": "collectEach", "amount": 50 } },
+      { "text": "You were just paid to leave! Receive 20🐉.", "effect": { "type": "money", "amount": 20 } },
+      { "text": "Lacedaemon actually paid a dividend. Collect 100🐉.", "effect": { "type": "money", "amount": 100 } },
+      { "text": "You committed fraud! Collect 10🐉 from every player.", "effect": { "type": "collectEach", "amount": 10 } },
+      { "text": "From paying 10 real euros you get 100🐉.", "effect": { "type": "money", "amount": 100 } },
+      { "text": "BlitzBait. Pay 60🐉.", "effect": { "type": "money", "amount": -60 } },
+      { "text": "You lost in the Casino. Pay 50🐉.", "effect": { "type": "money", "amount": -50 } },
+      { "text": "You won in the Casino. You made a profit of 25🐉.", "effect": { "type": "money", "amount": 25 } },
+      { "text": "It’s time to redesign your infrastructure. Pay 30🐉 per upgrade and 120🐉 per full-stack you own.", "effect": { "type": "repairs", "perHouse": 30, "perHotel": 120 } },
+      { "text": "You have written a lot messages. Collect 15🐉.", "effect": { "type": "money", "amount": 15 } },
+      { "text": "You received 100🐉 for reporting an Exploit.", "effect": { "type": "money", "amount": 100 } },
+      { "text": "Received a Pardon card.", "effect": { "type": "pardon" } }
+    ],
+    "surprise": [
+      { "text": "Advance to =collect.", "effect": { "type": "moveTo", "tile": 0 } },
+      { "text": "Advance to lizard-news.", "effect": { "type": "moveTo", "tile": 24 } },
+      { "text": "Advance to Scissors.", "effect": { "type": "moveTo", "tile": 11 } },
+      { "text": "Advance to the next company.", "effect": { "type": "nextOfType", "tileType": "company" } },
+      { "text": "Advance to the next airport.", "effect": { "type": "nextOfType", "tileType": "airport" } },
+      { "text": "Lacedaemon pays you dividend of 60🐉.", "effect": { "type": "money", "amount": 60 } },
+      { "text": "Go back 3 steps.", "effect": { "type": "moveSteps", "steps": -3 } },
+      { "text": "Go to the Backrooms.", "effect": { "type": "prison" } },
+      { "text": "It’s time to redesign your infrastructure. Pay 25🐉 per upgrade and 100🐉 per full-stack you own.", "effect": { "type": "repairs", "perHouse": 25, "perHotel": 100 } },
+      { "text": "Pay Server tax of 20🐉.", "effect": { "type": "money", "amount": -20 } },
+      { "text": "Take a trip to Windows.", "effect": { "type": "moveTo", "tile": 5 } },
+      { "text": "Have an adventure to securo.", "effect": { "type": "moveTo", "tile": 39 } },
+      { "text": "You lost roulette. Pay each player 50🐉.", "effect": { "type": "payEach", "amount": 50 } },
+      { "text": "You have a new investment. Receive 150🐉.", "effect": { "type": "money", "amount": 150 } },
+      { "text": "From a Blitzcheck you get 100🐉.", "effect": { "type": "money", "amount": 100 } },
+      { "text": "Your beloved server \"Lacedaemon\" needs some financial assistance. Pay 50🐉.", "effect": { "type": "money", "amount": -50 } },
+      { "text": "Received an Exit card.", "effect": { "type": "pardon" } }
+    ],
+    "crazy": {
+      "treasure": [
+        { "text": "Nitro Boost! Your properties collect double rent until your next turn.", "effect": { "type": "boost" } },
+        { "text": "You found diamonds at Y -59 on the Minecraft Server. Collect 300🐉.", "effect": { "type": "money", "amount": 300 } },
+        { "text": "Admin abuse: you gave yourself a free upgrade.", "effect": { "type": "freeUpgrade" } },
+        { "text": "Somebody leaked {player}'s bank PIN in text-comms. Take 10% of their cash.", "effect": { "type": "stealPercent", "percent": 10 } },
+        { "text": "Slowmode is on for you. You pay no rent until your next turn.", "effect": { "type": "shield" } },
+        { "text": "Wealth redistribution passed in Debate. {player} pays the poorest player 150🐉.", "effect": { "type": "robinHood", "amount": 150 } },
+        { "text": "You claimed an abandoned channel. Take the cheapest free property for nothing.", "effect": { "type": "claimFree" } },
+        { "text": "You blew up {player}'s base with TNT. They lose an upgrade.", "effect": { "type": "griefUpgrade" } },
+        { "text": "Ender pearl! You land on a random tile.", "effect": { "type": "teleportRandom" } },
+        { "text": "You won the giveaway in forum. Every player pays you 30🐉.", "effect": { "type": "collectEach", "amount": 30 } }
+      ],
+      "surprise": [
+        { "text": "You joined the wrong voice channel. Swap places with {player}.", "effect": { "type": "swapRandom" } },
+        { "text": "Server lag! You rubber-band to a random tile.", "effect": { "type": "teleportRandom" } },
+        { "text": "A mod timed you out. Skip your next turn.", "effect": { "type": "skipTurn", "turns": 1 } },
+        { "text": "Your screen time is too high. Go to Touch Grass.", "effect": { "type": "goToVacation" } },
+        { "text": "Server outage! Every player pays 50🐉 into the Touch Grass pot.", "effect": { "type": "everyonePaysPot", "amount": 50 } },
+        { "text": "Nether portal! Travel to the other side of the board.", "effect": { "type": "moveSteps", "steps": 20 } },
+        { "text": "You were caught alt-farming =collect. Pay 25🐉 for every property you own.", "effect": { "type": "payPerProperty", "amount": 25 } },
+        { "text": "Ghost ping! Every other player jumps back 3 steps.", "effect": { "type": "moveOthers", "steps": -3 } },
+        { "text": "The creeper behind you exploded. Your most built property loses an upgrade.", "effect": { "type": "griefSelf" } },
+        { "text": "Rollback! Back to =collect, and the server forgot to pay you.", "effect": { "type": "moveTo", "tile": 0, "collectGo": false } }
+      ]
+    }
+  }
+}
