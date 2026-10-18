@@ -40,7 +40,7 @@
   },
   "tiles": [
     { "type": "corner", "corner": "go", "name": "=collect" },
-    { "type": "city", "name": "Rust", "group": "brazil", "price": 60, "house": 50, "rent": [2, 10, 30, 90, 150, 240] },
+    { "type": "city", "name": "Valorant", "group": "brazil", "price": 60, "house": 50, "rent": [2, 10, 30, 90, 150, 240] },
     { "type": "treasure", "name": "Treasure" },
     { "type": "city", "name": "Minecraft", "group": "brazil", "price": 60, "house": 50, "rent": [4, 20, 60, 190, 330, 460] },
     { "type": "tax", "name": "Server Donation", "percent": 10, "icon": "donation" },
