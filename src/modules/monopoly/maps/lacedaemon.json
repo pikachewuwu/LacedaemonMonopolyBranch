@@ -32,10 +32,10 @@
     "brazil": { "color": "#2fb463", "flag": "steam", "placeholder": "Brazil" },
     "israel": { "color": "#e5484d", "flag": "orbit", "placeholder": "Israel" },
     "italy": { "color": "#f2f4f8", "flag": "rps", "placeholder": "Italy" },
-    "germany": { "color": "#79678a", "flag": "debate", "placeholder": "Germany" },
+    "germany": { "color": "#79678a", "flag": "shadow", "placeholder": "Germany" },
     "china": { "color": "#b5d334", "flag": "lizard", "placeholder": "China" },
     "france": { "color": "#f7c948", "flag": "casino", "placeholder": "France" },
-    "england": { "color": "#ff8a3d", "flag": "sheriff", "placeholder": "England" },
+    "england": { "color": "#ff8a3d", "flag": "revolver", "placeholder": "England" },
     "usa": { "color": "#3d7bff", "flag": "helmet", "placeholder": "USA" }
   },
   "tiles": [

@@ -3,12 +3,13 @@
 import { h, renderIf, wait } from './dom.js';
 import { Board } from './board.js';
 import { Dice } from './dice.js';
-import { UI, pawnSvg } from './icons.js';
+import { LOGO, UI, pawnSvg } from './icons.js';
 import { groupTiles, isOwnable, money, pardonName, word } from './format.js';
 import { closeModal, modalOpen, openModal, toast } from './modal.js';
 import { createTradeDialog, statsDialog, tileDialog, tradeSummary, viewTradeDialog } from './dialogs.js';
 import { isMuted, setMuted, sound } from './sound.js';
 import { confetti } from './confetti.js';
+import { Fx } from './fx.js';
 import { applyTheme, currentTheme, listThemes } from './themes.js';
 import { saveName, savedName } from './net.js';
 
@@ -27,6 +28,7 @@ export class RoomView {
     this.seenChat = 0;
     this.board = new Board({ onTile: i => this.map && isOwnable(this.map.tiles[i]) && tileDialog(this, i) });
     this.dice = new Dice();
+    this.fx = new Fx(this.board);
     this.build();
     this.ticker = setInterval(() => this.tick(), 200);
   }
@@ -57,7 +59,7 @@ export class RoomView {
     this.codeEl = h('span.room-code', this.roomId);
     this.left = h('aside.side.side-left',
       h('header.side-head',
-        h('a.brand-mini', { href: '#/' }, h('span.brand-mark', 'Λ'), h('span', 'Lacedaemon')),
+        h('a.brand-mini', { href: '#/' }, h('img.brand-mark', { src: LOGO, alt: '' }), h('span', 'Lacedaemon')),
         h('div.side-tools', this.soundBtn,
           h('button.icon-btn', { type: 'button', 'aria-label': 'Board theme', html: UI.palette, onclick: () => this.themeDialog() }),
           h('button.icon-btn', { type: 'button', 'aria-label': 'Leave room', html: UI.door, onclick: () => this.leaveDialog() }))),
@@ -77,7 +79,7 @@ export class RoomView {
     this.status = h('div.center-status');
     this.miniLog = h('ol.center-log');
     this.board.center.append(
-      h('div.center-brand', h('span.center-logo', 'LACEDAEMON'), h('span.center-map')),
+      h('div.center-brand', h('img.center-emblem', { src: LOGO, alt: '' }), h('span.center-logo', 'LACEDAEMON'), h('span.center-map')),
       this.status, this.dice.el, this.stage, this.cardSlot, this.miniLog,
     );
     this.boardArea = h('main.board-area', h('div.board-fit', this.board.el));
@@ -131,8 +133,35 @@ export class RoomView {
     this.board.center.querySelector('.center-map').textContent = this.map.name;
   }
 
+  /** Farbe und name eines spielers aus dem letzten bekannten zustand. */
+  who(id) {
+    const p = this.room?.game?.players.find(x => x.id === id) ?? this.room?.participants.find(x => x.id === id);
+    return { name: p?.name ?? '?', color: p?.appearance?.color ?? '#d6ad77' };
+  }
+
+  /** Effekte in der brettmitte zu den ereignissen. */
+  async effect(e) {
+    const fx = this.fx;
+    const bank = { x: 50, y: 50 };
+    if (e.type === 'turn') fx.turn(this.who(e.playerId).color);
+    else if (e.type === 'dice' && e.dice[0] === e.dice[1]) fx.banner('DOUBLES!', 'doubles', `${this.who(e.playerId).name} rolls again`);
+    else if (e.type === 'move' && e.mode === 'prison') fx.banner(this.map.tiles[this.board.prisonIndex()].name, 'prison', `${this.who(e.playerId).name} is trapped`);
+    else if (e.type === 'buy') fx.buy(this.map, e.tile, this.who(e.playerId).color, this.who(e.playerId).name);
+    else if (e.type === 'upgrade') fx.upgrade(e.tile);
+    else if (e.type === 'bankrupt') fx.banner(e.reason === 'bankrupt' ? 'BANKRUPT' : 'OUT', 'bankrupt', this.who(e.playerId).name);
+    else if (e.type === 'money' && e.amount > 0) {
+      const from = e.from ? fx.pawnPoint(e.from) : bank;
+      const to = e.to ? fx.pawnPoint(e.to) : bank;
+      const n = Math.min(14, 4 + Math.round(Math.log2(e.amount)));
+      fx.coins(from, to, n, e.to ? `+${money(this.map, e.amount)}` : '');
+    } else if (e.type === 'trade' && e.state === 'accepted' && e.give) {
+      await fx.trade(this.map, this.who(e.from), this.who(e.to), e.give, e.take);
+    }
+  }
+
   async play(events, fast) {
     for (const e of events) {
+      if (!fast) await this.effect(e);
       if (e.type === 'dice') {
         if (!fast) sound.dice();
         await this.dice.roll(e.dice, fast);

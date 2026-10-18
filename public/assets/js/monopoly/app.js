@@ -3,8 +3,7 @@
 import { h } from './dom.js';
 import { api, connect, savedName, saveName } from './net.js';
 import { Board } from './board.js';
-import { Dice } from './dice.js';
-import { UI, pawnSvg } from './icons.js';
+import { LOGO, UI, pawnSvg } from './icons.js';
 import { money } from './format.js';
 import { RoomView } from './room-view.js';
 import { toast } from './modal.js';
@@ -57,15 +56,6 @@ function openConnection(name) {
 
 // ---- startseite ------------------------------------------------------------------
 
-function heroDice() {
-  const dice = new Dice();
-  dice.el.classList.add('hero-dice');
-  const spin = () => dice.roll([1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
-  setTimeout(spin, 400);
-  dice.el.addEventListener('click', spin);
-  return dice.el;
-}
-
 async function landing() {
   header.hidden = false;
   document.body.classList.remove('in-room');
@@ -73,7 +63,7 @@ async function landing() {
   const preview = new Board();
   preview.setMap(map);
   preview.el.classList.add('is-preview');
-  preview.center.append(h('div.preview-center', h('span.center-logo', 'LACEDAEMON'), h('span.faint', 'Monopoly')));
+  preview.center.append(h('div.preview-center', h('img.preview-logo', { src: LOGO, alt: '' }), h('span.center-logo', 'LACEDAEMON'), h('span.faint', 'Monopoly')));
   preview.update({ tiles: [], players: [], turn: {}, phase: 'lobby' }, []);
 
   const nameInput = h('input.input.input-lg', { maxlength: 20, placeholder: 'Your nickname...', value: savedName(), 'aria-label': 'Nickname' });
@@ -123,7 +113,7 @@ async function landing() {
 
   root.replaceChildren(h('div.landing',
     h('section.hero',
-      heroDice(),
+      h('img.hero-logo', { src: LOGO, alt: 'Lacedaemon' }),
       h('h1.logo', h('span.logo-main', 'LACEDAEMON'), h('span.logo-sub', 'Monopoly')),
       h('p.tagline', 'Rule the server.'),
       h('div.hero-form',

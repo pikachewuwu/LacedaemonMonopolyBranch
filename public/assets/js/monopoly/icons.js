@@ -1,5 +1,8 @@
 // alle grafiken als inline-svg. flaggen, feld-icons und figuren werden in den map-vorlagen per id gewählt
 
+/** Server-logo (die erhobenen hände). */
+export const LOGO = '/assets/img/lacedaemon-favicon.jpg';
+
 const svg = (body, view = 32) => `<svg viewBox="0 0 ${view} ${view}" aria-hidden="true" focusable="false">${body}</svg>`;
 
 /** Runde "länder"-flaggen der farbgruppen. */
@@ -15,6 +18,32 @@ export const FLAGS = {
     <path d="M13 20.6l5.2-4.4" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
     <circle cx="20.8" cy="12.6" r="6.2" fill="#fff"/><circle cx="20.8" cy="12.6" r="4.2" fill="#1f3d5c"/><circle cx="20.8" cy="12.6" r="2.9" fill="#fff"/>
     <circle cx="11.6" cy="21.8" r="3.9" fill="#fff"/><circle cx="11.6" cy="21.8" r="2.2" fill="#1f3d5c"/>`),
+  shadow: svg(`<defs>
+      <radialGradient id="shf" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#5b4a70"/><stop offset=".45" stop-color="#2a2133"/><stop offset="1" stop-color="#0b080f"/></radialGradient>
+      <radialGradient id="she" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f3e6ff"/><stop offset=".4" stop-color="#c39bff"/><stop offset="1" stop-color="#c39bff" stop-opacity="0"/></radialGradient>
+    </defs>
+    <rect width="32" height="32" fill="url(#shf)"/>
+    <path d="M16 2.6 25.4 18.8H6.6z" fill="none" stroke="#79678a" stroke-width=".7" opacity=".55"/>
+    <path d="M16 8.2c-5 0-8.2 4-8.2 8.8v4.4C5.4 23 3.6 26.6 2.8 32h26.4c-.8-5.4-2.6-9-5-10.6V17c0-4.8-3.2-8.8-8.2-8.8z" fill="#07050a" stroke="#8b74a6" stroke-width=".55"/>
+    <path d="M16 11.2c-3 0-4.9 2.6-4.9 5.7 0 3.3 2.2 5.6 4.9 5.6s4.9-2.3 4.9-5.6c0-3.1-1.9-5.7-4.9-5.7z" fill="#000"/>
+    <ellipse cx="14.1" cy="16.6" rx="1.5" ry=".9" fill="url(#she)"/><ellipse cx="17.9" cy="16.6" rx="1.5" ry=".9" fill="url(#she)"/>
+    <circle cx="14.1" cy="16.6" r=".35" fill="#fff"/><circle cx="17.9" cy="16.6" r=".35" fill="#fff"/>`),
+  revolver: svg(`<defs>
+      <linearGradient id="rvd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb36b"/><stop offset=".6" stop-color="#ff8a3d"/><stop offset="1" stop-color="#c4561d"/></linearGradient>
+      <linearGradient id="rvs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b7280"/><stop offset=".5" stop-color="#2b2f38"/><stop offset="1" stop-color="#15171c"/></linearGradient>
+    </defs>
+    <rect width="32" height="32" fill="url(#rvd)"/><circle cx="23" cy="9" r="5" fill="#ffe2a8" opacity=".7"/>
+    <path d="M0 25c6-2 12-2.5 18-1.5s10 2 14 1V32H0z" fill="#9a3f12" opacity=".55"/>
+    <g transform="rotate(-8 16 16)">
+      <path d="M3.5 12.4h13.8v3.2H3.5z" fill="url(#rvs)"/><path d="M3.5 11.6h1.3v.9H3.5z" fill="#15171c"/>
+      <rect x="15.6" y="10.6" width="7.4" height="6.2" rx="1.2" fill="url(#rvs)"/>
+      <path d="M17.4 11.3v4.8M19.3 11.3v4.8M21.2 11.3v4.8" stroke="#0e1014" stroke-width=".55"/>
+      <path d="M22.8 10.8h3l.6 1.4v4.4h-3.6z" fill="url(#rvs)"/><path d="M24.6 10.9l1.3-2.3 1.2.5-1 2z" fill="#2b2f38"/>
+      <path d="M22.4 16.4h4.5c1 2.6 1.8 5.5 1.6 8.7l-4.5.4c.1-3.1-.6-6.3-2.2-8.6z" fill="#8a4b14" stroke="#4a260a" stroke-width=".5"/>
+      <path d="M24 18.5c.8 1.8 1.2 3.8 1.2 5.9" stroke="#b56a2a" stroke-width=".6" fill="none"/>
+      <path d="M18.3 16.6c-.2 2.2 1 3.4 3 3.4.8 0 1.4-.4 1.7-1" fill="none" stroke="#2b2f38" stroke-width=".9"/>
+      <path d="M20.3 16.8l.4 1.8" stroke="#15171c" stroke-width=".8" stroke-linecap="round"/>
+    </g>`),
   orbit: svg(`<rect width="32" height="32" fill="#121735"/>
     <g fill="#fff"><circle cx="6" cy="7" r=".9"/><circle cx="25" cy="5" r=".7"/><circle cx="27" cy="24" r=".9"/><circle cx="5" cy="25" r=".6"/><circle cx="12" cy="4" r=".5"/></g>
     <circle cx="16" cy="17" r="7" fill="#e5484d"/><path d="M11 14.5c2-1.6 6-2.3 9.5-.6" stroke="#ff8c8f" stroke-width="1.4" fill="none" stroke-linecap="round"/>

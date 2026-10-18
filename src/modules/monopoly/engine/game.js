@@ -1022,7 +1022,7 @@ export class MonopolyGame {
     this.transfer(from, p, trade.give);
     this.transfer(p, from, trade.take);
     this.stats.trades++;
-    this.emit({ type: 'trade', id, from: trade.from, to: trade.to, state: 'accepted' });
+    this.emit({ type: 'trade', id, from: trade.from, to: trade.to, state: 'accepted', give: trade.give, take: trade.take });
     this.say(`${p.name} accepted the trade from ${from.name}`, 'trade');
     // handel kann eigentumsverhältnisse ändern, die andere angebote ungültig machen
     this.trades = this.trades.filter(t => {
