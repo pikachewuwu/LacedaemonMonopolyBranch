@@ -29,3 +29,36 @@ CREATE TABLE IF NOT EXISTS economy_balances (
   is_demo INTEGER NOT NULL DEFAULT 1,
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- discord-mitglieder und login-sitzungen (token nur als sha256-hash gespeichert)
+CREATE TABLE IF NOT EXISTS members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  discord_user_id TEXT NOT NULL UNIQUE,
+  username TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  avatar TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  last_login_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  token_hash TEXT PRIMARY KEY,
+  member_id INTEGER NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  expires_at INTEGER NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_sessions_member_id ON sessions(member_id);
+
+-- abgeschlossene monopoly-partien
+CREATE TABLE IF NOT EXISTS monopoly_games (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id TEXT NOT NULL,
+  map_id TEXT NOT NULL,
+  started_at INTEGER NOT NULL,
+  ended_at INTEGER NOT NULL,
+  turns INTEGER NOT NULL,
+  winner_name TEXT NOT NULL,
+  winner_member_id INTEGER REFERENCES members(id) ON DELETE SET NULL,
+  players_json TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_monopoly_games_ended_at ON monopoly_games(ended_at);

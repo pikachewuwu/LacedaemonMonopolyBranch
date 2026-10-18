@@ -1,0 +1,140 @@
+// socket.io: server ist autoritativ, clients schicken nur wünsche und bekommen den ganzen zustand zurück
+
+import { createHash } from 'node:crypto';
+import { Server } from 'socket.io';
+import { GameError } from '../engine/errors.js';
+
+const NAME_PATTERN = /[^\p{L}\p{N} ._'-]/gu;
+
+export function guestName(raw) {
+  const name = String(raw ?? '').replace(NAME_PATTERN, '').replace(/\s+/g, ' ').trim().slice(0, 20);
+  return name.length >= 2 ? name : `Guest ${Math.floor(Math.random() * 900 + 100)}`;
+}
+
+/** Wer ist das? Discord-sitzung aus dem cookie, sonst gast mit zufalls-token aus dem browser. */
+export async function resolveIdentity(handshake, auth) {
+  const member = await auth.memberFromCookieHeader(handshake.headers.cookie).catch(() => null);
+  if (member) return { id: `m:${member.id}`, name: member.name, memberId: member.id, avatarUrl: member.avatarUrl };
+  const token = String(handshake.auth?.guestToken ?? '');
+  if (token.length < 16 || token.length > 128) throw new GameError('Missing guest token');
+  const id = `g:${createHash('sha256').update(token).digest('hex').slice(0, 20)}`;
+  return { id, name: guestName(handshake.auth?.name), memberId: null, avatarUrl: null };
+}
+
+export function attachMonopolySocket(httpServer, { rooms, auth }) {
+  const io = new Server(httpServer, { serveClient: true, maxHttpBufferSize: 64_000 });
+  const roomSockets = new Map();
+
+  rooms.setNotifier((room, events) => {
+    for (const socket of roomSockets.get(room.id) ?? []) {
+      socket.emit('room:state', { room: room.view(socket.data.identity.id), events });
+    }
+  });
+
+  io.use(async (socket, next) => {
+    try {
+      socket.data.identity = await resolveIdentity(socket.handshake, auth);
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  io.on('connection', socket => {
+    const identity = socket.data.identity;
+    let roomId = null;
+    let chatBudget = { tokens: 6, at: Date.now() };
+
+    function track(id) {
+      untrack();
+      roomId = id;
+      if (!roomSockets.has(id)) roomSockets.set(id, new Set());
+      roomSockets.get(id).add(socket);
+    }
+
+    function untrack() {
+      if (!roomId) return;
+      roomSockets.get(roomId)?.delete(socket);
+      if (!roomSockets.get(roomId)?.size) roomSockets.delete(roomId);
+      roomId = null;
+    }
+
+    const currentRoom = () => {
+      if (!roomId) throw new GameError('Join a room first');
+      return rooms.get(roomId);
+    };
+
+    /** Jede anfrage: fehler als { error } zurück statt den socket zu sprengen. */
+    function on(event, handler) {
+      socket.on(event, async (payload, ack) => {
+        const reply = typeof ack === 'function' ? ack : () => {};
+        try {
+          reply({ ok: true, ...(await handler(payload ?? {})) });
+        } catch (error) {
+          if (!(error instanceof GameError)) console.error(`Monopoly ${event}:`, error);
+          reply({ error: error instanceof GameError ? error.message : 'Something went wrong' });
+        }
+      });
+    }
+
+    socket.emit('hello', { identity: { id: identity.id, name: identity.name, memberId: identity.memberId, avatarUrl: identity.avatarUrl } });
+
+    on('rooms:list', () => ({ rooms: rooms.listPublic() }));
+
+    on('room:create', ({ settings }) => {
+      const room = rooms.create(settings ?? {});
+      return { roomId: room.id };
+    });
+
+    on('room:quick', () => ({ roomId: rooms.quickPlay(identity).id }));
+
+    on('room:join', ({ roomId: id, spectator, appearance }) => {
+      const room = rooms.get(id);
+      const wasIn = roomId === room.id;
+      track(room.id);
+      const role = room.join({ ...identity, appearance }, { spectator: Boolean(spectator) });
+      if (wasIn) room.changed();
+      return { role };
+    });
+
+    on('room:leave', () => {
+      const room = currentRoom();
+      room.leave(identity.id);
+      untrack();
+      return {};
+    });
+
+    on('room:settings', ({ patch }) => { currentRoom().updateSettings(identity.id, patch); });
+    on('room:appearance', ({ appearance }) => { currentRoom().setAppearance(identity.id, appearance); });
+    on('room:team', ({ team, playerId }) => { currentRoom().setTeam(identity.id, team, playerId ?? identity.id); });
+    on('room:bot', () => { currentRoom().addBot(identity.id); });
+    on('room:kick', ({ playerId }) => { currentRoom().kick(identity.id, playerId); });
+    on('room:votekick', ({ playerId }) => { currentRoom().voteKick(identity.id, playerId); });
+    on('room:start', () => { currentRoom().start(identity.id); });
+    on('room:restart', () => { currentRoom().restart(identity.id); });
+    on('game:act', action => { currentRoom().act(identity.id, action); });
+    on('game:grant', () => { currentRoom().grantTime(identity.id); });
+
+    on('chat:send', ({ text }) => {
+      const now = Date.now();
+      chatBudget = { tokens: Math.min(6, chatBudget.tokens + (now - chatBudget.at) / 1500), at: now };
+      if (chatBudget.tokens < 1) throw new GameError('Slow down a little');
+      chatBudget.tokens--;
+      currentRoom().say(identity.id, text);
+    });
+
+    socket.on('disconnect', () => {
+      if (!roomId) return;
+      const id = roomId;
+      untrack();
+      const stillHere = [...(roomSockets.get(id) ?? [])].some(s => s.data.identity.id === identity.id);
+      try {
+        if (!stillHere) rooms.get(id).disconnect(identity.id);
+      } catch {
+        /* raum schon weg */
+      }
+    });
+  });
+
+  return io;
+}

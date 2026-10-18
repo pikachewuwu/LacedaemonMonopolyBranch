@@ -21,5 +21,11 @@ export function getConfig() {
     dbClient,
     sqliteFile: process.env.SQLITE_FILE ?? './data/lacedaemon.sqlite',
     databaseUrl: process.env.DATABASE_URL,
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID ?? '',
+      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',
+      redirectUri: process.env.DISCORD_REDIRECT_URI ?? `http://localhost:${port}/api/auth/discord/callback`,
+      guildId: process.env.DISCORD_GUILD_ID ?? '',
+    },
   };
 }
