@@ -24,7 +24,7 @@
   --m-tile-text: #2a2416;
   --m-tile-radius: 0px;
   --m-tile-tint: 32%;
-  --m-fit-chars: 9;
+  --m-fit-chars: 7.4;
   --m-corner-bg: #cdb95e;
   --m-gap: 2px;
   --m-radius: 6px;
@@ -36,7 +36,7 @@
   --m-ink-vacation: #2f5a12;
   --m-ink-jail: #7a1f1f;
 }
-.mono-root[data-theme="backrooms"] .tile-name { text-shadow: none; font-weight: 700; font-size: calc(var(--S) * .155 * var(--fit, 1)); }
+.mono-root[data-theme="backrooms"] .tile-name { text-shadow: none; font-weight: 700; font-size: calc(var(--S) * .19 * var(--fit, 1)); }
 .mono-root[data-theme="backrooms"] .tile-price { background: rgba(42, 36, 22, .15); border-color: rgba(42, 36, 22, .25); }
 .mono-root[data-theme="backrooms"] .tile-treasure .tile-name { color: #7a4a12; }
 .mono-root[data-theme="backrooms"] .tile-surprise .tile-name { color: #7a2a5a; }

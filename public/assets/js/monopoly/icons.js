@@ -25,6 +25,12 @@ export const FLAGS = {
     <ellipse cx="15" cy="7.6" rx="2.5" ry="3.1" fill="#d7f05a"/><g fill="#2c5a14"><circle cx="14" cy="7" r=".6"/><circle cx="16" cy="7" r=".6"/></g>`),
   bolt: svg(`<rect width="11" height="32" fill="#1f3a93"/><rect x="11" width="10" height="32" fill="#fbf7ec"/><rect x="21" width="11" height="32" fill="#f7c948"/>
     <path d="M18.5 3 8.5 18h6.8l-2.3 11 10.5-16h-6.9z" fill="#ffd23f" stroke="#1b1b22" stroke-width="1.3" stroke-linejoin="round"/>`),
+  casino: svg(`<rect width="32" height="32" fill="#14532d"/>
+    <circle cx="16" cy="16" r="12.5" fill="#f7c948" stroke="#8a6a10" stroke-width="1"/>
+    <g fill="#fffaf0"><rect x="14.6" y="3.4" width="2.8" height="4" rx=".6"/><rect x="14.6" y="24.6" width="2.8" height="4" rx=".6"/><rect x="3.4" y="14.6" width="4" height="2.8" rx=".6"/><rect x="24.6" y="14.6" width="4" height="2.8" rx=".6"/>
+      <rect x="14.6" y="3.4" width="2.8" height="4" rx=".6" transform="rotate(45 16 16)"/><rect x="14.6" y="24.6" width="2.8" height="4" rx=".6" transform="rotate(45 16 16)"/><rect x="3.4" y="14.6" width="4" height="2.8" rx=".6" transform="rotate(45 16 16)"/><rect x="24.6" y="14.6" width="4" height="2.8" rx=".6" transform="rotate(45 16 16)"/></g>
+    <circle cx="16" cy="16" r="7.6" fill="#c9302c" stroke="#fffaf0" stroke-width="1" stroke-dasharray="2 1.4"/>
+    <path d="M16 10.6c-2.3 2.4-4.4 3.8-4.4 5.9 0 1.5 1.2 2.5 2.5 2.5.7 0 1.2-.2 1.5-.6l-.8 2.6h2.4l-.8-2.6c.3.4.8.6 1.5.6 1.3 0 2.5-1 2.5-2.5 0-2.1-2.1-3.5-4.4-5.9z" fill="#fffaf0"/>`),
   sheriff: svg(`<rect width="32" height="32" fill="#f6e7c8"/><rect x="13" width="6" height="32" fill="#ff8a3d"/><rect y="13" width="32" height="6" fill="#ff8a3d"/>
     <path d="M16 6.5l6.9 12H9.1z M16 25.5l-6.9-12h13.8z" fill="#8a4b14" stroke="#f6e7c8" stroke-width=".8" stroke-linejoin="round"/>
     <circle cx="16" cy="16" r="2.6" fill="#f6c76b"/>`),
@@ -32,6 +38,13 @@ export const FLAGS = {
     <path d="M9 27V15.6C9 10 12.1 5.8 16 5.8s7 4.2 7 9.8V27h-4.6v-6.2L16 18.2l-2.4 2.6V27z" fill="#e8c46a" stroke="#7b5a1c" stroke-width=".8"/>
     <path d="M16 6c.2-2.4 3.8-3.9 8-3-2.6.9-4.5 2.5-5.3 4.6" fill="#e5484d"/>`),
 };
+
+// stacheln rundherum für den kugelfisch (OpenBSD-maskottchen)
+const puffySpikes = Array.from({ length: 18 }, (_, k) => {
+  const a = (k / 18) * Math.PI * 2;
+  const p = (r, d) => `${(17 + Math.cos(a + d) * r).toFixed(1)} ${(16 + Math.sin(a + d) * r).toFixed(1)}`;
+  return `M${p(9.6, -0.13)}L${p(13.6, 0)}L${p(9.6, 0.13)}Z`;
+}).join('');
 
 /** Icons für nicht-straßen-felder. */
 export const TILE_ICONS = {
@@ -44,6 +57,13 @@ export const TILE_ICONS = {
   uwuntu: svg(`<circle cx="16" cy="16" r="12.5" fill="#e95420"/><g stroke="#fff" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path d="M9.4 12.8l3.4 2.2-3.4 2.2M22.6 12.8l-3.4 2.2 3.4 2.2"/><path d="M12.2 20.4c1.1 1.5 2.5 1.5 3.8 0 1.3 1.5 2.7 1.5 3.8 0"/></g>
     <g fill="#ff9d80"><ellipse cx="9" cy="20" rx="1.8" ry="1"/><ellipse cx="23" cy="20" rx="1.8" ry="1"/></g>`),
+  openbsd: svg(`<path d="M6.5 16 1.5 11.5 2.6 20.5z" fill="#f2c230" stroke="#3a2a06" stroke-width=".9" stroke-linejoin="round"/>
+    <path d="${puffySpikes}" fill="#f7d54a" stroke="#3a2a06" stroke-width=".7" stroke-linejoin="round"/>
+    <circle cx="17" cy="16" r="10" fill="#f9dc4f" stroke="#3a2a06" stroke-width="1"/>
+    <path d="M10 18.5c2 1.6 5 2 7.5 1.2" fill="none" stroke="#c99a12" stroke-width=".9" stroke-linecap="round"/>
+    <ellipse cx="21.2" cy="12.6" rx="2.2" ry="2.5" fill="#fff" stroke="#3a2a06" stroke-width=".7"/><circle cx="21.8" cy="13.1" r="1.05" fill="#1b1404"/>
+    <path d="M19 10.2l4.4-.9" stroke="#3a2a06" stroke-width=".9" stroke-linecap="round"/>
+    <path d="M25.4 16.6c1.8-.5 2.8.6 2.2 1.6.8.6.5 2-1 2-1 0-1.6-.6-1.6-1.2" fill="#f2a52b" stroke="#3a2a06" stroke-width=".8" stroke-linejoin="round"/>`),
   server: svg(`<g fill="#2b3446" stroke="#9fb3d1" stroke-width="1.2"><rect x="6" y="5" width="20" height="6.4" rx="1.6"/><rect x="6" y="12.8" width="20" height="6.4" rx="1.6"/><rect x="6" y="20.6" width="20" height="6.4" rx="1.6"/></g>
     <g fill="#43e07a"><circle cx="9.6" cy="8.2" r="1.1"/><circle cx="9.6" cy="16" r="1.1"/></g><circle cx="9.6" cy="23.8" r="1.1" fill="#ffc73f"/>
     <g stroke="#9fb3d1" stroke-width="1.2" stroke-linecap="round"><path d="M14 8.2h8M14 16h8M14 23.8h8"/></g>`),
