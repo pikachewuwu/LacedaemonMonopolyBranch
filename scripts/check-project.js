@@ -10,6 +10,8 @@ const required = [
   'public/pages/leaderboard.html', 'public/pages/fantasy.html',
   'public/assets/css/base.css', 'public/assets/js/core/layout.js',
   'src/server.js', 'src/app.js', 'src/db/migrations/sqlite.sql',
+  'public/pages/monopoly.html', 'public/assets/css/pages/monopoly.css', 'public/assets/js/monopoly/app.js',
+  'public/assets/monopoly/themes/themes.json', 'src/modules/monopoly/maps/lacedaemon.json',
   '.env.example', '.gitignore', 'README.md',
 ];
 let failed = false;

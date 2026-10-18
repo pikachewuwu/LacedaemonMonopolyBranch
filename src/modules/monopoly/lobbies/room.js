@@ -40,6 +40,8 @@ export class Room {
     this.random = random;
     this.createdAt = now();
     this.lastActiveAt = now();
+    // nur menschen zählen fürs aufräumen; bots allein halten keinen raum am leben
+    this.lastHumanAt = now();
     this.phase = 'lobby';
     this.hostId = null;
     this.participants = [];
@@ -81,6 +83,7 @@ export class Room {
   /** Beitreten: als spieler, wenn frei und lobby, sonst als zuschauer. Wiederkehrer behalten den platz. */
   join(identity, { spectator = false } = {}) {
     this.lastActiveAt = this.now();
+    this.lastHumanAt = this.now();
     const existing = this.participant(identity.id);
     if (existing) {
       existing.connected = true;
@@ -277,6 +280,7 @@ export class Room {
     if (!p) throw new GameError('Only game players can send chat messages');
     const clean = String(text ?? '').replace(/\s+/g, ' ').trim().slice(0, 300);
     if (!clean) return;
+    this.lastHumanAt = this.now();
     this.pushChat({ kind: 'chat', from: id, name: p.name, color: p.appearance.color, text: clean });
   }
 
@@ -332,6 +336,7 @@ export class Room {
   act(id, action) {
     if (this.phase !== 'playing') throw new GameError('The game is not running');
     this.autoActed.set(id, 0);
+    this.lastHumanAt = this.now();
     this.applyGame(() => this.game.act(id, action));
   }
 

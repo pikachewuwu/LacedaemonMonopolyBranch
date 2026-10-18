@@ -187,6 +187,7 @@ async function route() {
   if (ctx.view) {
     ctx.view.destroy();
     ctx.view = null;
+    ctx.net.ask('room:detach').catch(() => {});
   }
   if (hash === 'login-failed') {
     toast('Discord login failed or was cancelled', 'bad');

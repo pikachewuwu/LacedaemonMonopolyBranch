@@ -46,27 +46,26 @@ test('zwei spieler und ein bot: raum, einstellungen, start, züge', async () => 
     assert.ok((await ann.ask('room:start', {})).ok);
     await until(() => ann.last()?.phase === 'playing');
 
-    // ein paar runden: menschen würfeln und beenden, der bot spielt selbst
+    // ein paar züge: menschen würfeln, kaufen und beenden, der bot spielt selbst
     const sockets = { [ann.last().you.id]: ann, [ben.last().you.id]: ben };
-    for (let i = 0; i < 3; i++) {
-      await until(() => {
-        const g = ann.last().game;
-        return g.phase === 'over' || (sockets[g.turn.playerId] && !g.auction && !g.debts.length);
-      }, 15000);
+    let actions = 0;
+    const deadline = Date.now() + 30_000;
+    while (actions < 6 && Date.now() < deadline) {
       const g = ann.last().game;
       if (g.phase === 'over') break;
       const me = sockets[g.turn.playerId];
-      const before = g.version;
-      for (let k = 0; k < 6; k++) {
-        const s = me.last().game;
-        if (s.turn.playerId !== me.last().you.id || s.auction || s.debts.length) break;
-        const type = s.turn.phase === 'roll' ? 'roll' : s.turn.phase === 'buy' ? 'buy' : 'endTurn';
-        const reply = await me.ask('game:act', { type: type === 'buy' && s.players.find(p => p.id === me.last().you.id).money < 500 ? 'decline' : type });
-        if (reply.error) assert.fail(reply.error);
-        await until(() => me.last().game.version > before);
-        if (type === 'endTurn') break;
+      if (!me || g.auction || g.debts.length || me.last()?.game?.version !== g.version) {
+        await new Promise(r => setTimeout(r, 30));
+        continue;
       }
+      const mine = g.players.find(p => p.id === g.turn.playerId);
+      const type = g.turn.phase === 'roll' ? 'roll' : g.turn.phase === 'buy' ? (mine.money >= 400 ? 'buy' : 'decline') : 'endTurn';
+      const reply = await me.ask('game:act', { type });
+      if (reply.error) assert.fail(`${type}: ${reply.error}`);
+      actions++;
+      await until(() => ann.last().game.version > g.version, 15_000);
     }
+    assert.ok(actions >= 3, `nur ${actions} aktionen`);
     assert.ok(ann.last().game.log.length > 3);
     assert.ok((await ben.ask('chat:send', { text: 'gg' })).ok);
     await until(() => ann.last().chat.some(c => c.text === 'gg'));

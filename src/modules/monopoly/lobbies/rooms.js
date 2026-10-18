@@ -56,7 +56,7 @@ export function makeRoomManager({ maps, onFinished = () => {}, now = () => Date.
     for (const room of rooms.values()) {
       const online = room.participants.some(p => !p.isBot && p.connected) || room.spectators.size > 0;
       const limit = room.phase === 'playing' ? IDLE_GAME_MS : IDLE_LOBBY_MS;
-      if (!online && t - room.lastActiveAt > limit) {
+      if (!online && t - room.lastHumanAt > limit) {
         room.dispose();
         rooms.delete(room.id);
       }

@@ -46,6 +46,7 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
     let chatBudget = { tokens: 6, at: Date.now() };
 
     function track(id) {
+      if (roomId && roomId !== id) detach();
       untrack();
       roomId = id;
       if (!roomSockets.has(id)) roomSockets.set(id, new Set());
@@ -57,6 +58,19 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
       roomSockets.get(roomId)?.delete(socket);
       if (!roomSockets.get(roomId)?.size) roomSockets.delete(roomId);
       roomId = null;
+    }
+
+    /** Raum verlassen, ohne aufzugeben (z.b. zurück zur startseite). */
+    function detach() {
+      if (!roomId) return;
+      const id = roomId;
+      untrack();
+      const stillHere = [...(roomSockets.get(id) ?? [])].some(s => s.data.identity.id === identity.id);
+      try {
+        if (!stillHere) rooms.get(id).disconnect(identity.id);
+      } catch {
+        /* raum schon weg */
+      }
     }
 
     const currentRoom = () => {
@@ -123,17 +137,9 @@ export function attachMonopolySocket(httpServer, { rooms, auth }) {
       currentRoom().say(identity.id, text);
     });
 
-    socket.on('disconnect', () => {
-      if (!roomId) return;
-      const id = roomId;
-      untrack();
-      const stillHere = [...(roomSockets.get(id) ?? [])].some(s => s.data.identity.id === identity.id);
-      try {
-        if (!stillHere) rooms.get(id).disconnect(identity.id);
-      } catch {
-        /* raum schon weg */
-      }
-    });
+    on('room:detach', () => { detach(); });
+
+    socket.on('disconnect', detach);
   });
 
   return io;

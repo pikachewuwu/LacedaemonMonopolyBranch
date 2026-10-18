@@ -33,8 +33,10 @@ Voraussetzung: **Node.js LTS**, empfohlen >= 22.12.0.
 - Drachen-Leaderboard liest Einträge aus der Datenbank. Aktuell sind dies **explizit gekennzeichnete Beispieldaten**.
 - API-Endpunkt `/api/health`, strukturierte API-Routen und grundlegende Eingabevalidierung.
 - Fantasy-League-Seite als Platzhalter für spätere Implementierung.
+- **Monopoly** (unser richup.io): Echtzeit-Multiplayer mit Räumen, Bots, allen richup-Einstellungen plus Extras (Crazy Surprises/Treasures, Zuguhr, Rundenlimit), Handel, Auktionen, Hypotheken, Teams und sechs Themes. Brett, Straßennamen und Karten sind JSON-Vorlagen. Details: [docs/MONOPOLY.md](docs/MONOPOLY.md).
+- **Discord-Login** (OAuth2) mit serverseitigen Sitzungen; ohne Konfiguration spielt man Monopoly als Gast.
 
-**Noch NICHT enthalten:** Discord OAuth2, sichere Mitgliederidentitäten, reale Discord-Economy-Synchronisation, Fantasy-Berechnung, Monopoly-Multiplayer. Das Projekt ist ein **Starter mit einigen echten Funktionen**, keine fertige Community-Plattform.
+**Noch NICHT enthalten:** reale Discord-Economy-Synchronisation, Fantasy-Berechnung, Login-Pflicht für die übrigen Schreibendpunkte. Das Projekt ist ein **Starter mit einigen echten Funktionen**, keine fertige Community-Plattform.
 
 ## Projektstruktur
 
@@ -64,8 +66,10 @@ lacedaemon/
 │   │   ├── seed.js
 │   │   └── migrations/            # SQL für beide DB-Systeme
 │   ├── modules/
+│   │   ├── auth/                   # Discord OAuth2, Sitzungen
 │   │   ├── catalog/                # Anime + Spiele: Route, Service, Repository
 │   │   ├── leaderboard/            # Drachen
+│   │   ├── monopoly/               # Engine, Maps (JSON), Räume, Socket.IO
 │   │   └── overview/               # Dashboard-Zahlen
 │   ├── middleware/
 │   ├── app.js
@@ -89,6 +93,16 @@ lacedaemon/
 | POST | `/api/catalog/anime/reviews` | Anime-Bewertung hinzufügen/aktualisieren |
 | POST | `/api/catalog/games/reviews` | Spiele-Bewertung hinzufügen/aktualisieren |
 | GET | `/api/leaderboard` | Drachenwerte (vorerst Demo) |
+| GET | `/api/auth/me` | Angemeldetes Discord-Mitglied (oder `null`) |
+| GET | `/api/auth/discord` | Discord-Login starten |
+| POST | `/api/auth/logout` | Abmelden |
+| GET | `/api/monopoly/config` | Einstellungen mit UI-Texten, Farben, Figuren |
+| GET | `/api/monopoly/maps`, `/api/monopoly/maps/:id` | Map-Vorlagen |
+| GET | `/api/monopoly/rooms` | Öffentliche Räume |
+| GET | `/api/monopoly/games/recent` | Letzte Partien |
+| GET | `/play/:roomId` | Einladungslink in einen Raum |
+
+Das Spielgeschehen läuft über Socket.IO (`/socket.io`), siehe [docs/MONOPOLY.md](docs/MONOPOLY.md).
 
 POST-Beispiel (JSON):
 
@@ -119,9 +133,9 @@ Die SQLite-Integrationstests benötigen `npm install`. Die Modulsyntax kann dar�
 
 ## Später erweitern
 
-- Authentifizierung mit Discord OAuth2 und serverseitiger Session.
+- Discord-Login auch für Anime-/Spiele-Bewertungen verwenden.
 - PostgreSQL als DB-Alternative: siehe [docs/DATABASE.md](docs/DATABASE.md).
-- Eigenes Monopoly-Modul mit Game Engine und Map-Editor: siehe [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- Monopoly: grafischer Map-Editor, Gewinne an die Drachen-Economy anbinden: siehe [docs/MONOPOLY.md](docs/MONOPOLY.md).
 
 ## Sicherheit
 
