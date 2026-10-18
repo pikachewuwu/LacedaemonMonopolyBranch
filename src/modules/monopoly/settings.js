@@ -40,7 +40,7 @@ export const SETTINGS_CATALOG = [
   { section: 'rules', key: 'noRentPaymentsWhileInPrison', kind: 'switch', label: "Don't collect rent while in prison", description: 'Rent will not be collected when landing on properties whose owners are in prison' },
   { section: 'rules', key: 'mortgage', kind: 'switch', label: 'Mortgage', description: "Mortgage properties to earn 50% of their cost, but you won't get paid rent when players land on them" },
   { section: 'rules', key: 'evenBuild', kind: 'switch', label: 'Even build', description: 'Houses and hotels must be built up and sold off evenly within a property set' },
-  { section: 'rules', key: 'startingCash', kind: 'select', options: STARTING_CASH, money: true, label: 'Starting cash', description: 'Adjust how much money players start the game with' },
+  { section: 'rules', key: 'startingCash', kind: 'number', min: 100, max: 100000, step: 50, money: true, label: 'Starting cash', description: 'Type any amount from 100 to 100,000' },
   { section: 'more', key: 'crazyCards', kind: 'switch', label: 'Crazy Surprises/Treasures', badge: 'New', description: 'Mix wild cards into both decks: swaps, teleports, Nitro Boosts, TNT. Deviates from the original game' },
   { section: 'more', key: 'turnTimer', kind: 'select', options: TURN_TIMERS, label: 'Turn timer', description: 'Standard gives 20 seconds plus a time bank. Relaxed doubles it. Off waits forever' },
   { section: 'more', key: 'roundLimit', kind: 'select', options: ROUND_LIMITS, label: 'Round limit', description: 'End the game after this many rounds; the highest net worth wins. 0 plays until one is left' },
@@ -64,7 +64,7 @@ export function validateSettingsPatch(patch, knownMaps) {
       if (!MAX_PLAYERS.includes(value)) throw new GameError('Invalid maxPlayers value');
       clean[key] = value;
     } else if (key === 'startingCash') {
-      if (!STARTING_CASH.includes(value)) throw new GameError('Invalid startingCash value');
+      if (!Number.isInteger(value) || value < 100 || value > 100000) throw new GameError('Starting cash must be between 100 and 100000');
       clean[key] = value;
     } else if (key === 'turnTimer') {
       if (!TURN_TIMERS.includes(value)) throw new GameError('Invalid turnTimer value');

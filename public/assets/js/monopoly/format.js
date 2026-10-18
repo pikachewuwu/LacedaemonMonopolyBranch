@@ -12,7 +12,7 @@ export const word = (map, key, fallback) => map?.words?.[key] ?? fallback;
 export function pardonName(map, deck) {
   const pardon = map?.words?.pardon;
   if (typeof pardon === 'string') return pardon;
-  return pardon?.[deck] ?? 'Pardon card';
+  return pardon?.[deck] ?? 'Exit card';
 }
 
 /** Lesbare textfarbe auf einer gruppenfarbe. */

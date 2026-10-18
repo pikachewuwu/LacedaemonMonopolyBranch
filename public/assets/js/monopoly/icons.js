@@ -171,6 +171,7 @@ export const UI = {
   plus: ui('<path d="M12 5v14M5 12h14"/>'),
   door: ui('<path d="M14 3H6v18h8M10 12h11M18 9l3 3-3 3"/>'),
   stats: ui('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+  strip: ui('<path d="M3 12h5M9.5 12h5M16 12h5"/>'),
   key: ui('<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>'),
   people: ui('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 13.5a6.5 6.5 0 0 1 4 6.5"/>'),
   play: ui('<path d="M7 4v16l13-8z" fill="currentColor"/>'),

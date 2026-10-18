@@ -13,7 +13,7 @@
     "treasure": "Treasure",
     "surprise": "Surprise",
     "pardon": {
-      "treasure": "Pardon card",
+      "treasure": "Exit card",
       "surprise": "Exit card"
     }
   },
@@ -58,7 +58,7 @@
     { "type": "city", "name": "Consilium", "group": "germany", "price": 180, "house": 100, "rent": [14, 70, 190, 540, 760, 950] },
     { "type": "treasure", "name": "Treasure" },
     { "type": "city", "name": "Debate", "group": "germany", "price": 190, "house": 100, "rent": [15, 70, 210, 560, 760, 960] },
-    { "type": "city", "name": "Debait", "group": "germany", "price": 200, "house": 100, "rent": [15, 80, 220, 600, 780, 1000] },
+    { "type": "city", "name": "Archive", "group": "germany", "price": 200, "house": 100, "rent": [15, 80, 220, 600, 780, 1000] },
     { "type": "corner", "corner": "vacation", "name": "Touch Grass" },
     { "type": "city", "name": "hissssss", "group": "china", "price": 210, "house": 150, "rent": [18, 90, 240, 680, 850, 1000] },
     { "type": "surprise", "name": "Surprise" },
@@ -98,7 +98,7 @@
       { "text": "It’s time to redesign your infrastructure. Pay 30🐉 per upgrade and 120🐉 per full-stack you own.", "effect": { "type": "repairs", "perHouse": 30, "perHotel": 120 } },
       { "text": "You have written a lot messages. Collect 15🐉.", "effect": { "type": "money", "amount": 15 } },
       { "text": "You received 100🐉 for reporting an Exploit.", "effect": { "type": "money", "amount": 100 } },
-      { "text": "Received a Pardon card.", "effect": { "type": "pardon" } }
+      { "text": "Received an Exit card.", "effect": { "type": "pardon" } }
     ],
     "surprise": [
       { "text": "Advance to =collect.", "effect": { "type": "moveTo", "tile": 0 } },

@@ -6,11 +6,12 @@ import { Dice } from './dice.js';
 import { LOGO, UI, pawnSvg } from './icons.js';
 import { groupTiles, isOwnable, money, pardonName, word } from './format.js';
 import { closeModal, modalOpen, openModal, toast } from './modal.js';
-import { createTradeDialog, statsDialog, tileDialog, tradeSummary, viewTradeDialog } from './dialogs.js';
+import { createTradeDialog, groupDialog, setBuildPanel, statsDialog, tileDialog, tradeSummary, viewTradeDialog } from './dialogs.js';
 import { isMuted, setMuted, sound } from './sound.js';
 import { confetti } from './confetti.js';
 import { Fx } from './fx.js';
 import { applyTheme, currentTheme, listThemes } from './themes.js';
+import { BoardStrip } from './strip.js';
 import { saveName, savedName } from './net.js';
 
 export class RoomView {
@@ -56,11 +57,13 @@ export class RoomView {
       setMuted(!isMuted());
       this.soundBtn.innerHTML = isMuted() ? UI.mute : UI.sound;
     } });
+    this.strip = new BoardStrip({ onTile: i => this.map && isOwnable(this.map.tiles[i]) && tileDialog(this, i) });
+    this.lineBtn = h('button.icon-btn', { type: 'button', 'aria-label': 'Line view', title: 'Board view / line view', html: UI.strip, onclick: () => this.toggleLineView() });
     this.codeEl = h('span.room-code', this.roomId);
     this.left = h('aside.side.side-left',
       h('header.side-head',
         h('a.brand-mini', { href: '#/' }, h('img.brand-mark', { src: LOGO, alt: '' }), h('span', 'Lacedaemon')),
-        h('div.side-tools', this.soundBtn,
+        h('div.side-tools', this.lineBtn, this.soundBtn,
           h('button.icon-btn', { type: 'button', 'aria-label': 'Board theme', html: UI.palette, onclick: () => this.themeDialog() }),
           h('button.icon-btn', { type: 'button', 'aria-label': 'Leave room', html: UI.door, onclick: () => this.leaveDialog() }))),
       h('section.panel.invite-panel',
@@ -82,8 +85,19 @@ export class RoomView {
       h('div.center-brand', h('img.center-emblem', { src: LOGO, alt: '' }), h('span.center-logo', 'LACEDAEMON'), h('span.center-map')),
       this.status, this.dice.el, this.stage, this.cardSlot, this.miniLog,
     );
-    this.boardArea = h('main.board-area', h('div.board-fit', this.board.el));
+    this.boardArea = h('main.board-area', h('div.board-fit', this.board.el), this.strip.el);
     this.el = h('div.room-layout', this.left, this.boardArea, this.right);
+  }
+
+  /** brett oder eine zeile mit allen feldern; die zeile folgt dem spieler am zug. */
+  toggleLineView() {
+    this.lineView = !this.lineView;
+    this.boardArea.classList.toggle('is-line', Boolean(this.lineView));
+    if (this.lineView) this.boardArea.insertBefore(this.board.center, this.strip.el);
+    else this.board.grid.append(this.board.center);
+    this.strip.el.hidden = !this.lineView;
+    this.lineBtn.classList.toggle('is-on', Boolean(this.lineView));
+    if (this.lineView) this.strip.focusTurn(this.room?.game);
   }
 
   setTab(tab) {
@@ -130,6 +144,7 @@ export class RoomView {
     if (this.map?.id === id) return;
     this.map = await this.ctx.loadMap(id);
     this.board.setMap(this.map);
+    this.strip.setMap(this.map);
     this.board.center.querySelector('.center-map').textContent = this.map.name;
   }
 
@@ -185,6 +200,8 @@ export class RoomView {
       if (e.playerId === this.me) sound.turn();
     } else if (e.type === 'trade' && e.state === 'accepted') {
       sound.trade();
+    } else if (e.type === 'trade' && (e.state === 'declined' || e.state === 'cancelled')) {
+      sound.decline();
     } else if (e.type === 'bid') {
       if (!fast) sound.bid();
     } else if (e.type === 'over') {
@@ -236,6 +253,11 @@ export class RoomView {
     const game = room.game;
     this.el.dataset.phase = room.phase;
     this.board.update(game, room.participants, { showPot: room.settings.vacationCash });
+    this.strip.update(game, room.participants);
+    if (this.lineView) {
+      if (this.board.center.parentNode !== this.boardArea) this.boardArea.insertBefore(this.board.center, this.strip.el);
+      this.strip.focusTurn(game);
+    }
     if (!game) this.board.updatePawns({ players: room.participants.map(p => ({ ...p, position: 0, prisonTurns: 0 })), turn: {}, phase: 'lobby' }, room.participants);
     if (game?.turn.dice && !before?.game) this.dice.show(game.turn.dice, true);
     this.renderPlayers();
@@ -256,13 +278,21 @@ export class RoomView {
   }
 
   notifyTrades(before) {
-    const now = this.room.game?.trades ?? [];
-    const old = new Set((before?.game?.trades ?? []).map(t => t.id));
+    const game = this.room.game;
+    if (!game || !before?.game) return;
+    const now = game.trades ?? [];
+    const old = new Set((before.game.trades ?? []).map(t => t.id));
+    const nameOf = id => game.players.find(p => p.id === id)?.name ?? 'Someone';
     for (const t of now) {
-      if (!old.has(t.id) && t.to === this.me && before) {
+      if (old.has(t.id)) continue;
+      if (t.to === this.me) {
         sound.offer();
-        toast(`${this.room.game.players.find(p => p.id === t.from)?.name} sent you a trade offer`);
+        toast(`${nameOf(t.from)} sent you a trade offer`);
         if (!document.querySelector('.modal-backdrop')) viewTradeDialog(this, t);
+      } else if (t.from !== this.me) {
+        // offene angebote sieht der ganze tisch, nicht nur die beiden beteiligten
+        sound.watch();
+        toast(`${nameOf(t.from)} offered ${nameOf(t.to)} a trade`);
       }
     }
   }
@@ -363,18 +393,25 @@ export class RoomView {
     const show = game && game.phase === 'playing';
     this.tradesPanel.hidden = !show;
     if (!show) return;
-    const key = JSON.stringify([game.trades, this.myPlayer?.bankrupt, game.players.map(p => p.name), this.me]);
-    renderIf(this.tradesPanel, key, () => [
-      h('div.panel-head', h('h3', 'Trades'),
-        this.myPlayer && !this.myPlayer.bankrupt ? h('button.btn.btn-sm', { onclick: () => createTradeDialog(this) }, h('span.btn-icon', { html: UI.plus }), 'Create') : null),
-      game.trades.length ? h('div.trade-list', game.trades.map(t => {
-        const name = id => game.players.find(p => p.id === id)?.name ?? '?';
-        const label = t.to === this.me ? `Offer from ${name(t.from)}` : t.from === this.me ? `Your offer to ${name(t.to)}` : `${name(t.from)} → ${name(t.to)}`;
-        return h('button.trade-item', { type: 'button', class: t.to === this.me ? 'is-incoming' : '', onclick: () => viewTradeDialog(this, t) },
-          h('span.label', label, t.to === this.me ? h('span.badge.badge-new', 'answer') : null),
-          tradeSummary(this, t));
-      })) : h('p.faint.panel-empty', 'No open trades. Swap properties to complete your sets.'),
-    ]);
+    const me = this.me;
+    const key = JSON.stringify([game.trades, this.myPlayer?.bankrupt, game.players.map(p => [p.id, p.name, p.appearance?.color]), me]);
+    renderIf(this.tradesPanel, key, () => {
+      const who = id => game.players.find(p => p.id === id) ?? null;
+      const pawn = p => h('span.mini-pawn', { html: pawnSvg(p?.appearance?.shape, p?.appearance?.color) });
+      return [
+        h('div.panel-head', h('h3', 'Trade offers', game.trades.length ? h('span.badge', game.trades.length) : null),
+          this.myPlayer && !this.myPlayer.bankrupt ? h('button.btn.btn-sm', { onclick: () => createTradeDialog(this) }, h('span.btn-icon', { html: UI.plus }), 'Create') : null),
+        game.trades.length ? h('div.trade-list', game.trades.map(t => {
+          const from = who(t.from);
+          const to = who(t.to);
+          return h('button.trade-item', { type: 'button', class: t.to === me ? 'is-incoming' : '', onclick: () => viewTradeDialog(this, t) },
+            h('span.label',
+              h('span.trade-who', pawn(from), h('b', from?.name ?? '?'), h('span.trade-arrow-inline', { html: UI.trade }), pawn(to), h('b', to?.name ?? '?')),
+              t.to === me ? h('span.badge.badge-new', 'answer') : t.from === me ? h('span.badge', 'yours') : h('span.badge', 'open')),
+            tradeSummary(this, t));
+        })) : h('p.faint.panel-empty', 'No open offers. Every offer at this table is shown here for everyone.'),
+      ];
+    });
   }
 
   renderProps() {
@@ -399,8 +436,11 @@ export class RoomView {
         mine.length ? h('div.props', [...groups.entries()].map(([k, list]) => {
           const color = map.groups[k]?.color ?? 'var(--m-muted)';
           const total = map.groups[k] ? groupTiles(map, k).length : null;
+          const full = Boolean(total && list.length === total);
           return h('div.prop-group', { '--group': color },
-            h('span.prop-count', total ? `${list.length}/${total}` : list.length),
+            full
+              ? h('button.prop-count.prop-count-btn', { type: 'button', title: 'Upgrade or downgrade the whole set', onclick: () => groupDialog(this, k) }, `${list.length}/${total}`, h('span', ' ⇅'))
+              : h('span.prop-count', total ? `${list.length}/${total}` : list.length),
             list.map(i => h('button.prop', { type: 'button', class: game.tiles[i].mortgaged ? 'is-mortgaged' : '', onclick: () => tileDialog(this, i) },
               h('span.prop-name', map.tiles[i].name),
               game.tiles[i].level ? h('span.prop-level', game.tiles[i].level === 5 ? '★' : '▮'.repeat(game.tiles[i].level)) : null)));
@@ -428,6 +468,11 @@ export class RoomView {
             ? h('select.input.input-sm', { 'aria-label': item.label, onchange: e => set({ [item.key]: isNaN(Number(e.target.value)) ? e.target.value : Number(e.target.value) }) },
               item.options.map(o => h('option', { value: o, selected: o === value }, label(o))))
             : h('span.setting-value', label(value));
+        } else if (item.kind === 'number') {
+          control = editable
+            ? h('input.input.input-sm.num-input', { type: 'number', inputmode: 'numeric', min: item.min ?? 0, max: item.max ?? 1000000, step: item.step ?? 10, value, 'aria-label': item.label,
+              onchange: e => set({ [item.key]: Math.round(Number(e.target.value)) }) })
+            : h('span.setting-value', item.money ? money(this.map, value) : String(value));
         } else if (item.kind === 'teams') {
           control = h('button.switch', { type: 'button', role: 'switch', 'aria-checked': String(value.enabled), 'aria-label': 'Enable teams', disabled: !editable, onclick: () => set({ teams: { enabled: !value.enabled, balanceStartCash: value.balanceStartCash } }) }, h('i'));
         }

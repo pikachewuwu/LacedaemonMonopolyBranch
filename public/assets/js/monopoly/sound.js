@@ -44,4 +44,7 @@ export const sound = {
   offer() { [659, 880, 1175].forEach((f, i) => tone(f, { at: i * 0.09, length: 0.22, type: 'triangle', gain: 0.07 })); },
   trade() { tone(523, { length: 0.16, type: 'triangle' }); tone(784, { at: 0.12, length: 0.16, type: 'triangle' }); tone(1047, { at: 0.24, length: 0.3, type: 'sine', gain: 0.06 }); },
   bid() { tone(740, { length: 0.07, type: 'square', gain: 0.03 }); },
+  // fremder handel auf dem tisch: leise, damit es nicht nervt
+  watch() { tone(523, { length: 0.09, type: 'sine', gain: 0.04 }); tone(392, { at: 0.09, length: 0.14, type: 'sine', gain: 0.035 }); },
+  decline() { tone(392, { length: 0.12, type: 'sawtooth', gain: 0.025, slide: 0.7 }); tone(262, { at: 0.1, length: 0.2, type: 'sawtooth', gain: 0.025, slide: 0.78 }); },
 };

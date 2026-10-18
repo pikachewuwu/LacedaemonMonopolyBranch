@@ -9,6 +9,54 @@ const capital = text => text.charAt(0).toUpperCase() + text.slice(1);
 
 // ---- grundstückskarte --------------------------------------------------------
 
+const levelPips = level => h('span.set-build-pips',
+  level === 5
+    ? h('i.is-full', '★')
+    : Array.from({ length: 5 }, (_, k) => h('i', { class: k < level ? '' : 'is-empty' })));
+
+/** Ganzer straßenzug: alle straßen einer farbe auf einmal bauen oder abreißen. */
+export function setBuildPanel(view, group) {
+  const { map } = view;
+  const game = view.room?.game;
+  if (!game) return null;
+  const color = map.groups[group]?.color ?? 'var(--m-panel-3)';
+  const can = game.can ?? {};
+  const rows = groupTiles(map, group).map(index => ({ index, tile: map.tiles[index], level: game.tiles[index]?.level ?? 0 }));
+  if (!rows.length) return null;
+  const mine = rows.every(r => game.tiles[r.index]?.owner === view.me);
+  const low = Math.min(...rows.map(r => r.level));
+  const high = Math.max(...rows.map(r => r.level));
+  const up = rows.filter(r => r.level === low && can.upgrade?.includes(r.index));
+  const down = rows.filter(r => r.level === high && can.downgrade?.includes(r.index));
+  const upCost = up.reduce((sum, r) => sum + r.tile.house, 0);
+  const downRefund = down.reduce((sum, r) => sum + Math.floor(r.tile.house / 2), 0);
+  return h('section.set-build', { '--group': color },
+    h('div.set-build-head',
+      h('div', h('h3', 'Upgrade the whole set'), h('p.faint', `${rows.length} streets · level ${low}–${high}`)),
+      mine ? h('span.badge.badge-good', 'your set') : null),
+    h('div.set-build-rows', rows.map(r => h('div.set-build-row', { class: r.level ? 'is-built' : '' },
+      h('span.set-build-name', r.tile.name),
+      levelPips(r.level),
+      h('button.set-step', { type: 'button', disabled: r.level === 0 || !can.downgrade?.includes(r.index), title: `Downgrade ${r.tile.name}`, 'aria-label': `Downgrade ${r.tile.name}`, onclick: () => view.act({ type: 'downgrade', tile: r.index }) }, '−'),
+      h('button.set-step.set-step-up', { type: 'button', disabled: r.level >= 5 || !can.upgrade?.includes(r.index), title: `Upgrade ${r.tile.name}`, 'aria-label': `Upgrade ${r.tile.name}`, onclick: () => view.act({ type: 'upgrade', tile: r.index }) }, '+'),
+      h('span.set-build-cost.num', r.level >= 5 ? '★' : money(map, r.tile.house))))),
+    h('div.set-build-bulk',
+      h('button.btn.btn-good', { type: 'button', disabled: !up.length, onclick: () => view.act({ type: 'upgradeGroup', group }) },
+        h('span.btn-icon', { html: UI.upgrade }), up.length ? `Upgrade all · ${money(map, upCost)}` : 'Upgrade all'),
+      h('button.btn', { type: 'button', disabled: !down.length, onclick: () => view.act({ type: 'downgradeGroup', group }) },
+        h('span.btn-icon', { html: UI.downgrade }), down.length ? `Downgrade all · +${money(map, downRefund)}` : 'Downgrade all')),
+    h('p.hint.set-build-hint', 'One click lifts or drops the whole set one level. The + and − buttons change a single street.'));
+}
+
+/** Nur der straßenzug, ohne grundstückskarte (aus "My properties"). */
+export function groupDialog(view, group) {
+  const { map } = view;
+  if (!view.room?.game) return;
+  const title = `${map.groups[group]?.placeholder ?? 'Set'} set`;
+  const modal = openModal({ title, className: 'modal-deed', body: setBuildPanel(view, group), onClose: () => { view.refreshDialog = null; } });
+  view.refreshDialog = () => modal.panel.querySelector('.modal-body').replaceChildren(setBuildPanel(view, group));
+}
+
 export function tileDialog(view, index) {
   const { map } = view;
   const tile = map.tiles[index];
@@ -29,7 +77,7 @@ export function tileDialog(view, index) {
       tile.rent.forEach((r, k) => rows.push([`${k + 1} airport${k ? 's' : ''} owned`, money(map, r), k, owned === k + 1]));
     } else {
       const owned = owner ? map.tiles.filter((t, i) => t.type === 'company' && game.tiles[i]?.owner === owner.id).length : 0;
-      tile.multipliers.forEach((m, k) => rows.push([`${k + 1} compan${k ? 'ies' : 'y'} owned`, `dice × ${m}`, k, owned === k + 1]));
+      tile.multipliers.forEach((m, k) => rows.push([`${k + 1} provider${k ? 's' : ''} owned`, `dice × ${m}`, k, owned === k + 1]));
     }
     const can = game?.can ?? {};
     const act = (type, extra) => view.act({ type, tile: index, ...extra });
@@ -44,6 +92,7 @@ export function tileDialog(view, index) {
         : h('button.btn', { disabled: !can.mortgage?.includes(index), onclick: () => act('mortgage') }, h('span.btn-icon', { html: UI.mortgage }), `Mortgage · +${money(map, half)}`)),
     ] : [];
     const groupMembers = group ? groupTiles(map, tile.group) : [];
+    const ours = Boolean(mine && groupMembers.length && groupMembers.every(i => game?.tiles[i]?.owner === view.me));
     return h('div.deed', { '--group': color, '--group-ink': group ? inkOn(group.color) : 'var(--m-text)' },
       h('div.deed-head',
         group ? h('span.deed-flag', { html: artwork(group.flag, FLAGS) }) : h('span.deed-icon', { html: artwork(tile.icon ?? tile.type, TILE_ICONS) }),
@@ -54,6 +103,7 @@ export function tileDialog(view, index) {
         const o = s?.owner ? game.players.find(p => p.id === s.owner) : null;
         return h('span.deed-set-item', { class: i === index ? 'is-this' : '', '--owner': o?.appearance?.color ?? 'transparent', title: o ? `${map.tiles[i].name}: ${o.name}` : `${map.tiles[i].name}: for sale` }, map.tiles[i].name);
       })) : null,
+      ours ? setBuildPanel(view, tile.group) : null,
       h('table.deed-rent', h('tbody', rows.map(([label, value, k, now]) => h('tr', { class: now ? 'is-now' : '' },
         h('td', h('span.deed-label', tile.type === 'city' && k > 0 ? h('span.deed-levels', k === 5 ? h('i.level-full', '★') : Array.from({ length: k }, () => h('i.level'))) : null, label)),
         h('td.num', value))))),
@@ -110,7 +160,7 @@ export function viewTradeDialog(view, trade) {
       incoming || mine ? h('div.modal-actions',
         incoming ? h('button.btn.btn-good.btn-lg', { onclick: () => view.act({ type: 'tradeAccept', id: trade.id }).then(ok => ok && closeModal()) }, 'Accept') : null,
         h('button.btn', { onclick: () => view.act({ type: 'tradeDecline', id: trade.id }).then(ok => ok && closeModal()) }, incoming ? 'Decline' : 'Cancel offer'),
-      ) : h('p.hint', 'Only the two players in this trade can answer it.'),
+      ) : h('p.hint', `Open offer: ${name(trade.from)} and ${name(trade.to)} agree on it, everyone at the table can watch.`),
     ],
   });
 }

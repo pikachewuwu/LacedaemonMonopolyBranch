@@ -23,7 +23,7 @@ function rig(game, ...rolls) {
 test('die lacedaemon-map hat 40 felder und die vorgegebenen namen', () => {
   assert.equal(map.tiles.length, 40);
   assert.equal(map.tiles[0].name, '=collect');
-  assert.equal(map.tiles[19].name, 'Debait');
+  assert.equal(map.tiles[19].name, 'Archive');
   assert.equal(map.tiles[39].name, 'Lace');
   assert.equal(map.tiles[37].name, 'Daemon');
   assert.equal(map.tiles[35].name, 'OpenBSD');
@@ -127,6 +127,43 @@ test('gleichmäßig bauen, abreißen und hypotheken', () => {
   assert.throws(() => g.act('a', { type: 'upgrade', tile: 3 }), /mortgaged/);
   g.act('a', { type: 'unmortgage', tile: 1 });
   assert.equal(a.money, 1447);
+});
+
+test('ganzer straßenzug: auf einmal hoch- und runterbauen', () => {
+  const g = newGame();
+  const a = g.player('a');
+  g.tiles[1].owner = 'a';
+  g.tiles[3].owner = 'a';
+  g.act('a', { type: 'upgradeGroup', group: 'brazil' });
+  assert.deepEqual([g.tiles[1].level, g.tiles[3].level], [1, 1]);
+  assert.equal(a.money, 1400);
+  g.act('a', { type: 'upgradeGroup', group: 'brazil' });
+  assert.deepEqual([g.tiles[1].level, g.tiles[3].level], [2, 2]);
+  // ein ungerader stand: nur die niedrigere straße wird angehoben
+  g.act('a', { type: 'downgrade', tile: 1 });
+  assert.deepEqual([g.tiles[1].level, g.tiles[3].level], [1, 2]);
+  assert.throws(() => g.act('a', { type: 'upgrade', tile: 3 }), /evenly/);
+  g.act('a', { type: 'upgradeGroup', group: 'brazil' });
+  assert.deepEqual([g.tiles[1].level, g.tiles[3].level], [2, 2]);
+  // zurückbauen nimmt immer die höchste straße zuerst
+  g.act('a', { type: 'downgradeGroup', group: 'brazil' });
+  assert.deepEqual([g.tiles[1].level, g.tiles[3].level], [1, 1]);
+  assert.equal(a.money, 1500 - 5 * 50 + 3 * 25); // fünfmal gebaut, dreimal zurückgebaut
+  // fremde sets und unbekannte gruppen bleiben verboten
+  assert.throws(() => g.act('b', { type: 'upgradeGroup', group: 'brazil' }), /don't own/);
+  assert.throws(() => g.act('a', { type: 'upgradeGroup', group: 'atlantis' }), /Unknown property set/);
+});
+
+test('straßenzug baut nur so weit, wie das geld reicht', () => {
+  const g = newGame();
+  const a = g.player('a');
+  g.tiles[1].owner = 'a';
+  g.tiles[3].owner = 'a';
+  a.money = 80;
+  g.act('a', { type: 'upgradeGroup', group: 'brazil' });
+  assert.deepEqual([g.tiles[1].level, g.tiles[3].level], [1, 0]);
+  assert.equal(a.money, 30);
+  assert.throws(() => g.act('a', { type: 'upgradeGroup', group: 'brazil' }), /enough money/);
 });
 
 test('flughäfen und provider: miete nach anzahl', () => {
@@ -303,4 +340,21 @@ test('ungültige zahlen aus dem client werden abgelehnt', () => {
   }
   assert.throws(() => g.act('a', { type: 'constructor' }), /Unknown action/);
   assert.throws(() => g.act('a', { type: 'toString' }), /Unknown action/);
+});
+
+test('startgeld ist frei wählbar', () => {
+  const g = newGame({ startingCash: 777 });
+  assert.equal(g.player('a').money, 777);
+  assert.throws(() => createSettings({ startingCash: 50 }), /between 100 and 100000/);
+  assert.throws(() => createSettings({ startingCash: 1500.5 }), /between 100 and 100000/);
+});
+
+test('kartenstapel wird neu gemischt, wenn alle karten durch sind', () => {
+  const g = newGame();
+  const deck = g.decks.treasure;
+  const total = deck.cards.length;
+  for (let i = 0; i < total; i++) g.draw(g.player('a'), 'treasure');
+  assert.ok(deck.index >= total, `stapel sollte durch sein, index ${deck.index}`);
+  g.draw(g.player('a'), 'treasure');
+  assert.ok(deck.index < total, `nach dem mischen wieder von vorne, index ${deck.index}`);
 });

@@ -198,6 +198,7 @@ export class MonopolyGame {
       if (key in action && !(Number.isInteger(action[key]) && action[key] >= 0 && action[key] <= 1e9)) throw new GameError('Invalid action');
     }
     if ('tile' in action && action.tile >= this.info.size) throw new GameError('Invalid action');
+    if ('group' in action && typeof action.group !== 'string') throw new GameError('Invalid action');
     handler.call(this, p, action);
     this.version++;
     return this.drainEvents();
@@ -281,7 +282,7 @@ export class MonopolyGame {
     if (p.prisonTurns === 0) throw new GameError('You are not in prison');
     if (this.turn.phase !== 'roll' || this.turn.rolls > 0) throw new GameError("You can't do it now");
     const which = deck && p.pardons.includes(deck) ? deck : p.pardons[0];
-    if (!which) throw new GameError("You don't have a pardon card");
+    if (!which) throw new GameError("You don't have an exit card");
     p.pardons.splice(p.pardons.indexOf(which), 1);
     this.decks[which].pardonHolder = null;
     p.prisonTurns = 0;
@@ -469,6 +470,66 @@ export class MonopolyGame {
     this.credit(p, refund);
     this.emit({ type: 'upgrade', playerId: p.id, tile: index, level: state.level });
     this.say(`${p.name} sold an ${word(this.map, 'house', 'house')} on ${tile.name} for ${this.fmt(refund)}`, 'build');
+  }
+
+  /** Alle straßen eines sets um genau eine stufe hochziehen; immer die niedrigsten, damit evenBuild gilt. */
+  upgradeGroup(p, { group }) {
+    const list = this.setIndices(group);
+    const levels = list.map(i => this.tiles[i].level);
+    if (Math.min(...levels) >= 5) throw new GameError('This set is already fully upgraded');
+    const floor = Math.min(...levels);
+    let count = 0;
+    let spent = 0;
+    for (const index of list) {
+      if (this.tiles[index].level !== floor) continue;
+      if (this.upgradeError(p, index)) continue;
+      const cost = this.map.tiles[index].house;
+      p.money -= cost;
+      spent += cost;
+      this.tiles[index].level++;
+      this.emit({ type: 'upgrade', playerId: p.id, tile: index, level: this.tiles[index].level });
+      count++;
+    }
+    if (!count) {
+      // nur die fehler der straßen melden, die jetzt dran wären
+      const why = list.filter(i => this.tiles[i].level === floor).map(i => this.upgradeError(p, i)).find(Boolean);
+      throw new GameError(why ?? list.map(i => this.upgradeError(p, i)).find(Boolean) ?? 'Nothing to upgrade');
+    }
+    this.say(`${p.name} upgraded the whole ${this.setName(group)} set (${count}×, ${this.fmt(spent)})`, 'build');
+  }
+
+  /** Gegenstück: alle straßen eines sets um eine stufe zurückbauen; immer die höchsten zuerst. */
+  downgradeGroup(p, { group }) {
+    const list = this.setIndices(group);
+    const top = Math.max(...list.map(i => this.tiles[i].level));
+    if (top <= 0) throw new GameError('There is nothing to downgrade in this set');
+    let count = 0;
+    let refunded = 0;
+    for (const index of list) {
+      if (this.tiles[index].level !== top) continue;
+      if (this.downgradeError(p, index)) continue;
+      this.tiles[index].level--;
+      const refund = Math.floor(this.map.tiles[index].house / 2);
+      this.credit(p, refund);
+      refunded += refund;
+      this.emit({ type: 'upgrade', playerId: p.id, tile: index, level: this.tiles[index].level });
+      count++;
+    }
+    if (!count) {
+      const why = list.filter(i => this.tiles[i].level === top).map(i => this.downgradeError(p, i)).find(Boolean);
+      throw new GameError(why ?? list.map(i => this.downgradeError(p, i)).find(Boolean) ?? 'Nothing to downgrade');
+    }
+    this.say(`${p.name} downgraded the whole ${this.setName(group)} set (${count}×, +${this.fmt(refunded)})`, 'build');
+  }
+
+  setIndices(group) {
+    const list = typeof group === 'string' ? this.info.groups[group] : null;
+    if (!list?.length) throw new GameError('Unknown property set');
+    return list;
+  }
+
+  setName(group) {
+    return this.map.groups[group]?.placeholder ?? group;
   }
 
   setHasBuildings(index) {
@@ -778,6 +839,12 @@ export class MonopolyGame {
   draw(p, deckName) {
     const deck = this.decks[deckName];
     if (!deck.cards.length) return;
+    // stapel durch: neu mischen statt die alte reihenfolge zu wiederholen
+    if (deck.index >= deck.order.length) {
+      deck.order = shuffle(deck.cards.map((_, i) => i), this.rand);
+      deck.index = 0;
+      this.say(`The ${word(this.map, deckName, deckName)} cards are reshuffled`, 'card');
+    }
     let card = null;
     for (let tries = 0; tries < deck.cards.length; tries++) {
       const candidate = deck.cards[deck.order[deck.index % deck.order.length]];
@@ -1150,6 +1217,8 @@ const ACTIONS = {
   usePardon(p, a) { this.usePardon(p, a); },
   upgrade(p, a) { this.upgrade(p, a); },
   downgrade(p, a) { this.downgrade(p, a); },
+  upgradeGroup(p, a) { this.upgradeGroup(p, a); },
+  downgradeGroup(p, a) { this.downgradeGroup(p, a); },
   sell(p, a) { this.sell(p, a); },
   mortgage(p, a) { this.mortgage(p, a); },
   unmortgage(p, a) { this.unmortgage(p, a); },
