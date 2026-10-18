@@ -78,10 +78,9 @@ export class BoardStrip {
     const key = `${player.id}:${player.position}`;
     if (!force && this.focused === key) return;
     this.focused = key;
-    // erst nach dem layout messen, sonst ist die breite noch 0
-    const run = () => this.focusIndex(player.position);
-    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(run);
-    else run();
+    // direkt messen: getBoundingClientRect erzwingt das layout, rAF läuft in
+    // hintergrund-tabs gar nicht und würde das zentrieren verschlucken
+    this.focusIndex(player.position);
   }
 
   focusIndex(index) {
