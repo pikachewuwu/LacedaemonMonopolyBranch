@@ -284,8 +284,24 @@ export class Room {
     this.pushChat({ kind: 'chat', from: id, name: p.name, color: p.appearance.color, text: clean });
   }
 
-  system(text) {
-    this.pushChat({ kind: 'system', text });
+  system(text, kind = 'system') {
+    this.pushChat({ kind, text });
+  }
+
+  /** Kurze meldung im chat, ohne eigenes notify (läuft direkt vor dem der änderung). */
+  announceTrade(event) {
+    const nameOf = id => this.game?.players.find(p => p.id === id)?.name ?? 'Someone';
+    const from = nameOf(event.from);
+    const to = nameOf(event.to);
+    const text =
+      event.state === 'new' ? `${from} sent ${to} an offer`
+        : event.state === 'accepted' ? `${to} accepted ${from}'s offer`
+          : event.state === 'declined' ? `${to} declined ${from}'s offer`
+            : event.state === 'cancelled' ? `${from} took back the offer to ${to}`
+              : null;
+    if (!text) return;
+    this.chat.push({ id: ++this.chatSeq, at: this.now(), kind: 'trade', text });
+    if (this.chat.length > CHAT_LIMIT) this.chat.shift();
   }
 
   pushChat(message) {
@@ -360,6 +376,9 @@ export class Room {
       } catch (error) {
         console.error('Partie konnte nicht gespeichert werden:', error);
       }
+    }
+    for (const event of events) {
+      if (event?.type === 'trade') this.announceTrade(event);
     }
     this.syncClock();
     this.schedule();

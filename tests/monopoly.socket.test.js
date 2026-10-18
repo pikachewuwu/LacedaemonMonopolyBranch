@@ -78,3 +78,51 @@ test('zwei spieler und ein bot: raum, einstellungen, start, züge', async () => 
     await db.close();
   }
 });
+
+test('handelsangebote stehen im chat und mit details im log', async () => {
+  const db = openSqlite(':memory:');
+  const app = createApp(db, {});
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  const io = attachMonopolySocket(server, app.locals.monopoly);
+  const url = `http://127.0.0.1:${server.address().port}`;
+  const ann = client(url, 'Ann');
+  const ben = client(url, 'Ben');
+  try {
+    const { roomId } = await ann.ask('room:create', { settings: { isPrivate: true } });
+    assert.equal((await ann.ask('room:join', { roomId })).role, 'player');
+    assert.equal((await ben.ask('room:join', { roomId })).role, 'player');
+    assert.ok((await ann.ask('room:start', {})).ok);
+    await until(() => ben.last()?.phase === 'playing');
+
+    const benId = ben.last().you.id;
+    const reply = await ann.ask('game:act', {
+      type: 'tradeCreate',
+      to: benId,
+      give: { money: 250, tiles: [], pardons: [] },
+      take: { money: 0, tiles: [], pardons: [] },
+      note: 'take it',
+    });
+    assert.ok(reply.ok, reply.error);
+
+    await until(() => ben.last().chat.some(c => c.kind === 'trade' && c.text === 'Ann sent Ben an offer'));
+    const chatLine = ben.last().chat.find(c => c.kind === 'trade');
+    assert.equal(chatLine.text, 'Ann sent Ben an offer');
+
+    await until(() => ben.last().game.log.some(l => l.kind === 'trade' && l.text.includes('offered')));
+    const logLine = ben.last().game.log.find(l => l.kind === 'trade' && l.text.includes('offered'));
+    assert.match(logLine.text, /Ann offered Ben a trade: 250/);
+    assert.match(logLine.text, /take it/);
+
+    const tradeId = ben.last().game.trades[0].id;
+    assert.ok((await ben.ask('game:act', { type: 'tradeDecline', id: tradeId })).ok);
+    await until(() => ben.last().chat.some(c => c.text === "Ben declined Ann's offer"));
+  } finally {
+    ann.close();
+    ben.close();
+    app.locals.monopoly.rooms.dispose();
+    io.close();
+    server.close();
+    await db.close();
+  }
+});

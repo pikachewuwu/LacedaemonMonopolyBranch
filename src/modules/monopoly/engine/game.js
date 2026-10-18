@@ -1079,7 +1079,8 @@ export class MonopolyGame {
     const trade = { id: ++this.tradeSeq, from: p.id, to: other.id, ...offer, note: String(note ?? '').slice(0, 140), at: this.now() };
     this.trades.push(trade);
     this.emit({ type: 'trade', id: trade.id, from: p.id, to: other.id, state: 'new' });
-    this.say(`${p.name} offered ${other.name} a trade: ${this.sideText(trade.give)} for ${this.sideText(trade.take)}`, 'trade');
+    const noteText = trade.note ? ` — “${trade.note}”` : '';
+    this.say(`${p.name} offered ${other.name} a trade: ${this.sideText(trade.give)} for ${this.sideText(trade.take)}${noteText}`, 'trade');
     return trade;
   }
 

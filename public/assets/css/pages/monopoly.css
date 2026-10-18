@@ -753,3 +753,7 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 .mono-root .icon-btn { color: var(--m-text); background: color-mix(in srgb, var(--m-panel-3) 72%, transparent); border-color: var(--m-border); }
 .mono-root .icon-btn:hover { background: var(--m-panel-3); color: var(--m-text); border-color: color-mix(in srgb, var(--m-accent) 60%, var(--m-border)); }
 .mono-root .icon-btn[aria-label="Leave room"]:hover { color: var(--m-bad); border-color: color-mix(in srgb, var(--m-bad) 70%, var(--m-border)); background: color-mix(in srgb, var(--m-bad) 18%, var(--m-panel-3)); }
+
+/* ---- handelsmeldungen im chat ---- */
+.msg-trade { color: var(--m-accent-2); font-size: .88rem; }
+.msg-trade::before { content: '⇄ '; color: var(--m-accent); font-weight: 700; }
