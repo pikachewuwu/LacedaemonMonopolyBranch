@@ -87,7 +87,11 @@ export class BoardStrip {
   focusIndex(index) {
     const item = this.tiles[index];
     if (!item) return;
-    const target = item.el.offsetLeft - this.track.clientWidth / 2 + item.el.offsetWidth / 2;
+    // offsetLeft zählt ab dem nächsten positionierten elternteil, nicht ab der spur
+    const track = this.track.getBoundingClientRect();
+    const tile = item.el.getBoundingClientRect();
+    const offset = tile.left - track.left + this.track.scrollLeft;
+    const target = offset - this.track.clientWidth / 2 + tile.width / 2;
     this.track.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
   }
 }
