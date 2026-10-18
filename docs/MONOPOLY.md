@@ -106,7 +106,7 @@ Ebenfalls in `lacedaemon.json`:
 - `words`: Währung (`🐉`, Position `after`), Namen für Haus/Hotel (`upgrade`/`full-stack`), Gefängnis, Freikarten.
 - `rewards`, `prison`, `vacation`: Geld für =collect (vorbei 200, genau drauf 300), Kaution und Runden in den Backrooms, Aussetzen bei Touch Grass.
 
-Flaggen und Icons: eingebaute IDs (`block`, `orbit`, `rps`, `debate`, `lizard`, `casino`, `bolt`, `sheriff`, `helmet`; Icons `windows`, `linux`, `mac`, `uwuntu`, `openbsd`, `server`, `internet`, `donation`, `bill`), ein Emoji (`"emoji:🦎"`) oder ein eigenes Bild (`"img:/assets/img/meine-flagge.png"`). Neue eingebaute Grafiken kommen nach `public/assets/js/monopoly/icons.js`.
+Flaggen und Icons: eingebaute IDs (`steam`, `block`, `orbit`, `rps`, `debate`, `lizard`, `casino`, `bolt`, `sheriff`, `helmet`; Icons `windows`, `linux`, `mac`, `uwuntu`, `openbsd`, `server`, `internet`, `donation`, `bill`), ein Emoji (`"emoji:🦎"`) oder ein eigenes Bild (`"img:/assets/img/meine-flagge.png"`). Neue eingebaute Grafiken kommen nach `public/assets/js/monopoly/icons.js`.
 
 **Weitere Bretter**: eine neue JSON-Datei mit eigener `id` in `src/modules/monopoly/maps/` ablegen. Sie erscheint automatisch in den Raumeinstellungen unter „Board“. Mehr oder weniger als 40 Felder gehen auch (16 bis 64, durch 4 teilbar).
 

@@ -9,6 +9,12 @@ export const FLAGS = {
     <g fill="#5a3a20"><rect x="4" y="19" width="4" height="4"/><rect x="16" y="22" width="4" height="4"/><rect x="24" y="18" width="4" height="4"/><rect x="9" y="26" width="4" height="4"/></g>
     <g fill="#9b6b43"><rect x="12" y="16" width="3" height="3"/><rect x="22" y="26" width="3" height="3"/><rect x="2" y="27" width="3" height="3"/></g>
     <g fill="#8ee05f"><rect x="5" y="3" width="3" height="3"/><rect x="21" y="5" width="3" height="3"/></g>`),
+  steam: svg(`<defs><linearGradient id="stm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2838"/><stop offset="1" stop-color="#2a6a96"/></linearGradient></defs>
+    <rect width="32" height="32" fill="url(#stm)"/>
+    <path d="M2.5 19.5l6.6 2.8" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M13 20.6l5.2-4.4" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+    <circle cx="20.8" cy="12.6" r="6.2" fill="#fff"/><circle cx="20.8" cy="12.6" r="4.2" fill="#1f3d5c"/><circle cx="20.8" cy="12.6" r="2.9" fill="#fff"/>
+    <circle cx="11.6" cy="21.8" r="3.9" fill="#fff"/><circle cx="11.6" cy="21.8" r="2.2" fill="#1f3d5c"/>`),
   orbit: svg(`<rect width="32" height="32" fill="#121735"/>
     <g fill="#fff"><circle cx="6" cy="7" r=".9"/><circle cx="25" cy="5" r=".7"/><circle cx="27" cy="24" r=".9"/><circle cx="5" cy="25" r=".6"/><circle cx="12" cy="4" r=".5"/></g>
     <circle cx="16" cy="17" r="7" fill="#e5484d"/><path d="M11 14.5c2-1.6 6-2.3 9.5-.6" stroke="#ff8c8f" stroke-width="1.4" fill="none" stroke-linecap="round"/>

@@ -29,7 +29,7 @@
     "turns": 1
   },
   "groups": {
-    "brazil": { "color": "#2fb463", "flag": "block", "placeholder": "Brazil" },
+    "brazil": { "color": "#2fb463", "flag": "steam", "placeholder": "Brazil" },
     "israel": { "color": "#e5484d", "flag": "orbit", "placeholder": "Israel" },
     "italy": { "color": "#f2f4f8", "flag": "rps", "placeholder": "Italy" },
     "germany": { "color": "#79678a", "flag": "debate", "placeholder": "Germany" },
