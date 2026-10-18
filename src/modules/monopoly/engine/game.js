@@ -1114,7 +1114,8 @@ export class MonopolyGame {
       tiles: this.tiles.map((t, i) => (t ? { ...t, rent: this.rentFor(i) } : null)),
       auction: this.auction ? { ...this.auction } : null,
       debts: this.debts.map(d => ({ ...d })),
-      trades: this.trades.filter(t => viewerId && (t.from === viewerId || t.to === viewerId)).map(t => structuredClone(t)),
+      // offene angebote sieht der ganze tisch (wie bei richup), antworten dürfen nur die beiden beteiligten
+      trades: this.trades.map(t => structuredClone(t)),
       vacationPot: this.vacationPot,
       card: this.card,
       winner: this.winner,

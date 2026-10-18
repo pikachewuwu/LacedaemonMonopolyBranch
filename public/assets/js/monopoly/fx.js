@@ -1,8 +1,8 @@
-// effekte über dem brett: münzen, siegel, wellen, banner und der handschlag beim handel
+// effekte über dem brett: kurz und klar. münzen, siegel, banner und der tausch beim handel
 
 import { h, wait } from './dom.js';
 import { FLAGS, LOGO, TILE_ICONS, artwork } from './icons.js';
-import { isOwnable, money } from './format.js';
+import { isOwnable, money, pardonName } from './format.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -10,14 +10,13 @@ export class Fx {
   constructor(board) {
     this.board = board;
     this.layer = h('div.fx-layer');
-    this.ambient = h('div.center-ambient', Array.from({ length: 14 }, (_, k) => h('i', {
-      '--x': `${(k * 37) % 100}%`, '--d': `${9 + (k * 7) % 9}s`, '--delay': `${-(k * 1.7) % 9}s`, '--s': `${0.5 + ((k * 13) % 10) / 10}`,
+    this.ambient = h('div.center-ambient', Array.from({ length: 10 }, (_, k) => h('i', {
+      '--x': `${(k * 37) % 100}%`, '--d': `${10 + (k * 7) % 9}s`, '--delay': `${-(k * 1.7) % 9}s`, '--s': `${0.5 + ((k * 13) % 10) / 10}`,
     })));
     board.el.append(this.layer);
     board.center.prepend(this.ambient);
   }
 
-  /** Mittelpunkt eines felds oder einer figur in prozent des bretts. */
   tilePoint(index) {
     const g = this.board.geometry(index);
     return { x: g.x, y: g.y };
@@ -35,147 +34,133 @@ export class Fx {
     return node;
   }
 
-  /** Münzen fliegen im bogen von a nach b. */
-  coins(from, to, count = 8, label = '') {
+  /** Münzen fliegen im bogen von a nach b, dazu der betrag beim empfänger. */
+  coins(from, to, count, label = '') {
     if (!from || !to || reduced()) return;
     for (let i = 0; i < count; i++) {
-      const coin = this.spawn(h('span.fx-coin', '🐉'), 1600);
-      const lift = 10 + Math.random() * 8;
-      const jitter = () => (Math.random() - 0.5) * 3;
-      const mid = { x: (from.x + to.x) / 2 + jitter(), y: Math.min(from.y, to.y) - lift };
+      const coin = this.spawn(h('span.fx-coin', '🐉'), 1000);
+      const jitter = () => (Math.random() - 0.5) * 2.4;
+      const mid = { x: (from.x + to.x) / 2 + jitter(), y: Math.min(from.y, to.y) - 8 - Math.random() * 5 };
       coin.animate([
-        { left: `${from.x + jitter()}%`, top: `${from.y + jitter()}%`, transform: 'translate(-50%,-50%) scale(.3) rotate(0deg)', opacity: 0 },
-        { left: `${mid.x}%`, top: `${mid.y}%`, transform: 'translate(-50%,-50%) scale(1.15) rotate(200deg)', opacity: 1, offset: 0.5 },
-        { left: `${to.x}%`, top: `${to.y}%`, transform: 'translate(-50%,-50%) scale(.5) rotate(380deg)', opacity: 0.2 },
-      ], { duration: 900 + i * 45, delay: i * 55, easing: 'cubic-bezier(.45,.05,.4,1)', fill: 'both' });
+        { left: `${from.x + jitter()}%`, top: `${from.y + jitter()}%`, transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 },
+        { left: `${mid.x}%`, top: `${mid.y}%`, transform: 'translate(-50%,-50%) scale(1.1)', opacity: 1, offset: 0.5 },
+        { left: `${to.x}%`, top: `${to.y}%`, transform: 'translate(-50%,-50%) scale(.5)', opacity: 0 },
+      ], { duration: 600, delay: i * 35, easing: 'cubic-bezier(.45,.05,.4,1)', fill: 'both' });
     }
     if (label) this.floatText(to, label, 'gold');
   }
 
-  floatText(at, text, kind = '') {
+  floatText(at, text, kind = 'plain') {
     if (!at) return;
-    const el = this.spawn(h(`span.fx-float.${kind || 'plain'}`, { style: { left: `${at.x}%`, top: `${at.y}%` } }, text), 1700);
+    const el = this.spawn(h(`span.fx-float.${kind}`, { style: { left: `${at.x}%`, top: `${at.y}%` } }, text), 1300);
     el.animate([
-      { transform: 'translate(-50%, -20%) scale(.6)', opacity: 0 },
-      { transform: 'translate(-50%, -110%) scale(1.08)', opacity: 1, offset: 0.25 },
-      { transform: 'translate(-50%, -240%) scale(1)', opacity: 0 },
-    ], { duration: 1600, delay: 500, easing: 'ease-out', fill: 'both' });
+      { transform: 'translate(-50%, -40%) scale(.7)', opacity: 0 },
+      { transform: 'translate(-50%, -120%) scale(1)', opacity: 1, offset: 0.2 },
+      { transform: 'translate(-50%, -120%) scale(1)', opacity: 1, offset: 0.7 },
+      { transform: 'translate(-50%, -190%) scale(1)', opacity: 0 },
+    ], { duration: 1100, delay: 250, easing: 'ease-out', fill: 'both' });
   }
 
-  /** Wellen im mittelfeld in der farbe des spielers, der dran ist. */
+  /** Eine welle in der farbe des spielers, der jetzt dran ist. */
   turn(color) {
     if (reduced()) return;
-    for (let i = 0; i < 3; i++) {
-      this.spawn(h('span.fx-ring', { '--c': color, style: { animationDelay: `${i * 180}ms` } }), 1600);
-    }
+    this.spawn(h('span.fx-ring', { '--c': color }), 900);
   }
 
-  /** Gekauft: siegel mit flagge und name. */
+  /** Gekauft: kurzes siegel mit flagge, name und käufer. */
   buy(map, index, color, who) {
     const tile = map.tiles[index];
     if (!isOwnable(tile)) return;
     const group = tile.type === 'city' ? map.groups[tile.group] : null;
     const art = group ? artwork(group.flag, FLAGS) : artwork(tile.icon ?? tile.type, TILE_ICONS);
-    const seal = this.spawn(h('div.fx-seal', { '--c': color, '--g': group?.color ?? color },
+    const seal = this.spawn(h('div.fx-seal', { '--c': color },
       h('span.fx-seal-art', { html: art }),
       h('b', tile.name),
-      h('small', `${who} · SOLD`)), 2300);
+      h('small', `bought by ${who}`)), 1300);
     seal.animate([
-      { transform: 'translate(-50%,-50%) scale(2.2) rotate(-14deg)', opacity: 0 },
-      { transform: 'translate(-50%,-50%) scale(.94) rotate(-6deg)', opacity: 1, offset: 0.16 },
-      { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: 0.8 },
-      { transform: 'translate(-50%,-60%) scale(.9) rotate(-6deg)', opacity: 0 },
-    ], { duration: 2200, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' });
-    this.burst(this.tilePoint(index), color);
+      { transform: 'translate(-50%,-50%) scale(1.25)', opacity: 0 },
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.15 },
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.8 },
+      { transform: 'translate(-50%,-50%) scale(.96)', opacity: 0 },
+    ], { duration: 1200, easing: 'ease-out', fill: 'both' });
   }
 
-  burst(at, color, n = 14) {
+  burst(at, color, n = 10) {
     if (!at || reduced()) return;
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2;
-      const r = 5 + Math.random() * 4;
-      const spark = this.spawn(h('span.fx-spark', { '--c': color, style: { left: `${at.x}%`, top: `${at.y}%` } }), 900);
+      const r = 4 + Math.random() * 3;
+      const spark = this.spawn(h('span.fx-spark', { '--c': color, style: { left: `${at.x}%`, top: `${at.y}%` } }), 700);
       spark.animate([
         { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
         { transform: `translate(calc(-50% + ${Math.cos(a) * r}cqw), calc(-50% + ${Math.sin(a) * r}cqw)) scale(.2)`, opacity: 0 },
-      ], { duration: 650 + Math.random() * 250, easing: 'cubic-bezier(.1,.7,.3,1)', fill: 'both' });
+      ], { duration: 550, easing: 'cubic-bezier(.1,.7,.3,1)', fill: 'both' });
     }
   }
 
   banner(text, kind, sub = '') {
-    const el = this.spawn(h(`div.fx-banner.${kind}`, h('b', text), sub ? h('small', sub) : null), 2000);
+    const el = this.spawn(h(`div.fx-banner.${kind}`, h('b', text), sub ? h('small', sub) : null), 1200);
     el.animate([
-      { transform: 'translate(-50%,-50%) scale(.6)', opacity: 0, filter: 'blur(6px)' },
-      { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 1, filter: 'blur(0)', offset: 0.18 },
-      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.78 },
-      { transform: 'translate(-50%,-50%) scale(1.1)', opacity: 0, filter: 'blur(4px)' },
-    ], { duration: 1900, easing: 'ease-out', fill: 'both' });
+      { transform: 'translate(-50%,-50%) scale(.85)', opacity: 0 },
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.15 },
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.8 },
+      { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 0 },
+    ], { duration: 1100, easing: 'ease-out', fill: 'both' });
   }
 
-  upgrade(index, color) {
+  upgrade(index) {
     const at = this.tilePoint(index);
-    this.burst(at, '#8dffb9', 10);
-    this.floatText(at, '▲', 'good');
-    void color;
+    this.burst(at, '#8dffb9', 8);
+  }
+
+  /** Was eine seite gibt, als kleine chips (straßen in gruppenfarbe, geld, karten). */
+  parcel(map, side, color) {
+    const chips = [
+      side.money ? h('span.fx-chip.fx-chip-money', money(map, side.money)) : null,
+      ...side.tiles.map(i => {
+        const tile = map.tiles[i];
+        return h('span.fx-chip', { '--g': tile.type === 'city' ? map.groups[tile.group].color : '#9aa4b8' }, tile.name);
+      }),
+      ...side.pardons.map(d => h('span.fx-chip.fx-chip-card', pardonName(map, d))),
+    ].filter(Boolean);
+    return h('div.fx-parcel', { '--c': color }, chips.length ? chips : h('span.fx-chip', 'nothing'));
   }
 
   /**
-   * Handel: das server-logo erscheint, beide angebote steigen ins licht zwischen den händen,
-   * kreisen umeinander und landen beim jeweils anderen.
+   * Handel: das server-logo im hintergrund, beide pakete steigen ins licht zwischen
+   * den händen und landen beim anderen. Die inhalte stehen die ganze zeit lesbar da.
    */
   async trade(map, a, b, give, take) {
     if (reduced()) return;
-    const summary = side => [
-      side.money ? money(map, side.money) : null,
-      ...side.tiles.map(i => map.tiles[i].name),
-      ...side.pardons.map(() => 'Pardon card'),
-    ].filter(Boolean).join(', ') || 'nothing';
-    const light = { x: 50, y: 37 };
+    const D = 2600;
     const portal = h('img.fx-portal', { src: LOGO, alt: '' });
-    const glow = h('span.fx-handshake-glow', { style: { left: `${light.x}%`, top: `${light.y}%` } });
-    const halo = h('span.fx-halo', { style: { left: `${light.x}%`, top: `${light.y}%` } });
-    const orbA = h('span.fx-orb', { '--c': a.color });
-    const orbB = h('span.fx-orb', { '--c': b.color });
-    const tagA = h('span.fx-tag.left', { '--c': a.color }, a.name);
-    const tagB = h('span.fx-tag.right', { '--c': b.color }, b.name);
-    const caption = h('div.fx-trade-caption',
-      h('span.label', 'Trade complete'),
-      h('div.fx-trade-sides',
-        h('span', h('b', { style: { color: a.color } }, a.name), h('small', summary(give))),
-        h('i', '⇄'),
-        h('span', h('b', { style: { color: b.color } }, b.name), h('small', summary(take)))));
-    const scene = this.spawn(h('div.fx-trade', portal, halo, glow, tagA, tagB, orbA, orbB, caption), 5000);
-    const D = 4600;
-    scene.animate([{ opacity: 0 }, { opacity: 1, offset: 0.07 }, { opacity: 1, offset: 0.9 }, { opacity: 0 }], { duration: D, fill: 'both' });
+    const glow = h('span.fx-handshake-glow', { style: { left: '50%', top: '40%' } });
+    const fromA = this.parcel(map, give, a.color);
+    const fromB = this.parcel(map, take, b.color);
+    const head = h('div.fx-trade-head', h('span.label', 'Trade'),
+      h('b', h('span', { style: { color: a.color } }, a.name), ' ⇄ ', h('span', { style: { color: b.color } }, b.name)));
+    const scene = this.spawn(h('div.fx-trade', portal, glow, head, fromA, fromB), D + 200);
+    scene.animate([{ opacity: 0 }, { opacity: 1, offset: 0.08 }, { opacity: 1, offset: 0.88 }, { opacity: 0 }], { duration: D, fill: 'both' });
     portal.animate([
-      { transform: 'translate(-50%, -50%) scale(.7)', opacity: 0, filter: 'blur(8px) saturate(.6)' },
-      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, filter: 'blur(0) saturate(1)', offset: 0.18 },
-      { transform: 'translate(-50%, -50%) scale(1.03)', opacity: 1, offset: 0.82 },
-      { transform: 'translate(-50%, -50%) scale(1.08)', opacity: 0, filter: 'blur(6px)' },
-    ], { duration: D, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' });
-    halo.animate([{ opacity: 0 }, { opacity: 0, offset: 0.2 }, { opacity: 1, offset: 0.35 }, { opacity: 1, offset: 0.75 }, { opacity: 0 }], { duration: D, fill: 'both' });
-    // die angebote: von der eigenen seite hinauf ins licht, umkreisen, hinüber zum anderen
-    const path = (from, to, phase) => {
-      const ring = (t, r) => ({ left: `${light.x + Math.cos(t + phase) * r}%`, top: `${light.y + Math.sin(t + phase) * r * 0.7}%` });
-      return [
-        { left: `${from}%`, top: '58%', transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 },
-        { left: `${from}%`, top: '58%', transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.16 },
-        { ...ring(0, 7), transform: 'translate(-50%,-50%) scale(1.1)', opacity: 1, offset: 0.36 },
-        { ...ring(Math.PI * 0.7, 5), transform: 'translate(-50%,-50%) scale(1.25)', opacity: 1, offset: 0.46 },
-        { ...ring(Math.PI * 1.4, 3), transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1, offset: 0.54 },
-        { ...ring(Math.PI * 2.1, 5), transform: 'translate(-50%,-50%) scale(1.2)', opacity: 1, offset: 0.62 },
-        { left: `${to}%`, top: '58%', transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.8 },
-        { left: `${to}%`, top: '58%', transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 },
-      ];
-    };
-    orbA.animate(path(18, 82, Math.PI), { duration: D, easing: 'ease-in-out', fill: 'both' });
-    orbB.animate(path(82, 18, 0), { duration: D, easing: 'ease-in-out', fill: 'both' });
-    glow.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.2)' }, { opacity: 0, offset: 0.5 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: 0.57 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.8)', offset: 0.8 }, { opacity: 0 }],
+      { transform: 'translate(-50%, -50%) scale(.92)', opacity: 0 },
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.9, offset: 0.2 },
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.9, offset: 0.85 },
+      { transform: 'translate(-50%, -50%) scale(1.02)', opacity: 0 },
+    ],
       { duration: D, easing: 'ease-out', fill: 'both' });
-    for (const tag of [tagA, tagB]) tag.animate([{ opacity: 0 }, { opacity: 1, offset: 0.12 }, { opacity: 1, offset: 0.85 }, { opacity: 0 }], { duration: D, fill: 'both' });
-    caption.animate([{ opacity: 0, transform: 'translate(-50%, 20%)' }, { opacity: 0, offset: 0.6 }, { opacity: 1, transform: 'translate(-50%, 0)', offset: 0.7 }, { opacity: 1, offset: 0.92 }, { opacity: 0 }],
+    // links -> rechts über das licht, rechts -> links darunter
+    const travel = (from, to, lift) => [
+      { left: `${from}%`, top: '60%', transform: 'translate(-50%,-50%) scale(.8)', opacity: 0 },
+      { left: `${from}%`, top: '60%', transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.15 },
+      { left: `${from}%`, top: '60%', transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.3 },
+      { left: '50%', top: `${lift}%`, transform: 'translate(-50%,-50%) scale(1.06)', opacity: 1, offset: 0.55 },
+      { left: `${to}%`, top: '60%', transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.8 },
+      { left: `${to}%`, top: '60%', transform: 'translate(-50%,-50%) scale(1)', opacity: 0 },
+    ];
+    fromA.animate(travel(24, 76, 38), { duration: D, easing: 'ease-in-out', fill: 'both' });
+    fromB.animate(travel(76, 24, 74), { duration: D, easing: 'ease-in-out', fill: 'both' });
+    glow.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: 0, offset: 0.45 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: 0.55 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.4)', offset: 0.75 }, { opacity: 0 }],
       { duration: D, fill: 'both' });
-    setTimeout(() => this.burst(light, '#fff4d6', 18), D * 0.56);
-    await wait(1800);
+    await wait(900);
   }
 }

@@ -100,16 +100,17 @@ export function tradeSummary(view, trade) {
 
 export function viewTradeDialog(view, trade) {
   const incoming = trade.to === view.me;
-  const from = view.room.game.players.find(p => p.id === trade.from);
+  const mine = trade.from === view.me;
+  const name = id => view.room.game.players.find(p => p.id === id)?.name ?? '?';
   openModal({
-    title: incoming ? `Trade offer from ${from?.name}` : 'Your trade offer',
+    title: incoming ? `Trade offer from ${name(trade.from)}` : mine ? `Your offer to ${name(trade.to)}` : `${name(trade.from)} offers ${name(trade.to)}`,
     className: 'modal-trade',
     body: [
       tradeSummary(view, trade),
-      h('div.modal-actions',
-        incoming ? h('button.btn.btn-good', { onclick: () => view.act({ type: 'tradeAccept', id: trade.id }).then(ok => ok && closeModal()) }, 'Accept') : null,
+      incoming || mine ? h('div.modal-actions',
+        incoming ? h('button.btn.btn-good.btn-lg', { onclick: () => view.act({ type: 'tradeAccept', id: trade.id }).then(ok => ok && closeModal()) }, 'Accept') : null,
         h('button.btn', { onclick: () => view.act({ type: 'tradeDecline', id: trade.id }).then(ok => ok && closeModal()) }, incoming ? 'Decline' : 'Cancel offer'),
-      ),
+      ) : h('p.hint', 'Only the two players in this trade can answer it.'),
     ],
   });
 }

@@ -1,8 +1,9 @@
-// spielfiguren: farbe (richup-palette) und form, plus namen für bots und teams
+// spielfiguren: farbe und form, plus namen für bots und teams.
+// zehn farben, die man auf dem brett sicher auseinanderhält
 
 export const COLORS = [
-  '#c0da5a', '#ffc73f', '#ff843f', '#c34848', '#5a99da', '#7fe7f5',
-  '#009688', '#73e85d', '#9a6e5e', '#c63fa2', '#ff7ca0', '#7f5ada',
+  '#e53935', '#1e88e5', '#43a047', '#fdd835', '#fb8c00',
+  '#8e24aa', '#00bcd4', '#ec407a', '#f5f5f5', '#795548',
 ];
 
 export const SHAPES = ['blob', 'helmet', 'dragon', 'cube', 'ghost', 'crown'];

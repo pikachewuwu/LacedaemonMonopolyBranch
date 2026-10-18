@@ -24,7 +24,7 @@
   --m-tile-bg-2: #2c241a;
   --m-tile-text: #ffffff;
   --m-tile-radius: 0px;
-  --m-tile-tint: 30%;
+  --m-tile-tint: 9%;
   --m-fit-chars: 8.6;
   --m-corner-bg: #8a6a45;
   --m-gap: 3px;
@@ -37,12 +37,12 @@
 }
 .mono-root[data-theme="overworld"] .tile-card {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--group) 30%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in srgb, var(--group) 12%, transparent), transparent 40%),
     repeating-conic-gradient(#7d7d7d 0 25%, #6f6f6f 0 50%) 0 0 / calc(var(--S) * .25) calc(var(--S) * .25);
 }
 .mono-root[data-theme="overworld"] .edge-top .tile-card {
   background:
-    linear-gradient(0deg, color-mix(in srgb, var(--group) 30%, transparent), transparent 60%),
+    linear-gradient(0deg, color-mix(in srgb, var(--group) 12%, transparent), transparent 40%),
     repeating-conic-gradient(#7d7d7d 0 25%, #6f6f6f 0 50%) 0 0 / calc(var(--S) * .25) calc(var(--S) * .25);
 }
 .mono-root[data-theme="overworld"] .tile-name { font-size: calc(var(--S) * .25 * var(--fit, 1)); font-weight: 400; text-shadow: 2px 2px 0 rgba(0,0,0,.6); }

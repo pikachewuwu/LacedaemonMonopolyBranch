@@ -75,7 +75,7 @@ export class RoomView {
     this.right = h('aside.side.side-right', this.playersPanel, this.tradesPanel, this.propsPanel, this.settingsPanel);
 
     this.stage = h('div.center-stage');
-    this.cardSlot = h('div.center-card');
+    this.cardSlot = h('div.center-card', { title: 'Click to close', onclick: () => this.hideCard() });
     this.status = h('div.center-status');
     this.miniLog = h('ol.center-log');
     this.board.center.append(
@@ -149,11 +149,10 @@ export class RoomView {
     else if (e.type === 'buy') fx.buy(this.map, e.tile, this.who(e.playerId).color, this.who(e.playerId).name);
     else if (e.type === 'upgrade') fx.upgrade(e.tile);
     else if (e.type === 'bankrupt') fx.banner(e.reason === 'bankrupt' ? 'BANKRUPT' : 'OUT', 'bankrupt', this.who(e.playerId).name);
-    else if (e.type === 'money' && e.amount > 0) {
+    else if (e.type === 'money' && e.amount > 0 && e.to) {
+      // nur geld, das bei jemandem ankommt (miete, =collect, karten); zahlungen an die bank ohne münzregen
       const from = e.from ? fx.pawnPoint(e.from) : bank;
-      const to = e.to ? fx.pawnPoint(e.to) : bank;
-      const n = Math.min(14, 4 + Math.round(Math.log2(e.amount)));
-      fx.coins(from, to, n, e.to ? `+${money(this.map, e.amount)}` : '');
+      fx.coins(from, fx.pawnPoint(e.to), Math.min(8, 3 + Math.round(Math.log2(e.amount) / 2)), `+${money(this.map, e.amount)}`);
     } else if (e.type === 'trade' && e.state === 'accepted' && e.give) {
       await fx.trade(this.map, this.who(e.from), this.who(e.to), e.give, e.take);
     }
@@ -161,27 +160,36 @@ export class RoomView {
 
   async play(events, fast) {
     for (const e of events) {
+      await this.animate(e, fast);
       if (!fast) await this.effect(e);
-      if (e.type === 'dice') {
-        if (!fast) sound.dice();
-        await this.dice.roll(e.dice, fast);
-      } else if (e.type === 'move') {
-        if (e.mode === 'prison' && !fast) sound.prison();
-        await this.board.move(e, fast);
-      } else if (e.type === 'card') {
-        if (!fast) sound.card();
-        this.showCard(e);
-        if (!fast) await wait(700);
-      } else if (e.type === 'buy' || e.type === 'upgrade') {
-        if (!fast) sound.build();
-      } else if (e.type === 'turn' && e.playerId === this.me) {
-        sound.turn();
-      } else if (e.type === 'bid') {
-        if (!fast) sound.bid();
-      } else if (e.type === 'over') {
-        sound.win();
-        confetti();
-      }
+    }
+  }
+
+  /** Die eigentliche animation eines ereignisses (würfel, laufen, karte, klang). */
+  async animate(e, fast) {
+    if (e.type === 'dice') {
+      if (!fast) sound.dice();
+      await this.dice.roll(e.dice, fast);
+    } else if (e.type === 'move') {
+      if (e.mode === 'prison' && !fast) sound.prison();
+      await this.board.move(e, fast);
+    } else if (e.type === 'card') {
+      if (!fast) sound.card();
+      this.showCard(e);
+      if (!fast) await wait(700);
+    } else if (e.type === 'buy' || e.type === 'upgrade') {
+      if (!fast) sound.build();
+    } else if (e.type === 'turn') {
+      // neuer zug: alte karte weg
+      this.hideCard();
+      if (e.playerId === this.me) sound.turn();
+    } else if (e.type === 'trade' && e.state === 'accepted') {
+      sound.trade();
+    } else if (e.type === 'bid') {
+      if (!fast) sound.bid();
+    } else if (e.type === 'over') {
+      sound.win();
+      confetti();
     }
   }
 
@@ -192,7 +200,12 @@ export class RoomView {
       h('span.game-card-deck', e.crazy ? `Crazy ${deck}` : deck),
       h('p', e.text)));
     this.cardSlot.classList.add('is-shown');
-    this.cardTimer = setTimeout(() => this.cardSlot.classList.remove('is-shown'), 6500);
+    this.cardTimer = setTimeout(() => this.hideCard(), 3200);
+  }
+
+  hideCard() {
+    clearTimeout(this.cardTimer);
+    this.cardSlot.classList.remove('is-shown');
   }
 
   /** Spielaktion senden; fehler als meldung, rückgabe true bei erfolg. */
@@ -222,7 +235,7 @@ export class RoomView {
     this.room = room;
     const game = room.game;
     this.el.dataset.phase = room.phase;
-    this.board.update(game, room.participants);
+    this.board.update(game, room.participants, { showPot: room.settings.vacationCash });
     if (!game) this.board.updatePawns({ players: room.participants.map(p => ({ ...p, position: 0, prisonTurns: 0 })), turn: {}, phase: 'lobby' }, room.participants);
     if (game?.turn.dice && !before?.game) this.dice.show(game.turn.dice, true);
     this.renderPlayers();
@@ -247,8 +260,9 @@ export class RoomView {
     const old = new Set((before?.game?.trades ?? []).map(t => t.id));
     for (const t of now) {
       if (!old.has(t.id) && t.to === this.me && before) {
-        sound.card();
+        sound.offer();
         toast(`${this.room.game.players.find(p => p.id === t.from)?.name} sent you a trade offer`);
+        if (!document.querySelector('.modal-backdrop')) viewTradeDialog(this, t);
       }
     }
   }
@@ -346,16 +360,20 @@ export class RoomView {
 
   renderTrades() {
     const game = this.room.game;
-    const show = game && game.phase === 'playing' && this.room.you.role === 'player';
+    const show = game && game.phase === 'playing';
     this.tradesPanel.hidden = !show;
     if (!show) return;
-    const key = JSON.stringify([game.trades, this.myPlayer?.bankrupt, game.players.map(p => p.name)]);
+    const key = JSON.stringify([game.trades, this.myPlayer?.bankrupt, game.players.map(p => p.name), this.me]);
     renderIf(this.tradesPanel, key, () => [
       h('div.panel-head', h('h3', 'Trades'),
         this.myPlayer && !this.myPlayer.bankrupt ? h('button.btn.btn-sm', { onclick: () => createTradeDialog(this) }, h('span.btn-icon', { html: UI.plus }), 'Create') : null),
-      game.trades.length ? h('div.trade-list', game.trades.map(t => h('button.trade-item', { type: 'button', class: t.to === this.me ? 'is-incoming' : '', onclick: () => viewTradeDialog(this, t) },
-        h('span.label', t.to === this.me ? `From ${game.players.find(p => p.id === t.from)?.name}` : `To ${game.players.find(p => p.id === t.to)?.name}`),
-        tradeSummary(this, t)))) : h('p.faint.panel-empty', 'No open trades. Swap properties to complete your sets.'),
+      game.trades.length ? h('div.trade-list', game.trades.map(t => {
+        const name = id => game.players.find(p => p.id === id)?.name ?? '?';
+        const label = t.to === this.me ? `Offer from ${name(t.from)}` : t.from === this.me ? `Your offer to ${name(t.to)}` : `${name(t.from)} → ${name(t.to)}`;
+        return h('button.trade-item', { type: 'button', class: t.to === this.me ? 'is-incoming' : '', onclick: () => viewTradeDialog(this, t) },
+          h('span.label', label, t.to === this.me ? h('span.badge.badge-new', 'answer') : null),
+          tradeSummary(this, t));
+      })) : h('p.faint.panel-empty', 'No open trades. Swap properties to complete your sets.'),
     ]);
   }
 
@@ -387,6 +405,7 @@ export class RoomView {
               h('span.prop-name', map.tiles[i].name),
               game.tiles[i].level ? h('span.prop-level', game.tiles[i].level === 5 ? '★' : '▮'.repeat(game.tiles[i].level)) : null)));
         })) : h('p.faint.panel-empty', 'Click on a property to upgrade, downgrade or sell it.'),
+        h('button.btn.btn-bad.btn-sm.give-up', { onclick: () => this.confirmBankrupt() }, 'Declare bankruptcy'),
       ];
     });
   }
@@ -482,6 +501,8 @@ export class RoomView {
       h('span.status-text', mine ? 'Your turn' : `${current.name}'s turn`),
       h('span.clock', h('i.clock-bar')),
     );
+    this.status.classList.toggle('is-mine', Boolean(mine));
+    this.status.style.setProperty('--pc', current.appearance?.color ?? 'var(--m-accent)');
 
     renderIf(this.stage, key, () => {
       if (game.auction) return this.auctionStage();
@@ -490,7 +511,7 @@ export class RoomView {
           h('p', h('b.bad', `You owe ${money(map, myDebt)}`), h('br'), 'Downgrade, sell or mortgage properties to pay your debt.'),
           h('div.stage-buttons',
             h('button.btn', { onclick: () => this.propsPanel.scrollIntoView({ behavior: 'smooth' }) }, 'My properties'),
-            h('button.btn.btn-bad', { onclick: () => this.confirm('Declare bankruptcy?', 'Your properties go back to the bank and you are out of the game.', 'Go bankrupt', () => this.act({ type: 'bankrupt' })) }, 'Declare bankruptcy')));
+            h('button.btn.btn-bad', { onclick: () => this.confirmBankrupt() }, 'Declare bankruptcy')));
       }
       if (game.debts.length) {
         const names = [...new Set(game.debts.map(d => game.players.find(p => p.id === d.from)?.name))].join(', ');
@@ -652,6 +673,10 @@ export class RoomView {
     openModal({ title, className: 'modal-confirm', body: [h('p', text), h('div.modal-actions',
       h('button.btn', { onclick: closeModal }, 'Cancel'),
       h('button.btn.btn-bad', { onclick: () => { closeModal(); onYes(); } }, label))] });
+  }
+
+  confirmBankrupt() {
+    this.confirm('Declare bankruptcy?', 'Your properties go back to the bank (or to your teammate) and you are out of the game. You can keep watching.', 'Go bankrupt', () => this.act({ type: 'bankrupt' }));
   }
 
   leaveDialog() {

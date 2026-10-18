@@ -74,7 +74,9 @@ export class Board {
           h('span.prison-cell', h('span.prison-art', { html: artwork(tile.art ?? 'prison', CORNER_ART) }), h('span.prison-label', tile.name)),
         );
       } else {
-        el.append(h('span.corner-inner', h('span.corner-art', { html: artwork(tile.art ?? tile.corner, CORNER_ART) }), h('span.corner-label', tile.name)));
+        const pot = tile.corner === 'vacation' ? h('span.corner-pot', { hidden: true }) : null;
+        el.append(h('span.corner-inner', h('span.corner-art', { html: artwork(tile.art ?? tile.corner, CORNER_ART) }), h('span.corner-label', tile.name), pot));
+        return { el, tile, pot };
       }
       return { el, tile };
     }
@@ -87,24 +89,40 @@ export class Board {
     const longest = Math.max(...tile.name.split(/[\s-]+/).map(w => w.length));
     const name = h('span.tile-name', { '--chars': longest }, tile.name);
     if (/\s/.test(tile.name)) el.classList.add('has-space');
-    const card = h('span.tile-card', flag, h('span.tile-glow'), icon, name, levels, priceEl);
+    const owner = isOwnable(tile) ? h('span.tile-owner') : null;
+    const card = h('span.tile-card', flag, h('span.tile-glow'), icon, name, levels, priceEl, owner);
     el.append(card, h('span.tile-mortgage', 'Mortgaged'));
-    return { el, tile, priceEl, levels, price };
+    return { el, tile, priceEl, levels, price, owner };
   }
 
   /** Besitz, upgrades, hypotheken und figuren aus dem spielzustand übernehmen. */
-  update(game, participants = []) {
+  update(game, participants = [], { showPot = false } = {}) {
     if (!this.map) return;
     this.lastGame = game;
-    const colorOf = id => game?.players.find(p => p.id === id)?.appearance?.color ?? participants.find(p => p.id === id)?.appearance?.color ?? '#888';
+    const lookOf = id => game?.players.find(p => p.id === id)?.appearance ?? participants.find(p => p.id === id)?.appearance ?? { color: '#888', shape: 'blob' };
     this.tiles.forEach((t, i) => {
       const state = game?.tiles?.[i] ?? null;
       const owned = Boolean(state?.owner);
       t.el.classList.toggle('is-owned', owned);
       t.el.classList.toggle('is-mortgaged', Boolean(state?.mortgaged));
-      t.el.classList.toggle('is-turn-tile', Boolean(game && game.players.find(p => p.id === game.turn.playerId)?.position === i));
-      if (owned) t.el.style.setProperty('--owner', colorOf(state.owner));
-      else t.el.style.removeProperty('--owner');
+      if (owned) {
+        const look = lookOf(state.owner);
+        t.el.style.setProperty('--owner', look.color);
+        t.el.style.setProperty('--owner-ink', inkOn(look.color));
+        const key = `${look.shape}:${look.color}`;
+        if (t.owner && t.owner.dataset.look !== key) {
+          t.owner.dataset.look = key;
+          t.owner.innerHTML = pawnSvg(look.shape, look.color);
+        }
+      } else {
+        t.el.style.removeProperty('--owner');
+      }
+      if (t.pot) {
+        const pot = game?.vacationPot ?? 0;
+        t.pot.hidden = !(showPot || pot > 0);
+        const label = `Pot: ${money(this.map, pot)}`;
+        if (t.pot.textContent !== label) t.pot.textContent = label;
+      }
       if (t.priceEl) {
         const label = owned && !state.mortgaged && state.rent ? money(this.map, state.rent) : t.price;
         if (t.priceEl.textContent !== label) t.priceEl.textContent = label;
@@ -206,8 +224,6 @@ export class Board {
           void el.offsetWidth;
           el.classList.add('hop');
           this.layoutPawns(this.lastGame);
-          this.tiles[pos]?.el.classList.add('is-passed');
-          setTimeout(() => this.tiles[pos]?.el.classList.remove('is-passed'), 380);
           await wait(STEP_MS);
         }
       } else {
@@ -218,18 +234,9 @@ export class Board {
         await wait(event.mode === 'prison' ? 380 : 520);
         el.classList.remove('jump', 'warp');
       }
-      this.flash(event.to);
     } finally {
       this.moving.delete(event.playerId);
     }
-  }
-
-  flash(index) {
-    const el = this.tiles[index]?.el;
-    if (!el) return;
-    el.classList.remove('is-landed');
-    void el.offsetWidth;
-    el.classList.add('is-landed');
   }
 
   /** Felder hervorheben (z.b. eigene grundstücke beim handeln). */
