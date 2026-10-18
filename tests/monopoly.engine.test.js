@@ -24,7 +24,8 @@ test('die lacedaemon-map hat 40 felder und die vorgegebenen namen', () => {
   assert.equal(map.tiles.length, 40);
   assert.equal(map.tiles[0].name, '=collect');
   assert.equal(map.tiles[19].name, 'Debait');
-  assert.equal(map.tiles[39].name, 'securo');
+  assert.equal(map.tiles[39].name, 'Lace');
+  assert.equal(map.tiles[37].name, 'Daemon');
   assert.equal(map.tiles[35].name, 'OpenBSD');
   assert.equal(map.tiles[24 + 2].name, 'slot');
   assert.equal(map.tiles[29].name, 'casino');
@@ -155,7 +156,7 @@ test('schulden, liquidation und bankrott', () => {
   g.tiles[37].owner = 'a';
   g.tiles[1].owner = 'b';
   b.money = 100;
-  // b landet direkt auf securo
+  // b landet direkt auf Lace
   g.turn = g.freshTurn('b', 2);
   b.position = 35;
   rig(g, [2, 2]);

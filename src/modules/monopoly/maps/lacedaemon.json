@@ -76,9 +76,9 @@
     { "type": "city", "name": "The Good", "group": "england", "price": 320, "house": 200, "rent": [30, 140, 440, 1000, 1200, 1400] },
     { "type": "airport", "name": "OpenBSD", "price": 200, "rent": [25, 50, 100, 200], "icon": "openbsd" },
     { "type": "surprise", "name": "Surprise" },
-    { "type": "city", "name": "lacedaemon", "group": "usa", "price": 360, "house": 200, "rent": [35, 180, 550, 1150, 1350, 1525] },
+    { "type": "city", "name": "Daemon", "group": "usa", "price": 360, "house": 200, "rent": [35, 180, 550, 1150, 1350, 1525] },
     { "type": "tax", "name": "Server Bill", "amount": 75, "icon": "bill" },
-    { "type": "city", "name": "securo", "group": "usa", "price": 400, "house": 200, "rent": [50, 200, 600, 1400, 1700, 2000] }
+    { "type": "city", "name": "Lace", "group": "usa", "price": 400, "house": 200, "rent": [50, 200, 600, 1400, 1700, 2000] }
   ],
   "cards": {
     "treasure": [
@@ -112,7 +112,7 @@
       { "text": "It’s time to redesign your infrastructure. Pay 25🐉 per upgrade and 100🐉 per full-stack you own.", "effect": { "type": "repairs", "perHouse": 25, "perHotel": 100 } },
       { "text": "Pay Server tax of 20🐉.", "effect": { "type": "money", "amount": -20 } },
       { "text": "Take a trip to Windows.", "effect": { "type": "moveTo", "tile": 5 } },
-      { "text": "Have an adventure to securo.", "effect": { "type": "moveTo", "tile": 39 } },
+      { "text": "Have an adventure to Lace.", "effect": { "type": "moveTo", "tile": 39 } },
       { "text": "You lost roulette. Pay each player 50🐉.", "effect": { "type": "payEach", "amount": 50 } },
       { "text": "You have a new investment. Receive 150🐉.", "effect": { "type": "money", "amount": 150 } },
       { "text": "From a Blitzcheck you get 100🐉.", "effect": { "type": "money", "amount": 100 } },
