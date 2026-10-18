@@ -43,7 +43,7 @@ function openConnection(name) {
       hello: ({ identity }) => {
         ctx.identity = identity;
         resolve();
-        // nach einem verbindungsabbruch wieder in den raum
+        // nach einem verbindungsabbruch wieder in den raum (der sitzplatz bleibt erhalten)
         if (ctx.view) ctx.view.join().catch(() => {});
       },
       state: message => ctx.view?.receive(message),
@@ -94,11 +94,13 @@ async function landing() {
   const play = async () => {
     if (!(await ensureName())) return;
     const { roomId } = await ctx.net.ask('room:quick');
+    ctx.seatNext = roomId;
     location.hash = `#/room/${roomId}`;
   };
   const createPrivate = async () => {
     if (!(await ensureName())) return;
     const { roomId } = await ctx.net.ask('room:create', { settings: { isPrivate: true } });
+    ctx.seatNext = roomId;
     location.hash = `#/room/${roomId}`;
   };
 
@@ -174,7 +176,10 @@ async function enterRoom(roomId) {
   ctx.view = view;
   root.replaceChildren(view.el);
   try {
-    await view.join();
+    // über play/create direkt hinsetzen, über einen link erst zuschauen
+    const asPlayer = ctx.seatNext === roomId;
+    ctx.seatNext = null;
+    await view.join({ asPlayer });
   } catch (error) {
     ctx.view = null;
     view.destroy();

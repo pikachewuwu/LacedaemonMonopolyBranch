@@ -91,9 +91,10 @@ export class RoomView {
     this.renderChat();
   }
 
-  async join() {
+  /** Wer über einen link kommt, schaut erst zu und wählt dann name und figur. */
+  async join({ asPlayer = false } = {}) {
     const appearance = this.ctx.appearance;
-    const reply = await this.ctx.net.ask('room:join', { roomId: this.roomId, appearance });
+    const reply = await this.ctx.net.ask('room:join', { roomId: this.roomId, appearance, spectator: !asPlayer });
     return reply.role;
   }
 

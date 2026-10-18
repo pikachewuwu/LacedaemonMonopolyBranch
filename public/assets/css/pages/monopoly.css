@@ -551,6 +551,8 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 
 @media (max-width: 1280px) {
   .room-layout { grid-template-columns: 250px minmax(0, 1fr) 300px; gap: 10px; padding: 10px; }
+  .brand-mini { font-size: .8rem; letter-spacing: .08em; gap: 8px; }
+  .side-tools .icon-btn { width: 32px; }
 }
 @media (max-width: 1050px) {
   body.in-room { overflow: auto; }
