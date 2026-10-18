@@ -615,7 +615,7 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 @keyframes ring { 0% { transform: translate(-50%, -50%) scale(.3); opacity: .8; } 100% { transform: translate(-50%, -50%) scale(4); opacity: 0; } }
 
 .fx-seal {
-  --c: #fff; position: absolute; left: 50%; top: 50%; display: flex; align-items: center; gap: 1.4cqw;
+  --c: #fff; position: absolute; left: 50%; top: 21%; display: flex; align-items: center; gap: 1.4cqw;
   padding: 1.4cqw 2.6cqw 1.4cqw 1.4cqw; border-radius: 99px; background: rgba(10, 13, 20, .92);
   border: .45cqw solid var(--c); box-shadow: 0 0 3cqw color-mix(in srgb, var(--c) 45%, transparent), 0 1.6cqw 3cqw rgba(0,0,0,.5); color: #fff; white-space: nowrap;
 }
@@ -744,3 +744,12 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 .log-name { font-weight: 700; }
 .log-money { color: #ffd45c; font-weight: 700; }
 .center-log .log-name, .center-log .log-money { font-weight: 700; }
+
+/* ---- zeitgeber und sekunden in der auktion ---- */
+.auction-timer i { transition: width .2s linear; }
+.auction-left { font: 700 .9rem var(--m-font-ui); color: var(--m-muted); text-align: center; margin-top: -4px; font-variant-numeric: tabular-nums; }
+
+/* ---- kopf-icons deutlicher, ausgang mit warnfarbe beim hover ---- */
+.mono-root .icon-btn { color: var(--m-text); background: color-mix(in srgb, var(--m-panel-3) 72%, transparent); border-color: var(--m-border); }
+.mono-root .icon-btn:hover { background: var(--m-panel-3); color: var(--m-text); border-color: color-mix(in srgb, var(--m-accent) 60%, var(--m-border)); }
+.mono-root .icon-btn[aria-label="Leave room"]:hover { color: var(--m-bad); border-color: color-mix(in srgb, var(--m-bad) 70%, var(--m-border)); background: color-mix(in srgb, var(--m-bad) 18%, var(--m-panel-3)); }

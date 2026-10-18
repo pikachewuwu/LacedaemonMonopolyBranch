@@ -620,11 +620,14 @@ export class RoomView {
     const bidder = a.bidderId ? game.players.find(p => p.id === a.bidderId) : null;
     const me = this.myPlayer;
     const bid = amount => this.act({ type: 'bid', amount });
+    const left = Math.max(0, (a.endsAt ?? 0) - (Date.now() + this.offset));
+    const span = a.ms ?? 10_000;
     const canBid = me && !me.bankrupt;
     return h('div.auction', { '--group': tile.type === 'city' ? map.groups[tile.group].color : 'var(--m-accent)' },
       h('div.auction-head', h('span.label', h('span.btn-icon', { html: UI.gavel }), 'Auction'), h('b', tile.name)),
       h('div.auction-bid', h('span.num', money(map, a.bid)), h('span.faint', bidder ? `by ${bidder.name}` : 'no bids yet')),
-      h('div.auction-timer', h('i')),
+      h('div.auction-timer', h('i', { style: { width: `${Math.min(100, (left / span) * 100)}%` } })),
+      h('div.auction-left', `${Math.ceil(left / 1000)}s`),
       canBid ? h('div.stage-buttons', [2, 10, 100].map(step =>
         h('button.btn', { disabled: me.money < a.bid + step || bidder?.id === me.id, onclick: () => bid(a.bid + step) }, `+${money(map, step)}`))) : null,
     );
@@ -735,8 +738,13 @@ export class RoomView {
     }
     const auctionBar = this.stage.querySelector('.auction-timer i');
     if (auctionBar && room.game.auction) {
-      const left = Math.max(0, room.game.auction.endsAt - now);
-      auctionBar.style.width = `${(left / 10_000) * 100}%`;
+      const auction = room.game.auction;
+      const left = Math.max(0, auction.endsAt - now);
+      const span = auction.ms ?? 10_000;
+      auctionBar.style.width = `${Math.min(100, (left / span) * 100)}%`;
+      const label = this.stage.querySelector('.auction-left');
+      const text = `${Math.ceil(left / 1000)}s`;
+      if (label && label.textContent !== text) label.textContent = text;
     }
   }
 

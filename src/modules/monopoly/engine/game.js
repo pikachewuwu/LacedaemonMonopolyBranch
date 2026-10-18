@@ -334,7 +334,7 @@ export class MonopolyGame {
   startAuction(index, startedBy) {
     const tile = this.map.tiles[index];
     if (this.tiles[index].owner !== null) throw new GameError('Cannot auction owned property');
-    this.auction = { tile: index, bid: 0, bidderId: null, endsAt: this.now() + AUCTION_MS, startedBy, bids: 0 };
+    this.auction = { tile: index, bid: 0, bidderId: null, endsAt: this.now() + AUCTION_MS, ms: AUCTION_MS, startedBy, bids: 0 };
     this.stats.auctions++;
     this.emit({ type: 'auction', tile: index });
     this.say(`${tile.name} goes to auction`, 'auction');

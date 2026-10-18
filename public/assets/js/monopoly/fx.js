@@ -132,7 +132,7 @@ export class Fx {
    */
   async trade(map, a, b, give, take) {
     if (reduced()) return;
-    const D = 2600;
+    const D = 4400;
     const portal = h('img.fx-portal', { src: LOGO, alt: '' });
     const glow = h('span.fx-handshake-glow', { style: { left: '50%', top: '40%' } });
     const fromA = this.parcel(map, give, a.color);
@@ -161,6 +161,6 @@ export class Fx {
     fromB.animate(travel(76, 24, 74), { duration: D, easing: 'ease-in-out', fill: 'both' });
     glow.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: 0, offset: 0.45 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: 0.55 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.4)', offset: 0.75 }, { opacity: 0 }],
       { duration: D, fill: 'both' });
-    await wait(900);
+    await wait(1600);
   }
 }

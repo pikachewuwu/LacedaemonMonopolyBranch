@@ -355,6 +355,13 @@ test('ungültige zahlen aus dem client werden abgelehnt', () => {
   assert.throws(() => g.act('a', { type: 'toString' }), /Unknown action/);
 });
 
+test('auktion kennt ihre dauer für die anzeige', () => {
+  const g = newGame({ auction: true });
+  g.startAuction(1, g.player('a').id);
+  assert.equal(g.auction.ms, 10_000);
+  assert.ok(g.auction.endsAt > 0);
+});
+
 test('startgeld ist frei wählbar', () => {
   const g = newGame({ startingCash: 777 });
   assert.equal(g.player('a').money, 777);
