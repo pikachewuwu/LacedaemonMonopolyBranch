@@ -1,0 +1,266 @@
+.topbar {
+    border-bottom: 1px solid var(--border);
+    background: #0e151e;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.topbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    min-height: 82px;
+}
+
+.brand {
+    font-weight: 750;
+    font-size: 1.32rem;
+    letter-spacing: .2em;
+    white-space: nowrap;
+}
+
+.brand:hover {
+    color: var(--text);
+}
+
+.nav {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    flex: 1;
+}
+
+.nav a {
+    color: #b6c2d0;
+    padding: 14px 12px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    font-size: .91rem;
+}
+
+.nav a:hover {
+    color: #fff;
+}
+
+.nav a.active {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.account-label {
+    margin-left: auto;
+    font-size: .79rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-left: 6px;
+}
+
+.mobile-menu-button {
+    display: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    background: transparent;
+    padding: 7px 12px;
+}
+
+.panel {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--panel);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.stat-card {
+    padding: 24px;
+}
+
+.stat-card-label {
+    color: var(--muted);
+    font-size: .87rem;
+}
+
+.stat-card-number {
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -.04em;
+    font-weight: 650;
+    margin-top: 12px;
+}
+
+.stat-card-foot {
+    color: var(--muted);
+    font-size: .78rem;
+    margin-top: 13px;
+}
+
+.leaderboard-table {
+    overflow: hidden;
+}
+
+.leaderboard-head,
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 75px minmax(0, 1fr) 200px;
+    gap: 16px;
+    align-items: center;
+    padding: 17px 24px;
+}
+
+.leaderboard-head {
+    background: var(--panel-soft);
+    color: var(--muted);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+
+.leaderboard-row {
+    border-top: 1px solid var(--border);
+    min-height: 67px;
+}
+
+.leaderboard-row:hover {
+    background: #192433;
+}
+
+.rank {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.player-name {
+    font-weight: 600;
+}
+
+.balance {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    padding: 12px 18px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.button-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-dark);
+}
+
+.button-primary:hover {
+    color: #000;
+    background: #e3bc88;
+}
+
+.label {
+    display: block;
+    font-size: .84rem;
+    color: var(--muted);
+    margin-bottom: 7px;
+}
+
+.form-control {
+    width: 100%;
+    background: #0e1721;
+    border: 1px solid var(--border);
+    padding: 11px 13px;
+    border-radius: 7px;
+}
+
+.form-control:focus {
+    border-color: var(--accent);
+}
+
+@media(max-width:1050px) {
+    .account-label {
+        display: none;
+    }
+
+    .topbar-inner {
+        gap: 18px;
+    }
+
+    .nav a {
+        padding-inline: 8px;
+        font-size: .84rem;
+    }
+}
+
+@media(max-width:780px) {
+    .topbar-inner {
+        min-height: 72px;
+        flex-wrap: wrap;
+        padding-block: 12px;
+    }
+
+    .brand {
+        font-size: 1.08rem;
+    }
+
+    .mobile-menu-button {
+        display: block;
+        margin-left: auto;
+    }
+
+    .nav {
+        display: none;
+        width: 100%;
+        flex: 0 0 100%;
+        flex-direction: column;
+        gap: 0;
+        padding-bottom: 7px;
+    }
+
+    .nav.nav-open {
+        display: flex;
+    }
+
+    .nav a {
+        padding: 11px 6px;
+    }
+
+    .nav a.active {
+        border-bottom-color: transparent;
+        border-left: 2px solid var(--accent);
+        padding-left: 10px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .leaderboard-head,
+    .leaderboard-row {
+        grid-template-columns: 48px minmax(0, 1fr) 128px;
+        gap: 7px;
+        padding: 14px 11px;
+        font-size: .82rem;
+    }
+
+    .leaderboard-head {
+        font-size: .65rem;
+    }
+}

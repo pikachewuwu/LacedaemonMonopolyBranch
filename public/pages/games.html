@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a1017">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/pages/catalog.css">
+  <title>Lacedaemon | Spiele</title>
+</head>
+<body>
+  <div data-site-header></div>
+  <main class="container">
+    <section class="page-heading"><p class="eyebrow">Community-Liste</p><h1>Spiele</h1><p>Unsere Games und persönlichen Bewertungen – von der Merkliste bis zum abgeschlossenen Spiel.</p></section>
+    <section class="catalog-grid">
+      <div>
+        <div class="section-heading"><h2>Alle Einträge</h2><span class="muted" id="catalog-count">Lade …</span></div>
+        <div class="catalog-results" id="catalog-list"><p class="muted">Einträge werden geladen …</p></div>
+      </div>
+      <aside class="panel form-panel">
+        <h2>Bewertung eintragen</h2>
+        <p>Ein Name kann pro Titel eine Bewertung abgeben oder aktualisieren. Noch keine Anmeldung eingerichtet.</p>
+        <form id="catalog-form" class="form-fields">
+          <div><label class="label" for="title">Titel</label><input class="form-control" id="title" name="title" maxlength="120" required placeholder="Titel eingeben"></div>
+          <div><label class="label" for="memberName">Dein Anzeigename</label><input class="form-control" id="memberName" name="memberName" maxlength="40" minlength="2" required placeholder="Discord-Name (Demo)"></div>
+          <div><label class="label" for="score">Bewertung</label><select class="form-control" id="score" name="score"><option value="1" >1 / 10</option><option value="2" >2 / 10</option><option value="3" >3 / 10</option><option value="4" >4 / 10</option><option value="5" >5 / 10</option><option value="6" >6 / 10</option><option value="7" >7 / 10</option><option value="8" selected>8 / 10</option><option value="9" >9 / 10</option><option value="10" >10 / 10</option></select></div>
+          <div><label class="label" for="status">Status</label><select class="form-control" id="status" name="status"><option value="planned">Merkliste</option><option value="ongoing">Wird gespielt</option><option value="completed">Gespielt</option></select></div>
+          <button type="submit" class="button button-primary">Speichern</button>
+          <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </aside>
+    </section>
+    <p class="notice" style="margin-top:32px">Prototyp ohne Discord-Login: Anzeigenamen sind noch nicht verifiziert. Vor öffentlicher Nutzung muss Schreiben an eine echte Anmeldung und Berechtigungsprüfung gebunden werden.</p>
+  </main>
+  <script type="module" src="/assets/js/pages/games.js"></script>
+</body>
+</html>

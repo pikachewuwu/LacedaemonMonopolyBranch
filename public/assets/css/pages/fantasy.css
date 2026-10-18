@@ -1,0 +1,6 @@
+.future-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+.future-card { padding: 25px; }
+.future-number { color: var(--accent); font-size: .72rem; letter-spacing: .1em; font-weight: 700; }
+.future-card h2 { margin: 18px 0 10px; font-size: 1.2rem; }
+.future-card p { color: var(--muted); font-size: .89rem; margin: 0; }
+@media(max-width:760px) { .future-grid { grid-template-columns: 1fr; } }

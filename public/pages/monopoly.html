@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0a1017">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/pages/monopoly.css">
+    <title>Lacedaemon | Monopoly</title>
+</head>
+
+<body>
+    <div data-site-header></div>
+    <main class="container">
+        <section class="page-heading">
+            <p class="eyebrow">Geplantes Modul</p>
+            <h1>Lacedaemon Monopoly</h1>
+            <p>Custom Monopoly Map und ggf. Editor, so wie wir es wollen mit Server währung etc</p>
+        </section>
+        <section aria-label="Projektübersicht" class="stats-grid monopoly-buttons">
+            <a href="#" class="panel stat-card"> <!--href ist jetzt leer, da würde später kommen was nach click passieren soll-->
+
+                <div class="stat-card-number" id="new-monopoly-game"  style="color: gold;">Neues Spiel starten</div> <!--css anpassungen etweder inline mit style="..." für individuelle anpassungen, oder global über die /css/pages/xxx.css datei-->
+                
+            </a>
+            <a href="#" class="panel stat-card">
+
+                <div class="stat-card-number" id="customize-map">Map anpassen</div>
+
+            </a>
+
+        </section>
+        <p class="notice" style="margin-top:30px">Nächster Schritt: Discord OAuth2, Businesslogik, serverseitige
+            Auswertung, Economy anbindung etc.</p>
+
+    </main>
+    <script type="module" src="/assets/js/pages/monopoly.js"></script> <!-- welche datei die Frontend! logik speichert-->
+</body>
+
+</html>

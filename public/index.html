@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a1017">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <title>Lacedaemon | Dashboard</title>
+  <link rel="icon" type="image/jpeg" href="/assets/img/lacedaemon-favicon.jpg">
+</head>
+
+<body>
+  <div data-site-header></div>
+  <main class="container">
+    <section class="page-heading">
+      <p class="eyebrow">Community Hub</p>
+      <h1>Willkommen bei <span style="color:var(--accent)">Lacedaemon</span></h1>
+    </section>
+    <section aria-label="Projektübersicht" class="stats-grid">
+      <a class="panel stat-card" href="/pages/monopoly.html">
+        <div class="stat-card-label">Monopoly</div>
+        <div class="stat-card-number">Version 1</div>
+        <div class="stat-card-foot">Jay kann machen was er will</div>
+      </a>
+      <a class="panel stat-card" href="/pages/anime.html">
+        <div class="stat-card-label">Anime-Liste</div>
+        <div class="stat-card-number" id="anime-count">–</div>
+        <div class="stat-card-foot">Anime Liste, dann muss patrick nicht mehr sein txt file benutzen</div>
+      </a>
+      <a class="panel stat-card" href="/pages/games.html">
+        <div class="stat-card-label">Spiele-Liste</div>
+        <div class="stat-card-number" id="games-count">–</div>
+        <div class="stat-card-foot">Anstatt immer in debate Room steam links zu posten können wir hier gut sortieren, was wir spielen wollen und was uns gefallen hat</div>
+      </a>
+      <a class="panel stat-card" href="/pages/fantasy.html">
+        <div class="stat-card-label">Fantasy League</div>
+        <div class="stat-card-number">Season 1</div>
+        <div class="stat-card-foot">Ich finde die Idee toll!</div>
+      </a>
+    </section>
+    <section aria-labelledby="leaderboard-title">
+      <div class="section-heading">
+        <h2 id="leaderboard-title">Drachen Leaderboard</h2><a href="/pages/leaderboard.html">Zur vollständigen Rangliste
+          →</a>
+      </div>
+      <div class="panel leaderboard-table">
+        <div class="leaderboard-head"><span>Platz</span><span>Mitglied</span><span
+            style="text-align:right">Drachen</span></div>
+        <div id="leaderboard-rows">
+          <p class="empty-message">Wird geladen …</p>
+        </div>
+      </div>
+      <p class="muted" id="leaderboard-kind">Beispieldaten – live Discord-Anbindung folgt</p>
+      <p class="error-message" id="page-message" role="alert"></p>
+    </section>
+  </main>
+  <script type="module" src="/assets/js/pages/dashboard.js"></script>
+</body>
+
+</html>
