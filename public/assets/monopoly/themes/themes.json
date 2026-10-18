@@ -1,0 +1,10 @@
+{
+  "themes": [
+    { "id": "lacedaemon", "name": "Lacedaemon Night", "line": "Midnight blue and dragon gold. The house style.", "swatch": ["#070b11", "#131c27", "#d6ad77"] },
+    { "id": "amethyst", "name": "Amethyst", "line": "Deep violet with a soft glow, like the classic.", "swatch": ["#130f1d", "#29203f", "#8c6cff"], "fonts": "https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&family=Yanone+Kaffeesatz:wght@500;600;700&display=swap" },
+    { "id": "blurple", "name": "Blurple", "line": "Feels like home: the colours of the Discord client.", "swatch": ["#1e1f22", "#2b2d31", "#5865f2"], "fonts": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@500;600;700;800&family=Noto+Sans+Display:wght@600;700&display=swap" },
+    { "id": "overworld", "name": "Overworld", "line": "Grass, dirt and stone, in daylight. Pixel font included.", "swatch": ["#7cc0f2", "#6b4a2b", "#5fbf3a"], "fonts": "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;600;700&family=VT323&display=swap" },
+    { "id": "backrooms", "name": "The Backrooms", "line": "Mono-yellow wallpaper, damp carpet, buzzing lights.", "swatch": ["#2a2416", "#c9b458", "#fff6b0"], "fonts": "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Special+Elite&display=swap" },
+    { "id": "marble", "name": "Marble", "line": "Sparta at noon: white marble, gold leaf, terracotta.", "swatch": ["#efe9df", "#ffffff", "#b4441d"] }
+  ]
+}

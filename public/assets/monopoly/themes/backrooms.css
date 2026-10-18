@@ -1,0 +1,49 @@
+.mono-root[data-theme="backrooms"] {
+  --m-bg: #2a2416;
+  --m-bg-art: repeating-linear-gradient(90deg, rgba(255, 246, 176, .04) 0 2px, transparent 2px 46px), radial-gradient(900px 500px at 50% 0%, rgba(255, 246, 176, .14), transparent 70%);
+  --m-panel: rgba(56, 48, 26, .88);
+  --m-panel-2: #463c21;
+  --m-panel-3: #574b2a;
+  --m-border: rgba(255, 246, 176, .18);
+  --m-text: #fff6d0;
+  --m-muted: #d8c98a;
+  --m-faint: #a39566;
+  --m-accent: #f2df73;
+  --m-accent-2: #fff6b0;
+  --m-accent-ink: #2a2416;
+  --m-good: #a6d65a;
+  --m-bad: #ff7a5c;
+  --m-warn: #ffd34d;
+  --m-board-bg: #c9b458;
+  --m-board-art:
+    repeating-linear-gradient(90deg, rgba(120, 100, 30, .18) 0 .3cqw, transparent .3cqw 3.2cqw),
+    radial-gradient(circle at 50% 30%, #e8d67c, #c9b458 55%, #a8963f);
+  --m-board-edge: #6e6131;
+  --m-tile-bg: #d8c46a;
+  --m-tile-bg-2: #3a3220;
+  --m-tile-text: #2a2416;
+  --m-tile-radius: 0px;
+  --m-tile-tint: 32%;
+  --m-corner-bg: #cdb95e;
+  --m-gap: 2px;
+  --m-radius: 6px;
+  --m-font-ui: 'Courier Prime', 'Courier New', monospace;
+  --m-font-display: 'Special Elite', 'Courier Prime', monospace;
+  --m-font-tile: 'Courier Prime', 'Courier New', monospace;
+  --m-logo-gradient: linear-gradient(180deg, #fffbe0, #f2df73);
+}
+.mono-root[data-theme="backrooms"] .tile-name { text-shadow: none; font-weight: 700; font-size: calc(var(--S) * .155); }
+.mono-root[data-theme="backrooms"] .tile-price { background: rgba(42, 36, 22, .15); border-color: rgba(42, 36, 22, .25); }
+.mono-root[data-theme="backrooms"] .tile-treasure .tile-name { color: #7a4a12; }
+.mono-root[data-theme="backrooms"] .tile-surprise .tile-name { color: #7a2a5a; }
+.mono-root[data-theme="backrooms"] .corner-label { color: #2a2416 !important; }
+.mono-root[data-theme="backrooms"] .board-center { color: #2a2416; }
+.mono-root[data-theme="backrooms"] .stage-wait, .mono-root[data-theme="backrooms"] .center-log { color: #4d4326; }
+.mono-root[data-theme="backrooms"] .center-log li:last-child { color: #2a2416; }
+.mono-root[data-theme="backrooms"] .center-brand { opacity: .14; }
+.mono-root[data-theme="backrooms"] .center-logo { -webkit-background-clip: initial; background: none; color: #2a2416; }
+.mono-root[data-theme="backrooms"] .board::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: rgba(255, 252, 220, .06); animation: flicker 7s steps(1) infinite;
+}
+@keyframes flicker { 0%, 100% { opacity: 0; } 41% { opacity: 1; } 42% { opacity: 0; } 43% { opacity: .8; } 44% { opacity: 0; } }

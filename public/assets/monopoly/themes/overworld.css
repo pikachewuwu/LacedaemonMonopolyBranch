@@ -1,0 +1,57 @@
+.mono-root[data-theme="overworld"] {
+  --m-bg: #7cc0f2;
+  --m-bg-art: linear-gradient(180deg, #6db3ef 0%, #a9d8f7 55%, #d8f0ff 100%);
+  --m-panel: rgba(44, 36, 26, .86);
+  --m-panel-2: #3b3024;
+  --m-panel-3: #4d3f2f;
+  --m-border: rgba(0, 0, 0, .5);
+  --m-text: #fbf6ec;
+  --m-muted: #d9cdb6;
+  --m-faint: #a8987c;
+  --m-accent: #5fbf3a;
+  --m-accent-2: #9be27a;
+  --m-accent-ink: #10230a;
+  --m-good: #5fbf3a;
+  --m-bad: #ff5a4f;
+  --m-warn: #ffc73f;
+  --m-board-bg: #5fa53a;
+  --m-board-art:
+    linear-gradient(45deg, rgba(0,0,0,.06) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.06) 75%) 0 0 / 4cqw 4cqw,
+    linear-gradient(45deg, rgba(0,0,0,.06) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.06) 75%) 2cqw 2cqw / 4cqw 4cqw,
+    radial-gradient(circle at 50% 45%, #79c64f, #4f9330 80%);
+  --m-board-edge: #3b2a19;
+  --m-tile-bg: #7a7a7a;
+  --m-tile-bg-2: #2c241a;
+  --m-tile-text: #ffffff;
+  --m-tile-radius: 0px;
+  --m-tile-tint: 30%;
+  --m-corner-bg: #8a6a45;
+  --m-gap: 3px;
+  --m-radius: 4px;
+  --m-shadow: 0 10px 0 rgba(0, 0, 0, .25);
+  --m-font-ui: 'Pixelify Sans', 'VT323', monospace;
+  --m-font-display: 'Pixelify Sans', monospace;
+  --m-font-tile: 'VT323', 'Pixelify Sans', monospace;
+  --m-logo-gradient: linear-gradient(180deg, #ffffff 0%, #e9e9e9 50%, #9e9e9e 100%);
+}
+.mono-root[data-theme="overworld"] .tile-card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--group) 30%, transparent), transparent 60%),
+    repeating-conic-gradient(#7d7d7d 0 25%, #6f6f6f 0 50%) 0 0 / calc(var(--S) * .25) calc(var(--S) * .25);
+}
+.mono-root[data-theme="overworld"] .edge-top .tile-card {
+  background:
+    linear-gradient(0deg, color-mix(in srgb, var(--group) 30%, transparent), transparent 60%),
+    repeating-conic-gradient(#7d7d7d 0 25%, #6f6f6f 0 50%) 0 0 / calc(var(--S) * .25) calc(var(--S) * .25);
+}
+.mono-root[data-theme="overworld"] .tile-name { font-size: calc(var(--S) * .22); font-weight: 400; text-shadow: 2px 2px 0 rgba(0,0,0,.6); }
+.mono-root[data-theme="overworld"] .tile-price { border-radius: 0; font-size: calc(var(--S) * .17); font-weight: 400; }
+.mono-root[data-theme="overworld"] .tile-flag { border-radius: 0; }
+.mono-root[data-theme="overworld"] .btn, .mono-root[data-theme="overworld"] .input, .mono-root[data-theme="overworld"] .panel, .mono-root[data-theme="overworld"] .modal { border-radius: 2px; border-width: 2px; }
+.mono-root[data-theme="overworld"] .btn-primary { background: #5fbf3a; box-shadow: inset 0 -4px 0 #3a7f22, inset 0 3px 0 #9be27a; color: #10230a; }
+.mono-root[data-theme="overworld"] .btn-primary:hover:not(:disabled) { background: #6ccd46; color: #10230a; }
+.mono-root[data-theme="overworld"] .center-logo { -webkit-background-clip: initial; background: none; color: #fff; text-shadow: .5cqw .5cqw 0 #3a3a3a; }
+.mono-root[data-theme="overworld"] .board-center { opacity: 1; }
+.mono-root[data-theme="overworld"] .center-brand { opacity: .22; }
+.mono-root[data-theme="overworld"] .logo-main { color: #fff; background: none; -webkit-background-clip: initial; text-shadow: 4px 4px 0 #3a3a3a; letter-spacing: .04em; }
+.mono-root[data-theme="overworld"] .die-face { border-radius: 6%; }

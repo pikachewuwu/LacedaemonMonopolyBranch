@@ -425,7 +425,7 @@ export class Room {
     if (!config) return [];
     return [...this.debtSince.entries()]
       .filter(([id]) => !this.game.player(id)?.isBot)
-      .map(([id, since]) => ({ playerId: id, deadline: since + config.debtGraceMs }));
+      .map(([id, since]) => ({ playerId: id, since, deadline: since + config.debtGraceMs }));
   }
 
   grantTime(id) {
@@ -573,6 +573,7 @@ export class Room {
       game: this.game ? this.game.snapshot(role === 'player' ? viewerId : null) : null,
       clock: this.clock && config ? {
         playerId: this.clock.playerId,
+        startedAt: this.clock.startedAt + this.clock.pausedMs,
         deadline: this.turnDeadline(),
         graceEndsAt: this.clock.startedAt + this.clock.pausedMs + config.graceMs + this.clock.grantedMs,
         paused: this.clock.pausedAt !== null,

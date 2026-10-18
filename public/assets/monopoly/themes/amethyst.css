@@ -1,0 +1,37 @@
+.mono-root[data-theme="amethyst"] {
+  --m-bg: #130f1d;
+  --m-bg-art: radial-gradient(1000px 600px at 50% -10%, #2a1e4a 0%, transparent 60%), radial-gradient(800px 600px at 0% 100%, #1f1433 0%, transparent 60%);
+  --m-panel: rgba(28, 25, 38, .82);
+  --m-panel-2: #1c1926;
+  --m-panel-3: #29203f;
+  --m-border: rgba(166, 152, 200, .16);
+  --m-text: #edeaf3;
+  --m-muted: #a698c8;
+  --m-faint: #7a6f96;
+  --m-accent: #8c6cff;
+  --m-accent-2: #b9a6ff;
+  --m-accent-ink: #ffffff;
+  --m-good: #30b833;
+  --m-bad: #f44336;
+  --m-warn: #ff9800;
+  --m-board-bg: #18142a;
+  --m-board-art: radial-gradient(circle at 50% 45%, rgba(102, 71, 224, .28), transparent 60%);
+  --m-board-edge: #0f0c18;
+  --m-tile-bg: #221c36;
+  --m-tile-bg-2: #1a1529;
+  --m-tile-text: #f3f0fa;
+  --m-tile-radius: 10px;
+  --m-tile-tint: 26%;
+  --m-corner-bg: #241d3a;
+  --m-gap: 4px;
+  --m-font-ui: 'Nunito', 'Segoe UI', sans-serif;
+  --m-font-display: 'Yanone Kaffeesatz', 'Nunito', sans-serif;
+  --m-font-tile: 'Yanone Kaffeesatz', 'Arial Narrow', sans-serif;
+  --m-logo-gradient: linear-gradient(180deg, #ffffff 0%, #cdbfff 50%, #8c6cff 100%);
+}
+.mono-root[data-theme="amethyst"] .btn-primary { background: linear-gradient(180deg, #8c47e0, #6647e0); color: #fff; }
+.mono-root[data-theme="amethyst"] .btn-primary:hover:not(:disabled) { background: linear-gradient(180deg, #9a5bf0, #7353f0); color: #fff; }
+.mono-root[data-theme="amethyst"] .board-grid { padding: 4px; }
+.mono-root[data-theme="amethyst"] .tile { border-radius: 8px; }
+.mono-root[data-theme="amethyst"] .tile-name { font-weight: 600; font-size: calc(var(--S) * .2); letter-spacing: .02em; }
+.mono-root[data-theme="amethyst"] .logo-main { letter-spacing: .04em; font-weight: 700; }

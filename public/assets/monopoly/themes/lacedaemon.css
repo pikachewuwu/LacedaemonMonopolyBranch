@@ -1,0 +1,17 @@
+/* Lacedaemon Night: die standardwerte stehen in monopoly.css, hier nur die signatur */
+.mono-root[data-theme="lacedaemon"] .board-center {
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 18%, rgba(255, 244, 220, .55), transparent),
+    radial-gradient(1px 1px at 78% 12%, rgba(255, 244, 220, .45), transparent),
+    radial-gradient(1.4px 1.4px at 64% 82%, rgba(255, 244, 220, .5), transparent),
+    radial-gradient(1px 1px at 30% 70%, rgba(255, 244, 220, .35), transparent),
+    radial-gradient(1px 1px at 88% 52%, rgba(255, 244, 220, .4), transparent),
+    radial-gradient(1.2px 1.2px at 42% 34%, rgba(255, 244, 220, .3), transparent),
+    var(--m-board-art);
+}
+.mono-root[data-theme="lacedaemon"] .board-center::before {
+  content: ''; position: absolute; inset: 3cqw; border-radius: 2cqw; pointer-events: none;
+  border: 1px solid rgba(214, 173, 119, .12);
+  background: repeating-linear-gradient(90deg, transparent 0 1.6cqw, rgba(214, 173, 119, .05) 1.6cqw 1.8cqw) top / 100% .9cqw no-repeat,
+              repeating-linear-gradient(90deg, transparent 0 1.6cqw, rgba(214, 173, 119, .05) 1.6cqw 1.8cqw) bottom / 100% .9cqw no-repeat;
+}

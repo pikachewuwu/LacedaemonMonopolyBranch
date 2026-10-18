@@ -1,0 +1,43 @@
+.mono-root[data-theme="marble"] {
+  --m-bg: #efe9df;
+  --m-bg-art: radial-gradient(1200px 700px at 50% -10%, #ffffff 0%, transparent 60%), linear-gradient(115deg, transparent 40%, rgba(160, 150, 135, .1) 41%, transparent 43%);
+  --m-panel: rgba(255, 255, 255, .78);
+  --m-panel-2: #ffffff;
+  --m-panel-3: #f1ebe1;
+  --m-border: rgba(110, 84, 50, .18);
+  --m-text: #2a2017;
+  --m-muted: #6f5f4c;
+  --m-faint: #9a8a74;
+  --m-accent: #b4441d;
+  --m-accent-2: #c8682f;
+  --m-accent-ink: #fff8ef;
+  --m-good: #2f8f4e;
+  --m-bad: #c0392b;
+  --m-warn: #c88a10;
+  --m-board-bg: #f7f2ea;
+  --m-board-art:
+    linear-gradient(125deg, transparent 30%, rgba(150, 140, 125, .12) 31%, transparent 34%),
+    linear-gradient(60deg, transparent 55%, rgba(150, 140, 125, .1) 56%, transparent 58%),
+    radial-gradient(circle at 50% 45%, #ffffff, #efe8dc 80%);
+  --m-board-edge: #c9a96a;
+  --m-tile-bg: #fbf8f2;
+  --m-tile-bg-2: #f4eee4;
+  --m-tile-text: #2a2017;
+  --m-tile-radius: 4px;
+  --m-tile-tint: 24%;
+  --m-corner-bg: #f4ede1;
+  --m-gap: 2px;
+  --m-shadow: 0 20px 50px rgba(90, 70, 40, .22);
+  --m-logo-gradient: linear-gradient(180deg, #e6c27a 0%, #b88a3a 60%, #7a5520 100%);
+}
+.mono-page:has(.mono-root[data-theme="marble"]) { background: #efe9df; }
+.mono-root[data-theme="marble"] .tile-name { text-shadow: none; }
+.mono-root[data-theme="marble"] .tile-price { background: rgba(42, 32, 23, .07); border-color: rgba(42, 32, 23, .12); }
+.mono-root[data-theme="marble"] .corner-go .corner-label { color: #8a5a14; }
+.mono-root[data-theme="marble"] .corner-visit { color: #6f5f4c; }
+.mono-root[data-theme="marble"] .center-brand { opacity: .2; }
+.mono-root[data-theme="marble"] .game-card { color: #fff; }
+.mono-root[data-theme="marble"] .player-row.is-turn { background: color-mix(in srgb, var(--pc) 14%, #fff); }
+.mono-root[data-theme="marble"] .tile-treasure .tile-name { color: #9a5d12; }
+.mono-root[data-theme="marble"] .tile-surprise .tile-name { color: #9a2f6e; }
+.mono-root[data-theme="marble"] .board { box-shadow: var(--m-shadow), 0 0 0 4px #c9a96a, 0 0 0 7px #fbf8f2, 0 0 0 8px #c9a96a; }
