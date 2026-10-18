@@ -289,7 +289,9 @@ export class RoomView {
         sound.offer();
         toast(`${nameOf(t.from)} sent you a trade offer`);
         if (!document.querySelector('.modal-backdrop')) viewTradeDialog(this, t);
-      } else if (t.from !== this.me) {
+      } else if (t.from === this.me) {
+        sound.send();
+      } else {
         // offene angebote sieht der ganze tisch, nicht nur die beiden beteiligten
         sound.watch();
         toast(`${nameOf(t.from)} offered ${nameOf(t.to)} a trade`);
@@ -506,6 +508,32 @@ export class RoomView {
     });
   }
 
+  /** Log-text lesbar machen: spielernamen in ihrer farbe, geldbeträge hervorgehoben. */
+  logContent(text) {
+    const game = this.room?.game;
+    const map = this.map;
+    if (!game || !map || !text) return text;
+    const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const names = game.players.map(p => p.name).filter(Boolean).sort((a, b) => b.length - a.length);
+    const currency = map.words?.currency ?? '$';
+    const tokens = [...new Set(names)].map(escape);
+    tokens.push(`\\d[\\d,.]*\\s*${escape(currency)}`);
+    const pattern = new RegExp(`(${tokens.join('|')})`, 'g');
+    const parts = [];
+    let last = 0;
+    for (const match of text.matchAll(pattern)) {
+      if (match.index > last) parts.push(text.slice(last, match.index));
+      const token = match[0];
+      const player = game.players.find(p => p.name === token);
+      parts.push(player
+        ? h('b.log-name', { style: { color: player.appearance?.color ?? 'inherit' } }, token)
+        : h('b.log-money', token));
+      last = match.index + token.length;
+    }
+    if (last < text.length) parts.push(text.slice(last));
+    return parts;
+  }
+
   renderChat() {
     const room = this.room;
     if (!room) return;
@@ -515,14 +543,14 @@ export class RoomView {
     const stick = this.chatList.scrollHeight - this.chatList.scrollTop - this.chatList.clientHeight < 40;
     this.chatList.dataset.key = key;
     this.chatList.replaceChildren(...items.map(m => h('li', { class: `msg msg-${m.kind}` },
-      m.name ? h('b', { style: { color: m.color } }, `${m.name}: `) : null, m.text)));
+      m.name ? h('b', { style: { color: m.color } }, `${m.name}: `) : null, this.logContent(m.text))));
     if (stick || this.logTab === 'log') this.chatList.scrollTop = this.chatList.scrollHeight;
   }
 
   renderMiniLog() {
     const log = this.room.game?.log ?? [];
     const key = String(log.at(-1)?.id ?? 0);
-    renderIf(this.miniLog, key, () => log.slice(-3).map(l => h('li', { class: `log-${l.kind}` }, l.text)));
+    renderIf(this.miniLog, key, () => log.slice(-3).map(l => h('li', { class: `log-${l.kind}` }, this.logContent(l.text))));
   }
 
   // ---- mitte -------------------------------------------------------------

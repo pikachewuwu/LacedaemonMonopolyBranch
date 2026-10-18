@@ -716,3 +716,31 @@ body.is-offline .room-layout::before { content: 'Reconnecting…'; position: fix
 .strip-pawn svg { width: 100%; height: 100%; }
 .icon-btn.is-on { color: var(--m-accent); box-shadow: inset 0 0 0 1px var(--m-accent); }
 .num-input { width: 108px; text-align: right; }
+
+/* ---- upgrade-pips mit schwarzer kontur, damit sie auf jeder farbe lesbar sind ---- */
+.tile-levels .level { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .7), 0 0 calc(var(--S) * .08) rgba(79, 209, 139, .7); }
+.deed-levels .level { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .7); }
+.set-build-pips i.level { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .7); }
+.strip-levels .level { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .7); }
+.tile-levels .level-full, .deed-levels .level-full, .set-build-pips .level-full, .strip-levels .level-full { text-shadow: 0 0 2px #000, 0 0 4px #000; }
+
+/* ---- straßen: farbband oben dicker, plus rahmen in der set-farbe ---- */
+.tile.tile-city .tile-glow { height: calc(var(--S) * .18); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .45); }
+.tile.tile-city { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--group) 65%, transparent); }
+.tile.tile-city.is-owned { box-shadow: inset 0 0 0 2px var(--group); }
+.tile.tile-city:hover { box-shadow: inset 0 0 0 2px var(--group), 0 0 0 1px var(--m-accent); }
+
+/* ---- popups deutlich über den würfeln ---- */
+.center-card { top: 20%; max-width: min(78%, 560px); }
+.center-card.is-shown { transform: translate(-50%, -50%) scale(1) rotateY(0); }
+.fx-banner { top: 22%; }
+
+/* ---- spiel-log: ruhiger, aber lesbar ---- */
+.msg.log { padding: 3px 10px; border-radius: 0 8px 8px 0; }
+.msg.log-trade { border-color: var(--m-accent); background: color-mix(in srgb, var(--m-accent) 8%, transparent); }
+.msg.log-card { background: color-mix(in srgb, #c98bff 7%, transparent); }
+.msg.log-buy, .msg.log-build { background: color-mix(in srgb, var(--m-good) 7%, transparent); }
+.msg.log-rent, .msg.log-debt, .msg.log-bankrupt { background: color-mix(in srgb, var(--m-bad) 7%, transparent); }
+.log-name { font-weight: 700; }
+.log-money { color: #ffd45c; font-weight: 700; }
+.center-log .log-name, .center-log .log-money { font-weight: 700; }

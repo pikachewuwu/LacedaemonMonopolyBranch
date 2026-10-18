@@ -247,6 +247,7 @@ export class MonopolyGame {
         this.say(`${p.name} rolled doubles three times in a row`, 'prison');
         this.sendToPrison(p);
         this.turn.phase = 'done';
+        this.autoEndTurn(p);
         return;
       }
       this.turn.again = doubles;
@@ -254,6 +255,18 @@ export class MonopolyGame {
       this.moveBy(p, total);
     }
     this.settleTurnPhase();
+    // wer in die backrooms geschickt wurde, hat nichts mehr zu tun
+    if (this.turn.jailed && this.turn.phase === 'done') this.autoEndTurn(p);
+  }
+
+  /** Zug sofort abgeben, wenn er nach dem backrooms-besuch leer ist. */
+  autoEndTurn(p) {
+    this.turn.jailed = false;
+    try {
+      this.endTurn(p);
+    } catch {
+      /* schulden oder auktion: dann beendet der spieler den zug selbst */
+    }
   }
 
   /** Nach einer auflösung: nochmal würfeln, kaufen oder fertig. */
@@ -403,7 +416,7 @@ export class MonopolyGame {
   }
 
   freshTurn(playerId, number) {
-    return { playerId, phase: 'roll', dice: null, again: false, rolls: 0, number, startedAt: this.now() };
+    return { playerId, phase: 'roll', dice: null, again: false, rolls: 0, jailed: false, number, startedAt: this.now() };
   }
 
   // ---- bauen und verwalten -----------------------------------------------
@@ -770,6 +783,7 @@ export class MonopolyGame {
     p.prisonTurns = this.map.prison.turns;
     p.doublesInARow = 0;
     this.turn.again = false;
+    if (this.turn.playerId === p.id) this.turn.jailed = true;
     this.stats.prisonVisits[p.id] = (this.stats.prisonVisits[p.id] ?? 0) + 1;
     this.emit({ type: 'move', playerId: p.id, from, to: p.position, steps: 0, mode: 'prison' });
     this.say(`${p.name} was sent to ${word(this.map, 'prison', 'prison')}`, 'prison');
@@ -1065,7 +1079,7 @@ export class MonopolyGame {
     const trade = { id: ++this.tradeSeq, from: p.id, to: other.id, ...offer, note: String(note ?? '').slice(0, 140), at: this.now() };
     this.trades.push(trade);
     this.emit({ type: 'trade', id: trade.id, from: p.id, to: other.id, state: 'new' });
-    this.say(`${p.name} sent a trade offer to ${other.name}`, 'trade');
+    this.say(`${p.name} offered ${other.name} a trade: ${this.sideText(trade.give)} for ${this.sideText(trade.take)}`, 'trade');
     return trade;
   }
 
@@ -1095,7 +1109,7 @@ export class MonopolyGame {
     this.transfer(p, from, trade.take);
     this.stats.trades++;
     this.emit({ type: 'trade', id, from: trade.from, to: trade.to, state: 'accepted', give: trade.give, take: trade.take });
-    this.say(`${p.name} accepted the trade from ${from.name}`, 'trade');
+    this.say(`${from.name} gave ${this.sideText(trade.give)} to ${p.name} and got ${this.sideText(trade.take)} back`, 'trade');
     // handel kann eigentumsverhältnisse ändern, die andere angebote ungültig machen
     this.trades = this.trades.filter(t => {
       try {
@@ -1121,13 +1135,24 @@ export class MonopolyGame {
     }
   }
 
+  /** Was in einer handelsseite steckt, in worten. */
+  sideText(side) {
+    const bits = [];
+    if (side.money) bits.push(this.fmt(side.money));
+    for (const i of side.tiles) bits.push(this.map.tiles[i]?.name ?? 'a property');
+    for (const d of side.pardons) bits.push(pardonName(this.map, d));
+    return bits.length ? bits.join(', ') : 'nothing';
+  }
+
   tradeDecline(p, { id }) {
     const trade = this.findTrade(id);
     if (trade.to !== p.id && trade.from !== p.id) throw new GameError('This trade is not for you');
     this.trades = this.trades.filter(t => t.id !== id);
     const cancelled = trade.from === p.id;
     this.emit({ type: 'trade', id, from: trade.from, to: trade.to, state: cancelled ? 'cancelled' : 'declined' });
-    this.say(cancelled ? `${p.name} cancelled a trade offer` : `${p.name} declined the trade from ${this.player(trade.from).name}`, 'trade');
+    this.say(cancelled
+      ? `${p.name} took back the offer to ${this.player(trade.to).name} (${this.sideText(trade.give)} for ${this.sideText(trade.take)})`
+      : `${p.name} declined ${this.player(trade.from).name}'s offer (${this.sideText(trade.give)} for ${this.sideText(trade.take)})`, 'trade');
   }
 
   cancelTradesWith(index) {

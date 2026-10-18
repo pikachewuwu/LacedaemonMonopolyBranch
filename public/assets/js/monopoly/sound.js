@@ -11,10 +11,26 @@ export function setMuted(value) {
   try { localStorage.setItem(KEY, value ? '1' : '0'); } catch { /* egal */ }
 }
 
+/** Browser starten audio erst nach einer echten eingabe: beim ersten klick entsperren. */
+export function unlock() {
+  try {
+    ctx ??= new AudioContext();
+    if (ctx.state === 'suspended') ctx.resume();
+  } catch {
+    /* kein audio */
+  }
+}
+
+if (typeof window !== 'undefined') {
+  for (const event of ['pointerdown', 'keydown', 'touchstart']) {
+    window.addEventListener(event, unlock, { passive: true });
+  }
+}
+
 function tone(freq, { at = 0, length = 0.12, type = 'sine', gain = 0.08, slide = 0 } = {}) {
   if (muted) return;
   try {
-    ctx ??= new AudioContext();
+    unlock();
     const t = ctx.currentTime + at;
     const osc = ctx.createOscillator();
     const vol = ctx.createGain();
@@ -41,10 +57,11 @@ export const sound = {
   prison() { tone(220, { length: 0.3, type: 'sawtooth', gain: 0.04, slide: 0.5 }); },
   build() { tone(440, { length: 0.08, type: 'square', gain: 0.03 }); tone(660, { at: 0.06, length: 0.12, type: 'square', gain: 0.03 }); },
   win() { [523, 659, 784, 1047].forEach((f, i) => tone(f, { at: i * 0.12, length: 0.3, type: 'triangle' })); },
-  offer() { [659, 880, 1175].forEach((f, i) => tone(f, { at: i * 0.09, length: 0.22, type: 'triangle', gain: 0.07 })); },
-  trade() { tone(523, { length: 0.16, type: 'triangle' }); tone(784, { at: 0.12, length: 0.16, type: 'triangle' }); tone(1047, { at: 0.24, length: 0.3, type: 'sine', gain: 0.06 }); },
+  offer() { [659, 880, 1175].forEach((f, i) => tone(f, { at: i * 0.09, length: 0.26, type: 'triangle', gain: 0.12 })); },
+  trade() { tone(523, { length: 0.18, type: 'triangle', gain: 0.11 }); tone(784, { at: 0.12, length: 0.18, type: 'triangle', gain: 0.11 }); tone(1047, { at: 0.24, length: 0.34, type: 'sine', gain: 0.1 }); },
   bid() { tone(740, { length: 0.07, type: 'square', gain: 0.03 }); },
   // fremder handel auf dem tisch: leise, damit es nicht nervt
-  watch() { tone(523, { length: 0.09, type: 'sine', gain: 0.04 }); tone(392, { at: 0.09, length: 0.14, type: 'sine', gain: 0.035 }); },
-  decline() { tone(392, { length: 0.12, type: 'sawtooth', gain: 0.025, slide: 0.7 }); tone(262, { at: 0.1, length: 0.2, type: 'sawtooth', gain: 0.025, slide: 0.78 }); },
+  watch() { tone(587, { length: 0.11, type: 'triangle', gain: 0.075 }); tone(440, { at: 0.1, length: 0.18, type: 'triangle', gain: 0.065 }); },
+  send() { tone(520, { length: 0.07, type: 'triangle', gain: 0.07 }); tone(780, { at: 0.06, length: 0.13, type: 'triangle', gain: 0.06 }); },
+  decline() { tone(349, { length: 0.15, type: 'sawtooth', gain: 0.055, slide: 0.72 }); tone(233, { at: 0.13, length: 0.26, type: 'sawtooth', gain: 0.05, slide: 0.78 }); },
 };

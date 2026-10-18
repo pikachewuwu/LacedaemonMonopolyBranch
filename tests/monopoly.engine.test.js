@@ -74,7 +74,20 @@ test('pasch erlaubt nochmal, dreimal pasch führt in die backrooms', () => {
   g.act('a', { type: 'roll' });
   assert.equal(g.player('a').position, 10);
   assert.equal(g.player('a').prisonTurns, 3);
-  assert.equal(g.turn.phase, 'done');
+  // der zug endet sofort, der nächste spieler ist dran
+  assert.equal(g.turn.playerId, 'b');
+  assert.equal(g.turn.phase, 'roll');
+});
+
+test('go to backrooms beendet den zug sofort', () => {
+  const g = newGame();
+  g.player('a').position = 27;
+  rig(g, [1, 2]);
+  g.act('a', { type: 'roll' });
+  assert.equal(g.player('a').position, 10);
+  assert.equal(g.player('a').prisonTurns, 3);
+  assert.equal(g.turn.playerId, 'b');
+  assert.equal(g.turn.phase, 'roll');
 });
 
 test('backrooms: freikaufen kostet 50, nach drei fehlversuchen frei', () => {
