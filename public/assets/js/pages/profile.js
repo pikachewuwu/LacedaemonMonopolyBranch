@@ -44,7 +44,8 @@ async function initDescription() {
   try {
     const profile = await api('/auth/profile', { cache: 'no-store' });
     savedDescription = profile.description;
-    description.textContent = savedDescription;
+    // The profile API sanitizes HTML both on read and on save.
+    description.innerHTML = savedDescription;
     editButton.disabled = false;
   } catch (error) {
     message.textContent = 'Die Beschreibung konnte nicht geladen werden. Bitte lade die Seite erneut.';
@@ -88,7 +89,7 @@ async function initDescription() {
         body: JSON.stringify({ description: input.value }),
       });
       savedDescription = profile.description;
-      description.textContent = savedDescription;
+      description.innerHTML = savedDescription;
       setEditing(false);
       message.textContent = '';
     } catch (error) {

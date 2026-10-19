@@ -2,6 +2,7 @@
 
 import { createHash, randomBytes } from 'node:crypto';
 import { parseCookies } from '../../middleware/cookies.js';
+import { sanitizeDescription } from './profile-description.js';
 
 export const SESSION_COOKIE = 'lcd_session';
 export const STATE_COOKIE = 'lcd_oauth_state';
@@ -48,14 +49,17 @@ export function makeAuthService(repository, discord, { fetchImpl = fetch } = {})
 
     async getProfile(memberId) {
       const description = await repository.getDescription(memberId);
-      return { description: description ?? 'Mitglied der Lacedaemon-Community.' };
+      return { description: sanitizeDescription(description ?? 'Mitglied der Lacedaemon-Community.') };
     },
 
     async updateProfile(memberId, description) {
       if (typeof description !== 'string' || description.length > 500) {
         throw new AuthError('Die Beschreibung darf maximal 500 Zeichen enthalten.');
       }
-      const text = description.trim();
+      const text = sanitizeDescription(description.trim());
+      if (text.length > 500) {
+        throw new AuthError('Die Beschreibung darf inklusive HTML maximal 500 Zeichen enthalten.');
+      }
       await repository.saveDescription(memberId, text);
       return { description: text };
     },

@@ -20,11 +20,11 @@
       </div>
       <div class="profile-identity">
         <h1 id="profile-name">Mein Profil</h1>
-        <p id="profile-description" class="profile-description">Mitglied der Lacedaemon-Community.</p>
+        <div id="profile-description" class="profile-description">Mitglied der Lacedaemon-Community.</div>
         <form id="profile-edit-form" class="profile-edit-form" hidden>
-          <label for="profile-description-input">Beschreibung</label>
+          <label for="profile-description-input">Beschreibung (HTML)</label>
           <textarea id="profile-description-input" name="description" rows="4" maxlength="500" aria-describedby="profile-description-help"></textarea>
-          <p id="profile-description-help">Maximal 500 Zeichen.</p>
+          <p id="profile-description-help">HTML erlaubt, maximal 500 Zeichen.</p>
           <div class="profile-edit-actions">
             <button id="profile-save" class="profile-button" type="submit">Speichern</button>
             <button id="profile-cancel" class="profile-button profile-button-secondary" type="button">Abbrechen</button>

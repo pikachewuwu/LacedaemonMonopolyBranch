@@ -8,6 +8,32 @@ import { makeAuthService } from '../src/modules/auth/auth.service.js';
 import { authRoutes } from '../src/modules/auth/auth.routes.js';
 import { errorHandler } from '../src/middleware/error-handler.js';
 
+test('Descriptions preserve formatting and sanitize new and existing stored HTML', async () => {
+  const db = openSqlite(':memory:');
+  try {
+    const repository = makeAuthRepository(db);
+    const service = makeAuthService(repository, {});
+    const id = await repository.upsertMember({ discordUserId: '123', username: 'alex', displayName: 'Alex', avatar: null });
+    const formatted = '<p>Hallo <strong>Welt</strong><br /><em>Willkommen</em></p><ul><li>Spiele</li></ul><a href="https://example.com">Website</a>';
+    assert.equal((await service.updateProfile(id, formatted)).description, formatted);
+    assert.equal((await service.getProfile(id)).description, formatted);
+    const headings = '<h1>Titel</h1><h2>Abschnitt</h2><h3>Text</h3><h4>Text</h4><h5>Text</h5><h6>Text</h6>';
+    assert.equal((await service.updateProfile(id, headings)).description, headings);
+    assert.equal((await service.getProfile(id)).description, headings);
+    const unsafe = '<p onclick="alert(1)">Hallo</p><script>alert(1)</script><img src=x onerror="alert(1)"><a href="javascript:alert(1)">Link</a><iframe src="https://example.com"></iframe>';
+    const clean = '<p>Hallo</p><a>Link</a>';
+    assert.equal((await service.updateProfile(id, unsafe)).description, clean);
+    assert.equal(await repository.getDescription(id), clean);
+    await repository.saveDescription(id, unsafe);
+    assert.equal((await service.getProfile(id)).description, clean);
+    await service.updateProfile(id, '&'.repeat(100));
+    assert.equal((await service.getProfile(id)).description.length, 500);
+    await assert.rejects(service.updateProfile(id, '&'.repeat(101)), /500/);
+  } finally {
+    await db.close();
+  }
+});
+
 test('Profile descriptions persist independently of Discord profile updates', async () => {
   const db = openSqlite(':memory:');
   try {
@@ -61,6 +87,14 @@ test('Profile API authenticates updates and only changes the session owner', asy
     const invalid = await fetch(url, { method: 'PUT', headers, body: JSON.stringify({ description: 'x'.repeat(501) }) });
     assert.equal(invalid.status, 400);
     assert.equal(await repository.getDescription(id), "Ich spiele gern.\nHallo 'Welt'!");
+    const htmlUpdate = await fetch(url, {
+      method: 'PUT', headers,
+      body: JSON.stringify({ description: '<strong onclick="alert(1)">Hallo</strong><script>alert(1)</script>' }),
+    });
+    assert.equal(htmlUpdate.status, 200);
+    assert.equal((await htmlUpdate.json()).description, '<strong>Hallo</strong>');
+    const htmlReload = await fetch(url, { headers });
+    assert.equal((await htmlReload.json()).description, '<strong>Hallo</strong>');
     await repository.deleteSession(tokenHash);
     assert.equal((await fetch(url, { method: 'PUT', headers, body: '{"description":"test"}' })).status, 401);
   } finally {
