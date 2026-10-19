@@ -95,8 +95,7 @@ async function landing() {
   };
 
   const who = ctx.member
-    ? h('div.whoami', h('img.avatar', { src: ctx.member.avatarUrl, alt: '' }), h('span', 'Playing as ', h('b', ctx.member.name)),
-      h('button.btn.btn-ghost.btn-sm', { onclick: async () => { await api('/auth/logout', { method: 'POST' }); location.reload(); } }, 'Log out'))
+    ? h('div.whoami', h('img.avatar', { src: ctx.member.avatarUrl, alt: '' }), h('span', 'Playing as ', h('b', ctx.member.name)))
     : nameInput;
 
   const recent = h('div.recent');

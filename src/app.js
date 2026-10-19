@@ -56,7 +56,10 @@ export function createApp(db, config = {}) {
   app.use('/api/catalog', catalogRoutes(catalogService));
   app.use('/api/leaderboard', leaderboardRoutes(leaderboardRepository));
   app.use('/api/overview', overviewRoutes(catalogService, leaderboardRepository));
-  app.use('/api/auth', authRoutes(auth, { secure: config.nodeEnv === 'production' }));
+  app.use('/api/auth', authRoutes(auth, {
+    secure: config.nodeEnv === 'production',
+    redirectUri: config.discord?.redirectUri,
+  }));
   app.use('/api/monopoly', monopolyRoutes({ maps, rooms, repository: monopolyRepository }));
   app.use('/api', notFound);
 

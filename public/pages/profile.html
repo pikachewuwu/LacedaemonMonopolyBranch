@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a1017">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/pages/profile.css">
+  <title>Lacedaemon | Mein Profil</title>
+</head>
+<body class="profile-page">
+  <div data-site-header></div>
+  <main class="container profile-container" aria-label="Mein Profil">
+    <p id="profile-status" role="status">Profil wird geladen …</p>
+    <section id="profile-details" class="profile-header" hidden aria-labelledby="profile-name">
+      <div class="profile-avatar-frame">
+        <span id="profile-avatar-fallback" class="profile-avatar-fallback" aria-hidden="true" hidden></span>
+        <img id="profile-avatar" width="156" height="156" alt="Discord-Profilbild">
+      </div>
+      <div class="profile-identity">
+        <h1 id="profile-name">Mein Profil</h1>
+        <p id="profile-description" class="profile-description">Mitglied der Lacedaemon-Community.</p>
+        <form id="profile-edit-form" class="profile-edit-form" hidden>
+          <label for="profile-description-input">Beschreibung</label>
+          <textarea id="profile-description-input" name="description" rows="4" maxlength="500" aria-describedby="profile-description-help"></textarea>
+          <p id="profile-description-help">Maximal 500 Zeichen.</p>
+          <div class="profile-edit-actions">
+            <button id="profile-save" class="profile-button" type="submit">Speichern</button>
+            <button id="profile-cancel" class="profile-button profile-button-secondary" type="button">Abbrechen</button>
+          </div>
+        </form>
+        <p id="profile-edit-status" class="profile-edit-status" role="status"></p>
+      </div>
+      <div class="profile-sidebar">
+        <div class="profile-level" aria-label="Level 1">
+          <span>Level</span>
+          <span class="profile-level-badge">1</span>
+        </div>
+        <button id="profile-edit" class="profile-button" type="button" aria-expanded="false" aria-controls="profile-edit-form" disabled>Profil bearbeiten</button>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/assets/js/pages/profile.js"></script>
+</body>
+</html>

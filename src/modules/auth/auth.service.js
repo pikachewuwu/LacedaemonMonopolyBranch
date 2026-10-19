@@ -26,7 +26,7 @@ export function avatarUrl(discordUserId, avatar) {
 
 /** Nur relative pfade auf der eigenen seite zulassen (kein open redirect). */
 export function safeReturnTo(value) {
-  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') && !value.includes('\\') ? value : '/pages/monopoly.html';
+  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') && !value.includes('\\') ? value : '/';
 }
 
 export function makeAuthService(repository, discord, { fetchImpl = fetch } = {}) {
@@ -46,6 +46,20 @@ export function makeAuthService(repository, discord, { fetchImpl = fetch } = {})
   return {
     enabled,
 
+    async getProfile(memberId) {
+      const description = await repository.getDescription(memberId);
+      return { description: description ?? 'Mitglied der Lacedaemon-Community.' };
+    },
+
+    async updateProfile(memberId, description) {
+      if (typeof description !== 'string' || description.length > 500) {
+        throw new AuthError('Die Beschreibung darf maximal 500 Zeichen enthalten.');
+      }
+      const text = description.trim();
+      await repository.saveDescription(memberId, text);
+      return { description: text };
+    },
+
     authorizeUrl(state) {
       const params = new URLSearchParams({
         client_id: discord.clientId,
@@ -53,7 +67,7 @@ export function makeAuthService(repository, discord, { fetchImpl = fetch } = {})
         response_type: 'code',
         scope: discord.guildId ? 'identify guilds' : 'identify',
         state,
-        prompt: 'none',
+        prompt: 'consent',
       });
       return `https://discord.com/oauth2/authorize?${params}`;
     },

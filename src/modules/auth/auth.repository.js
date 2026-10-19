@@ -1,5 +1,16 @@
 export function makeAuthRepository(db) {
   return {
+    async getDescription(memberId) {
+      const row = await db.get('SELECT description FROM member_profile_descriptions WHERE member_id = ?', [memberId]);
+      return row?.description ?? null;
+    },
+    async saveDescription(memberId, description) {
+      await db.run(
+        `INSERT INTO member_profile_descriptions (member_id, description) VALUES (?, ?)
+         ON CONFLICT(member_id) DO UPDATE SET description = excluded.description`,
+        [memberId, description],
+      );
+    },
     async upsertMember({ discordUserId, username, displayName, avatar }) {
       await db.run(
         `INSERT INTO members (discord_user_id, username, display_name, avatar)

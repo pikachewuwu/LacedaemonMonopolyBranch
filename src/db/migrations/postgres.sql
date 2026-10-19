@@ -42,6 +42,11 @@ CREATE TABLE IF NOT EXISTS members (
   last_login_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS member_profile_descriptions (
+  member_id BIGINT PRIMARY KEY REFERENCES members(id) ON DELETE CASCADE,
+  description TEXT NOT NULL DEFAULT ''
+);
+
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,
   member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
