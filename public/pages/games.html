@@ -1,37 +1,74 @@
 <!doctype html>
 <html lang="de">
 <head>
+  <link rel="icon" type="image/jpeg" href="/assets/img/lacedaemon-favicon.jpg">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a1017">
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/components.css">
-  <link rel="stylesheet" href="/assets/css/pages/catalog.css">
+  <link rel="stylesheet" href="/assets/css/pages/games.css">
   <title>Lacedaemon | Spiele</title>
 </head>
 <body>
   <div data-site-header></div>
   <main class="container">
-    <section class="page-heading"><p class="eyebrow">Community-Liste</p><h1>Spiele</h1><p>Unsere Games und persönlichen Bewertungen – von der Merkliste bis zum abgeschlossenen Spiel.</p></section>
-    <section class="catalog-grid">
-      <div>
-        <div class="section-heading"><h2>Alle Einträge</h2><span class="muted" id="catalog-count">Lade …</span></div>
-        <div class="catalog-results" id="catalog-list"><p class="muted">Einträge werden geladen …</p></div>
-      </div>
-      <aside class="panel form-panel">
-        <h2>Bewertung eintragen</h2>
-        <p>Ein Name kann pro Titel eine Bewertung abgeben oder aktualisieren. Noch keine Anmeldung eingerichtet.</p>
-        <form id="catalog-form" class="form-fields">
-          <div><label class="label" for="title">Titel</label><input class="form-control" id="title" name="title" maxlength="120" required placeholder="Titel eingeben"></div>
-          <div><label class="label" for="memberName">Dein Anzeigename</label><input class="form-control" id="memberName" name="memberName" maxlength="40" minlength="2" required placeholder="Discord-Name (Demo)"></div>
-          <div><label class="label" for="score">Bewertung</label><select class="form-control" id="score" name="score"><option value="1" >1 / 10</option><option value="2" >2 / 10</option><option value="3" >3 / 10</option><option value="4" >4 / 10</option><option value="5" >5 / 10</option><option value="6" >6 / 10</option><option value="7" >7 / 10</option><option value="8" selected>8 / 10</option><option value="9" >9 / 10</option><option value="10" >10 / 10</option></select></div>
-          <div><label class="label" for="status">Status</label><select class="form-control" id="status" name="status"><option value="planned">Merkliste</option><option value="ongoing">Wird gespielt</option><option value="completed">Gespielt</option></select></div>
-          <button type="submit" class="button button-primary">Speichern</button>
-          <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
-        </form>
-      </aside>
+    <section class="page-heading">
+      <p class="eyebrow">Gemeinsam spielen</p><h1>Spiele</h1>
+      <p>Entdecke Spiele auf Steam und teile mit der Community, was du spielen möchtest und wie es dir gefällt.</p>
     </section>
-    <p class="notice" style="margin-top:32px">Prototyp ohne Discord-Login: Anzeigenamen sind noch nicht verifiziert. Vor öffentlicher Nutzung muss Schreiben an eine echte Anmeldung und Berechtigungsprüfung gebunden werden.</p>
+    <section class="games-toolbar panel" aria-label="Spiele filtern und sortieren">
+      <details id="games-members-filter" class="games-members-filter">
+        <summary>Merkliste von <span id="games-selected-members" class="games-filter-count" hidden>0</span></summary>
+        <div class="games-members-dropdown">
+          <p class="muted">Zeige Spiele, die alle ausgewählten Mitglieder auf ihrer Merkliste haben.</p>
+          <fieldset id="games-member-options"><legend class="games-visually-hidden">Mitglieder auswählen</legend><p class="muted">Mitglieder werden geladen …</p></fieldset>
+          <button id="games-clear-members" class="button games-secondary" type="button">Auswahl aufheben</button>
+        </div>
+      </details>
+      <div class="games-toolbar-field"><label class="label" for="games-status-filter">Status</label><select id="games-status-filter" class="form-control"><option value="all">Alle Status</option><option value="planned">Merkliste</option><option value="ongoing">Wird gespielt</option><option value="paused">Pausiert</option><option value="completed">Abgeschlossen</option></select></div>
+      <div class="games-toolbar-field"><label class="label" for="games-sort">Sortierung</label><select id="games-sort" class="form-control"><option value="newest">Neueste zuerst</option><option value="oldest">Älteste zuerst</option><option value="popular">Beliebteste zuerst</option><option value="price-desc">Preis: absteigend</option><option value="price-asc">Preis: aufsteigend</option><option value="genre">Genre: A–Z</option></select></div>
+      <button id="games-add-button" class="button button-primary" type="button" aria-haspopup="dialog" aria-controls="games-add-dialog">Spiel hinzufügen</button>
+    </section>
+    <p id="games-feedback" class="games-message" role="status" aria-live="polite"></p>
+    <section class="games-library" aria-label="Spiele und Bewertungen">
+        <div class="games-section-heading"><h2>Unsere Spiele</h2><span class="muted" id="games-count" aria-live="polite">Wird geladen …</span></div>
+        <p id="games-list-status" class="games-message" role="status">Spiele werden geladen …</p>
+        <button id="games-retry" class="button games-secondary" type="button" hidden>Erneut laden</button>
+        <div class="games-cards" id="games-list"></div>
+    </section>
+    <dialog class="games-dialog" id="games-add-dialog" aria-labelledby="games-editor-heading">
+      <section class="games-editor" id="games-editor">
+        <div class="games-dialog-heading"><div><p class="eyebrow">Steam-Suche</p><h2 id="games-editor-heading">Spiel hinzufügen</h2></div><button id="games-dialog-close" type="button" class="games-dialog-close" aria-label="Schließen">×</button></div>
+        <p class="muted games-editor-intro">Suche ein Spiel und lege deinen Status mit Priorität oder Bewertung fest. Weitere Mitglieder kannst du direkt mit aufnehmen.</p>
+        <div class="games-search">
+          <label class="label" for="game-search">Spiel auf Steam suchen</label>
+          <input class="form-control" id="game-search" type="search" maxlength="100" autocomplete="off" placeholder="Zum Beispiel Portal 2" aria-describedby="game-search-status" aria-controls="game-search-results">
+          <p class="games-search-status" id="game-search-status" role="status" aria-live="polite">Mindestens 2 Zeichen eingeben.</p>
+          <ul class="games-search-results" id="game-search-results" aria-label="Steam-Suchergebnisse" hidden></ul>
+          <button id="game-search-more" class="button games-secondary" type="button" hidden>Weitere Treffer</button>
+        </div>
+        <div class="games-selection" id="game-selection" aria-live="polite" hidden></div>
+        <p class="games-session" id="games-session" role="status">Anmeldestatus wird geprüft …</p>
+        <a id="games-login" class="button games-secondary" href="/api/auth/discord?returnTo=%2Fpages%2Fgames.html" hidden>Mit Discord anmelden</a>
+        <button id="games-auth-retry" type="button" class="button games-secondary" hidden>Anmeldestatus erneut prüfen</button>
+        <form id="game-review-form" class="games-review-form">
+          <fieldset id="game-review-fields" disabled>
+            <legend class="games-visually-hidden">Dein Eintrag</legend>
+            <div class="games-review-options">
+              <div><label class="label" for="game-status">Status</label><select class="form-control" id="game-status" name="status"><option value="planned">Merkliste</option><option value="ongoing">Wird gespielt</option><option value="paused">Pausiert</option><option value="completed">Abgeschlossen</option></select></div>
+              <div data-game-score-field hidden><label class="label" for="game-score">Bewertung</label><select class="form-control" id="game-score" name="score" disabled><option value="1">1 / 10</option><option value="2">2 / 10</option><option value="3">3 / 10</option><option value="4">4 / 10</option><option value="5">5 / 10</option><option value="6">6 / 10</option><option value="7">7 / 10</option><option value="8" selected>8 / 10</option><option value="9">9 / 10</option><option value="10">10 / 10</option></select></div>
+              <div data-game-priority-field><label class="label" for="game-priority">Priorität</label><select class="form-control" id="game-priority" name="priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
+            </div>
+            <fieldset class="games-add-members"><legend>Weitere Mitglieder aufnehmen</legend><p class="muted">Ausgewählte Mitglieder kommen mit Priorität Medium auf die Merkliste. Vorhandene Einträge bleiben erhalten.</p><p id="game-members-message" role="status"></p><div id="game-add-member-options"></div><button id="game-members-retry" class="button games-secondary" type="button" hidden>Mitglieder erneut laden</button></fieldset>
+            <button id="game-save" type="submit" class="button button-primary">Bewertung speichern</button>
+          </fieldset>
+          <p id="game-review-message" class="games-message" role="status" aria-live="polite"></p>
+        </form>
+        <p class="games-source-note">Spieldaten und Preise stammen aus dem deutschen Steam Store. Wenn Steam keine eindeutige Koop-Spielerzahl nennt, wird sie als nicht angegeben angezeigt.</p>
+        <button id="games-dialog-cancel" class="button games-secondary games-dialog-cancel" type="button">Abbrechen</button>
+      </section>
+    </dialog>
   </main>
   <script type="module" src="/assets/js/pages/games.js"></script>
 </body>

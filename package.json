@@ -11,7 +11,10 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "node --test",
-    "check": "node scripts/check-project.js"
+    "check": "node scripts/check-project.js",
+    "check:leaderboard": "node scripts/check-leaderboard-browser.js",
+    "check:games": "node scripts/check-games-browser.js",
+    "check:anime": "node scripts/check-anime-browser.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.0.0",

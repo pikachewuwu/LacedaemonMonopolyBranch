@@ -28,15 +28,16 @@ Voraussetzung: **Node.js LTS**, empfohlen >= 22.12.0.
 ## Was funktioniert bereits?
 
 - Mehrseitiges Dark-Mode-Dashboard mit **gemeinsamer Navigation** aus einer Partial-Datei.
-- **Anime-Liste und Spiele-Liste**: Titel mit Namen, Status und Bewertungen (1–10) erfassen; Daten bleiben in der SQLite-Datei bestehen.
-- Mehrere Mitglieder können denselben Titel bewerten; Durchschnitt wird berechnet. Derselbe Anzeigename kann seine Bewertung aktualisieren.
+- **Anime-Liste**: MyAnimeList über Tenrai durchsuchen, Watching-Fortschritt, Plan to watch und Completed erfassen, gemeinsam schauen und filtern. Bewertungen (1–10) gibt es nur bei Completed. Details: [docs/ANIME.md](docs/ANIME.md).
+- **Spiele-Liste**: Steam-Spiele suchen, mit Steam-Metadaten übernehmen und mit dem eigenen Discord-Profil bewerten. Details: [docs/GAMES.md](docs/GAMES.md).
+- Mehrere Discord-Mitglieder können eigene Einträge zum selben Titel speichern; persönliche Bewertungen fließen in den Durchschnitt ein.
 - Drachen-Leaderboard liest Einträge aus der Datenbank. Aktuell sind dies **explizit gekennzeichnete Beispieldaten**.
 - API-Endpunkt `/api/health`, strukturierte API-Routen und grundlegende Eingabevalidierung.
 - Fantasy-League-Seite als Platzhalter für spätere Implementierung.
 - **Monopoly** (unser richup.io): Echtzeit-Multiplayer mit Räumen, Bots, allen richup-Einstellungen plus Extras (Crazy Surprises/Treasures, Zuguhr, Rundenlimit), Handel, Auktionen, Hypotheken, Teams und sechs Themes. Brett, Straßennamen und Karten sind JSON-Vorlagen. Details: [docs/MONOPOLY.md](docs/MONOPOLY.md).
 - **Discord-Login** (OAuth2) mit serverseitigen Sitzungen; ohne Konfiguration spielt man Monopoly als Gast.
 
-**Noch NICHT enthalten:** reale Discord-Economy-Synchronisation, Fantasy-Berechnung, Login-Pflicht für die übrigen Schreibendpunkte. Das Projekt ist ein **Starter mit einigen echten Funktionen**, keine fertige Community-Plattform.
+**Noch NICHT enthalten:** reale Discord-Economy-Synchronisation und Fantasy-Berechnung. Anime- und Spiele-Einträge werden mit Discord-Sitzung gespeichert. Das Projekt ist ein **Starter mit einigen echten Funktionen**, keine fertige Community-Plattform.
 
 ## Projektstruktur
 
@@ -90,8 +91,16 @@ lacedaemon/
 | GET | `/api/overview` | Dashboard-Statistik |
 | GET | `/api/catalog/anime` | Anime mit Bewertungen |
 | GET | `/api/catalog/games` | Spiele mit Bewertungen |
-| POST | `/api/catalog/anime/reviews` | Anime-Bewertung hinzufügen/aktualisieren |
-| POST | `/api/catalog/games/reviews` | Spiele-Bewertung hinzufügen/aktualisieren |
+| GET | `/api/anime` | Anime-Bibliothek mit persönlichen Einträgen |
+| GET | `/api/anime/search?q=cowboy&page=1` | Paginierte MyAnimeList-Suche über Tenrai |
+| GET | `/api/anime/mal/:id` | Anime-Metadaten |
+| GET | `/api/anime/members` | Mitglieder für gemeinsame Watchlists, Sitzung erforderlich |
+| POST | `/api/anime/:id/entries` | Eigenen Eintrag und optionale weitere Mitglieder speichern |
+| DELETE | `/api/anime/:id` | Anime als Ersteller löschen |
+| GET | `/api/games` | Steam-Spiele und erhaltene ältere Spieleinträge |
+| GET | `/api/games/search?q=portal&page=1` | Paginierte Suche im deutschen Steam Store |
+| GET | `/api/games/steam/:appId` | Steam-Metadaten für ein Spiel |
+| POST | `/api/games/:appId/reviews` | Eigene Bewertung mit Discord-Sitzung speichern/aktualisieren |
 | GET | `/api/leaderboard` | Drachenwerte (vorerst Demo) |
 | GET | `/api/auth/me` | Angemeldetes Discord-Mitglied (oder `null`) |
 | GET | `/api/auth/discord` | Discord-Login starten |
@@ -104,14 +113,14 @@ lacedaemon/
 
 Das Spielgeschehen läuft über Socket.IO (`/socket.io`), siehe [docs/MONOPOLY.md](docs/MONOPOLY.md).
 
-POST-Beispiel (JSON):
+POST-Beispiel für `/api/anime/1/entries` mit Discord-Sitzung (JSON):
 
 ```json
 {
-  "title": "Naruto",
-  "memberName": "Alex",
-  "score": 9,
-  "status": "completed"
+  "status": "watching",
+  "watchedEpisodes": 6,
+  "score": null,
+  "memberIds": []
 }
 ```
 
@@ -133,10 +142,10 @@ Die SQLite-Integrationstests benötigen `npm install`. Die Modulsyntax kann dar�
 
 ## Später erweitern
 
-- Discord-Login auch für Anime-/Spiele-Bewertungen verwenden.
+- Discord-Login auch für Anime-Bewertungen verwenden.
 - PostgreSQL als DB-Alternative: siehe [docs/DATABASE.md](docs/DATABASE.md).
 - Monopoly: grafischer Map-Editor, Gewinne an die Drachen-Economy anbinden: siehe [docs/MONOPOLY.md](docs/MONOPOLY.md).
 
 ## Sicherheit
 
-Schreibendpunkte sind noch nicht durch Login geschützt. Für einen öffentlichen Testserver deshalb **`SITE_PASSWORD` setzen** (sperrt die ganze Seite, siehe [docs/MONOPOLY.md](docs/MONOPOLY.md)) und `NODE_ENV=production`. Vor Deployment gehören Authentifizierung, Autorisierung, Rate-Limits, HTTPS, sichere Session-Cookies und regelmäßige Backups dazu.
+Anime-Schreibendpunkte sind noch nicht durch Login geschützt. Für einen öffentlichen Testserver deshalb **`SITE_PASSWORD` setzen** (sperrt die ganze Seite, siehe [docs/MONOPOLY.md](docs/MONOPOLY.md)) und `NODE_ENV=production`. Vor Deployment gehören Authentifizierung, Autorisierung, Rate-Limits, HTTPS, sichere Session-Cookies und regelmäßige Backups dazu.

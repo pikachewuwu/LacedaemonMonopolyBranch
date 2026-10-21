@@ -1,37 +1,83 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a1017">
+  <link rel="icon" type="image/jpeg" href="/assets/img/lacedaemon-favicon.jpg">
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/components.css">
-  <link rel="stylesheet" href="/assets/css/pages/catalog.css">
+  <link rel="stylesheet" href="/assets/css/pages/games.css">
+  <link rel="stylesheet" href="/assets/css/pages/anime.css">
   <title>Lacedaemon | Anime</title>
 </head>
-<body>
+<body class="anime-page">
   <div data-site-header></div>
   <main class="container">
-    <section class="page-heading"><p class="eyebrow">Community-Liste</p><h1>Anime</h1><p>Gemeinsame Watchlist mit Bewertungen je Mitglied. Alle Einträge werden in eurer Datenbank gespeichert.</p></section>
-    <section class="catalog-grid">
-      <div>
-        <div class="section-heading"><h2>Alle Einträge</h2><span class="muted" id="catalog-count">Lade …</span></div>
-        <div class="catalog-results" id="catalog-list"><p class="muted">Einträge werden geladen …</p></div>
+    <section class="page-heading"><p class="eyebrow">Gemeinsam schauen</p><h1>Anime</h1><p>Entdecke die aktuelle Anime-Season, plane mit der Community und halte fest, wie weit ihr geschaut habt.</p></section>
+    <section class="anime-source-bar" aria-label="Anime-Auswahl">
+      <div id="anime-source-toggle" class="anime-source-toggle" role="group" aria-label="Welche Anime anzeigen?">
+        <button type="button" data-anime-source="members" aria-pressed="true" aria-controls="anime-list">Lacedaemon</button>
+        <button type="button" data-anime-source="season" aria-pressed="false" aria-controls="anime-list">Aktuelle Season</button>
       </div>
-      <aside class="panel form-panel">
-        <h2>Bewertung eintragen</h2>
-        <p>Ein Name kann pro Titel eine Bewertung abgeben oder aktualisieren. Noch keine Anmeldung eingerichtet.</p>
-        <form id="catalog-form" class="form-fields">
-          <div><label class="label" for="title">Titel</label><input class="form-control" id="title" name="title" maxlength="120" required placeholder="Titel eingeben"></div>
-          <div><label class="label" for="memberName">Dein Anzeigename</label><input class="form-control" id="memberName" name="memberName" maxlength="40" minlength="2" required placeholder="Discord-Name (Demo)"></div>
-          <div><label class="label" for="score">Bewertung</label><select class="form-control" id="score" name="score"><option value="1" >1 / 10</option><option value="2" >2 / 10</option><option value="3" >3 / 10</option><option value="4" >4 / 10</option><option value="5" >5 / 10</option><option value="6" >6 / 10</option><option value="7" >7 / 10</option><option value="8" selected>8 / 10</option><option value="9" >9 / 10</option><option value="10" >10 / 10</option></select></div>
-          <div><label class="label" for="status">Status</label><select class="form-control" id="status" name="status"><option value="planned">Geplant</option><option value="ongoing">Wird geschaut</option><option value="completed">Gesehen</option></select></div>
-          <button type="submit" class="button button-primary">Speichern</button>
-          <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
-        </form>
-      </aside>
+      <p id="anime-source-description" class="muted anime-source-description">Alle Anime, die Mitglieder schauen, planen oder bereits abgeschlossen haben.</p>
     </section>
-    <p class="notice" style="margin-top:32px">Prototyp ohne Discord-Login: Anzeigenamen sind noch nicht verifiziert. Vor öffentlicher Nutzung muss Schreiben an eine echte Anmeldung und Berechtigungsprüfung gebunden werden.</p>
+    <section class="games-toolbar anime-toolbar panel" aria-label="Anime filtern und sortieren">
+      <details id="anime-members-filter" class="games-members-filter"><summary>Mitglieder <span id="anime-selected-members" class="games-filter-count" hidden>0</span></summary>
+        <div class="games-members-dropdown"><p class="muted">Zeige Anime, die alle ausgewählten Mitglieder in ihrer Liste haben. Ohne Auswahl werden alle angezeigt.</p>
+          <fieldset id="anime-member-options" class="anime-member-options"><legend class="games-visually-hidden">Mitglieder auswählen</legend></fieldset>
+          <button id="anime-clear-members" type="button" class="button games-secondary">Auswahl aufheben</button>
+        </div>
+      </details>
+      <div class="games-toolbar-field"><label class="label" for="anime-status-filter">Status</label><select id="anime-status-filter" class="form-control"><option value="all">Alle Status</option><option value="watching">Watching</option><option value="plan_to_watch">Plan to watch</option><option value="completed">Completed</option></select></div>
+      <div class="games-toolbar-field"><label class="label" for="anime-genre-filter">Genre</label><select id="anime-genre-filter" class="form-control"><option value="all">Alle Genres</option></select></div>
+      <div class="games-toolbar-field"><label class="label" for="anime-type-filter">Format</label><select id="anime-type-filter" class="form-control"><option value="all">Alle Formate</option></select></div>
+      <div class="games-toolbar-field"><label class="label" for="anime-sort">Sortierung</label><select id="anime-sort" class="form-control"><option value="newest">Neueste zuerst</option><option value="oldest">Älteste zuerst</option><option value="added">Zuletzt hinzugefügt</option><option value="popular">Beliebteste zuerst</option><option value="title">Titel: A–Z</option><option value="genre">Genre: A–Z</option><option value="score">Bester MAL-Score</option><option value="episodes-asc">Wenigste Episoden</option><option value="episodes-desc">Meiste Episoden</option></select></div>
+    </section>
+    <p id="anime-feedback" class="games-message" role="status" aria-live="polite"></p>
+    <section class="games-library" aria-label="Anime und Watchlists">
+      <div class="games-section-heading anime-section-heading"><h2 id="anime-library-heading">Unsere Anime</h2><span id="anime-count" class="muted" aria-live="polite">Wird geladen …</span></div>
+      <div class="anime-library-actions">
+        <button id="anime-add-button" class="button button-primary anime-add-button" type="button" aria-haspopup="dialog" aria-controls="anime-add-dialog">Anime hinzufügen</button>
+        <div id="anime-view-toggle" class="anime-view-toggle" role="group" aria-label="Ansicht auswählen">
+          <button type="button" data-anime-view="grid" aria-pressed="true" aria-controls="anime-list">Kacheln</button>
+          <button type="button" data-anime-view="list" aria-pressed="false" aria-controls="anime-list">Liste</button>
+        </div>
+      </div>
+      <p id="anime-list-status" class="games-message" role="status">Anime werden geladen …</p>
+      <button id="anime-retry" type="button" class="button games-secondary" hidden>Erneut laden</button>
+      <div id="anime-list" class="games-cards"></div>
+    </section>
+    <p class="games-source-note">Metadaten von <a href="https://myanimelist.net/" target="_blank" rel="noopener noreferrer">MyAnimeList</a> über <a href="https://tenrai.org/" target="_blank" rel="noopener noreferrer">Tenrai</a>. Eure Auswahl und Fortschritte werden auf dieser Website gespeichert. „Interessant“ nimmt einen Anime in deine Plan-to-watch-Liste auf.</p>
+    <dialog id="anime-members-dialog" class="games-dialog anime-members-dialog" aria-labelledby="anime-members-heading">
+      <section class="games-editor">
+        <div class="games-dialog-heading"><div><p class="eyebrow">Mitgliedereinträge</p><h2 id="anime-members-heading">Mitglieder</h2></div><button id="anime-members-close" class="games-dialog-close" type="button" aria-label="Mitgliederübersicht schließen" autofocus>×</button></div>
+        <div id="anime-members-list"></div>
+      </section>
+    </dialog>
+    <dialog id="anime-add-dialog" class="games-dialog" aria-labelledby="anime-editor-heading">
+      <section class="games-editor">
+        <div class="games-dialog-heading"><div><p class="eyebrow">MyAnimeList-Suche</p><h2 id="anime-editor-heading">Anime hinzufügen</h2></div><button id="anime-dialog-close" class="games-dialog-close" type="button" aria-label="Schließen">×</button></div>
+        <p class="muted games-editor-intro">Wähle einen Anime aus und lege deinen Status fest. Weitere Mitglieder kannst du direkt mit aufnehmen.</p>
+        <div class="games-search"><label for="anime-search" class="label">Anime auf MyAnimeList suchen</label><input id="anime-search" class="form-control" type="search" maxlength="100" autocomplete="off" placeholder="Zum Beispiel Naruto" aria-controls="anime-search-results" aria-describedby="anime-search-status">
+          <p id="anime-search-status" class="games-search-status" role="status">Mindestens 2 Zeichen eingeben.</p>
+          <ul id="anime-search-results" class="games-search-results" aria-label="Anime-Suchergebnisse" hidden></ul>
+          <button id="anime-search-more" class="button games-secondary" type="button" hidden>Weitere Treffer</button>
+        </div>
+        <div id="anime-selection" class="games-selection" aria-live="polite" hidden></div>
+        <p id="anime-session" class="games-session" role="status">Anmeldestatus wird geprüft …</p>
+        <a id="anime-login" class="button games-secondary" href="/api/auth/discord?returnTo=%2Fpages%2Fanime.html" hidden>Mit Discord anmelden</a>
+        <button id="anime-auth-retry" type="button" class="button games-secondary" hidden>Anmeldestatus erneut prüfen</button>
+        <form id="anime-entry-form" class="games-review-form">
+          <fieldset id="anime-entry-fields" disabled><legend class="games-visually-hidden">Dein Anime-Eintrag</legend><div id="anime-entry-options"></div>
+            <fieldset class="games-add-members"><legend>Zusammen schauen</legend><p class="muted">Weitere Mitglieder erhalten einen Plan-to-watch-Eintrag. Ihre bestehenden Einträge bleiben erhalten.</p><p id="anime-members-message" role="status"></p><div id="anime-add-member-options"></div><button id="anime-members-retry" class="button games-secondary" type="button" hidden>Mitglieder erneut laden</button></fieldset>
+            <button id="anime-save" class="button button-primary" type="submit">Anime hinzufügen</button>
+          </fieldset>
+          <p id="anime-entry-message" class="games-message" role="status" aria-live="polite"></p>
+        </form>
+        <button id="anime-dialog-cancel" class="button games-secondary games-dialog-cancel" type="button">Abbrechen</button>
+      </section>
+    </dialog>
   </main>
   <script type="module" src="/assets/js/pages/anime.js"></script>
 </body>

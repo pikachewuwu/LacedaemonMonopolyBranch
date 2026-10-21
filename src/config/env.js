@@ -16,7 +16,7 @@ export function getConfig() {
   }
   return {
     nodeEnv: process.env.NODE_ENV ?? 'development',
-    host: process.env.HOST ?? '127.0.0.1',
+    host: process.env.HOST ?? 'localhost',
     port,
     dbClient,
     sqliteFile: process.env.SQLITE_FILE ?? './data/lacedaemon.sqlite',

@@ -1,16 +1,60 @@
 <!doctype html>
 <html lang="de">
-<head><meta charset="utf-8">
+<head>
+  <link rel="icon" type="image/jpeg" href="/assets/img/lacedaemon-favicon.jpg"><meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a1017">
   <link rel="stylesheet" href="/assets/css/base.css">
-  <link rel="stylesheet" href="/assets/css/components.css"><title>Lacedaemon | Drachen</title></head>
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/pages/leaderboard.css">
+  <title>Lacedaemon | Drachen</title></head>
 <body>
   <div data-site-header></div>
-  <main class="container">
+  <main class="container leaderboard-page">
     <section class="page-heading"><p class="eyebrow">Economy</p><h1>Drachen Leaderboard</h1><p>Übersicht der Community-Währung. Die Live-Anbindung an Discord ist noch nicht implementiert.</p></section>
-    <div class="panel leaderboard-table"><div class="leaderboard-head"><span>Platz</span><span>Mitglied</span><span style="text-align:right">Drachen</span></div><div id="leaderboard-rows"></div></div>
-    <p class="notice" id="board-hint" style="margin-top:24px">Daten werden geladen …</p>
+    <dl class="board-summary" aria-label="Auswertung der gefilterten Rangliste">
+      <div class="panel"><dt>Mitglieder in der Auswahl</dt><dd id="board-count">–</dd></div>
+      <div class="panel"><dt>Drachen insgesamt</dt><dd id="board-total">–</dd></div>
+      <div class="panel"><dt>Durchschnitt pro Mitglied</dt><dd id="board-average">–</dd></div>
+    </dl>
+    <form id="board-controls" class="panel board-controls" aria-label="Rangliste anpassen">
+      <fieldset id="board-fields" disabled>
+        <legend class="board-sr-only">Darstellung, Sortierung und Filter</legend>
+        <div class="board-view-row">
+          <div class="board-views" role="group" aria-label="Darstellung">
+            <button type="button" data-view="list" aria-pressed="true" aria-controls="leaderboard-display">Liste</button>
+            <button type="button" data-view="bar" aria-pressed="false" aria-controls="leaderboard-display">Balken</button>
+            <button type="button" data-view="column" aria-pressed="false" aria-controls="leaderboard-display">Säulen</button>
+            <button type="button" data-view="pie" aria-pressed="false" aria-controls="leaderboard-display">Kreis</button>
+            <button type="button" data-view="donut" aria-pressed="false" aria-controls="leaderboard-display">Ring</button>
+          </div>
+          <button id="board-reset" type="button" class="board-reset">Zurücksetzen</button>
+        </div>
+        <details class="board-filter-menu">
+          <summary>Filter und Sortierung</summary>
+          <div class="board-filters">
+          <div><label class="label" for="board-search">Mitglied suchen</label><input id="board-search" class="form-control" type="search" placeholder="Name eingeben …" autocomplete="off"></div>
+          <div><label class="label" for="board-sort">Sortierung</label><select id="board-sort" class="form-control">
+            <option value="balance-desc">Drachen: absteigend</option><option value="balance-asc">Drachen: aufsteigend</option>
+            <option value="name-asc">Name: A–Z</option><option value="name-desc">Name: Z–A</option>
+          </select></div>
+          <div><label class="label" for="board-min">Mindestens Drachen</label><input id="board-min" class="form-control" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label class="label" for="board-max">Höchstens Drachen</label><input id="board-max" class="form-control" type="number" min="0" step="1" placeholder="Unbegrenzt"></div>
+          <div><label class="label" for="board-ranks">Rangbereich</label><select id="board-ranks" class="form-control">
+            <option value="all">Alle Ränge</option><option value="10">Top 10</option><option value="25">Top 25</option><option value="50">Top 50</option>
+          </select></div>
+          <div><label class="label" for="board-limit">Maximale Mitgliederzahl</label><input id="board-limit" class="form-control" type="number" min="1" step="1" placeholder="Alle Mitglieder"></div>
+          </div>
+        </details>
+      </fieldset>
+    </form>
+    <div class="board-results-heading">
+      <h2 id="board-view-title">Rangliste</h2>
+      <p id="board-result-status" class="muted" role="status">Daten werden geladen …</p>
+    </div>
+    <div id="leaderboard-display" class="panel board-display" aria-busy="true" aria-labelledby="board-view-title"></div>
+    <p class="notice board-hint" id="board-hint">Die Live-Anbindung an Discord ist noch nicht implementiert.</p>
+    <noscript><p class="notice">Bitte aktiviere JavaScript, um die Rangliste und Diagramme zu laden.</p></noscript>
   </main>
   <script type="module" src="/assets/js/pages/leaderboard.js"></script>
 </body>

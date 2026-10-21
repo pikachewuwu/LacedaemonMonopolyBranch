@@ -10,7 +10,7 @@ const ACCESS_DAYS = 30;
 const MAX_FAILURES = 8;
 const LOCK_MS = 15 * 60_000;
 // ohne passwort erreichbar: health-check (für das hosting) und alles, was die passwortseite braucht
-const OPEN_PATHS = new Set(['/api/health', '/access', '/assets/img/lacedaemon-favicon.jpg']);
+const OPEN_PATHS = new Set(['/api/health', '/access', '/favicon.ico', '/assets/img/lacedaemon-favicon.jpg']);
 
 const sha = text => createHash('sha256').update(String(text)).digest();
 
@@ -23,7 +23,8 @@ const escape = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<
 
 function page(next, message = '') {
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lacedaemon</title><link rel="icon" href="/assets/img/lacedaemon-favicon.jpg"></head>
+<link rel="icon" type="image/jpeg" href="/assets/img/lacedaemon-favicon.jpg">
+<title>Lacedaemon</title></head>
 <body style="margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(900px 600px at 50% 0%,#142338,#070b11 70%);color:#eef2f6;font-family:Inter,'Segoe UI',system-ui,sans-serif">
 <form method="post" action="/access" style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:32px;width:min(340px,calc(100vw - 32px));border-radius:18px;background:rgba(18,26,36,.85);border:1px solid rgba(214,173,119,.18);box-shadow:0 20px 60px rgba(0,0,0,.5)">
 <img src="/assets/img/lacedaemon-favicon.jpg" alt="" width="96" height="96" style="border-radius:50%;box-shadow:0 0 50px rgba(120,200,255,.35)">

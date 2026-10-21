@@ -47,6 +47,107 @@ CREATE TABLE IF NOT EXISTS member_profile_descriptions (
   description TEXT NOT NULL DEFAULT ''
 );
 
+CREATE TABLE IF NOT EXISTS mal_anime (
+  mal_id BIGINT PRIMARY KEY,
+  title TEXT NOT NULL,
+  metadata_json TEXT NOT NULL,
+  fetched_at BIGINT NOT NULL,
+  creator_member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS mal_anime_entries (
+  mal_id BIGINT NOT NULL REFERENCES mal_anime(mal_id) ON DELETE CASCADE,
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('watching', 'plan_to_watch', 'completed', 'on_hold', 'dropped')),
+  watched_episodes INTEGER CHECK (watched_episodes BETWEEN 0 AND 100000),
+  score INTEGER CHECK (score BETWEEN 1 AND 10),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (mal_id, member_id),
+  CONSTRAINT mal_anime_entries_fields_check CHECK ((status = 'plan_to_watch' AND watched_episodes IS NULL AND score IS NULL)
+    OR (status IN ('watching', 'on_hold', 'dropped') AND watched_episodes IS NOT NULL AND score IS NULL)
+    OR (status = 'completed' AND watched_episodes IS NOT NULL AND watched_episodes > 0))
+);
+CREATE INDEX IF NOT EXISTS idx_mal_anime_entries_member ON mal_anime_entries(member_id);
+
+-- Vorhandene Tabellen behalten bei CREATE TABLE IF NOT EXISTS ihre alten CHECKs.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'mal_anime_entries'::regclass AND conname = 'mal_anime_entries_fields_check'
+      AND pg_get_constraintdef(oid) LIKE '%on_hold%' AND pg_get_constraintdef(oid) LIKE '%dropped%')
+    OR NOT EXISTS (SELECT 1 FROM pg_constraint
+      WHERE conrelid = 'mal_anime_entries'::regclass AND conname = 'mal_anime_entries_status_check'
+        AND pg_get_constraintdef(oid) LIKE '%on_hold%' AND pg_get_constraintdef(oid) LIKE '%dropped%') THEN
+    ALTER TABLE mal_anime_entries DROP CONSTRAINT IF EXISTS mal_anime_entries_status_check;
+    ALTER TABLE mal_anime_entries DROP CONSTRAINT IF EXISTS mal_anime_entries_check;
+    ALTER TABLE mal_anime_entries DROP CONSTRAINT IF EXISTS mal_anime_entries_fields_check;
+    ALTER TABLE mal_anime_entries ADD CONSTRAINT mal_anime_entries_status_check
+      CHECK (status IN ('watching', 'plan_to_watch', 'completed', 'on_hold', 'dropped'));
+    ALTER TABLE mal_anime_entries ADD CONSTRAINT mal_anime_entries_fields_check CHECK (
+      (status = 'plan_to_watch' AND watched_episodes IS NULL AND score IS NULL)
+      OR (status IN ('watching', 'on_hold', 'dropped') AND watched_episodes IS NOT NULL AND score IS NULL)
+      OR (status = 'completed' AND watched_episodes IS NOT NULL AND watched_episodes > 0));
+  END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS steam_games (
+  app_id BIGINT PRIMARY KEY,
+  title TEXT NOT NULL,
+  metadata_json TEXT NOT NULL,
+  fetched_at BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS steam_game_reviews (
+  steam_app_id BIGINT NOT NULL REFERENCES steam_games(app_id) ON DELETE CASCADE,
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  score INTEGER CHECK (score BETWEEN 1 AND 10),
+  status TEXT NOT NULL CHECK (status IN ('planned', 'ongoing', 'paused', 'completed')),
+  priority TEXT CHECK (priority IN ('high', 'medium', 'low')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (steam_app_id, member_id),
+  CONSTRAINT steam_game_reviews_fields_check CHECK (
+    (status = 'planned' AND priority IS NOT NULL AND score IS NULL)
+    OR (status = 'ongoing' AND priority IS NULL AND score IS NULL)
+    OR (status IN ('paused', 'completed') AND priority IS NULL AND score IS NOT NULL))
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'steam_game_reviews' AND column_name = 'priority') THEN
+    ALTER TABLE steam_game_reviews ADD COLUMN priority TEXT CHECK (priority IN ('high', 'medium', 'low'));
+    ALTER TABLE steam_game_reviews ALTER COLUMN score DROP NOT NULL;
+    ALTER TABLE steam_game_reviews DROP CONSTRAINT steam_game_reviews_status_check;
+    ALTER TABLE steam_game_reviews ADD CONSTRAINT steam_game_reviews_status_check CHECK (status IN ('planned', 'ongoing', 'paused', 'completed'));
+    UPDATE steam_game_reviews SET score = NULL WHERE status IN ('planned', 'ongoing');
+    UPDATE steam_game_reviews SET priority = 'medium' WHERE status = 'planned';
+    ALTER TABLE steam_game_reviews ADD CONSTRAINT steam_game_reviews_fields_check CHECK (
+      (status = 'planned' AND priority IS NOT NULL AND score IS NULL)
+      OR (status = 'ongoing' AND priority IS NULL AND score IS NULL)
+      OR (status IN ('paused', 'completed') AND priority IS NULL AND score IS NOT NULL));
+  END IF;
+END $$;
+
+-- Unveränderlicher Ersteller und Hinzufügezeitpunkt, getrennt vom Steam-Datenstand.
+CREATE TABLE IF NOT EXISTS steam_game_entries (
+  steam_app_id BIGINT PRIMARY KEY REFERENCES steam_games(app_id) ON DELETE CASCADE,
+  creator_member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Ohne eindeutige erste Bewertung wird kein historischer Ersteller behauptet.
+INSERT INTO steam_game_entries (steam_app_id, creator_member_id, created_at)
+SELECT g.app_id,
+  (SELECT CASE WHEN COUNT(*) = 1 THEN MIN(r.member_id) ELSE NULL END
+   FROM steam_game_reviews r WHERE r.steam_app_id = g.app_id
+     AND r.created_at = (SELECT MIN(first.created_at) FROM steam_game_reviews first WHERE first.steam_app_id = g.app_id)),
+  COALESCE((SELECT MIN(r.created_at) FROM steam_game_reviews r WHERE r.steam_app_id = g.app_id), to_timestamp(g.fetched_at::double precision / 1000))
+FROM steam_games g WHERE 1 = 1
+ON CONFLICT(steam_app_id) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,
   member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,

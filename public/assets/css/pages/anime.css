@@ -1,0 +1,121 @@
+.anime-toolbar .games-toolbar-field { flex-basis: 140px; }
+.anime-source-bar { margin-bottom: 22px; }
+.anime-source-toggle { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); }
+.anime-source-toggle button { min-height: 44px; padding: 11px 22px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--muted); font-size: .86rem; font-weight: 500; }
+.anime-source-toggle button:hover { color: var(--text); background: var(--panel-soft); }
+.anime-source-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-dark); font-weight: 600; }
+.anime-source-description { margin: 10px 0 0; font-size: .8rem; line-height: 1.6; }
+.anime-library-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 20px; }
+.anime-add-button { margin: 0; min-height: 44px; font-size: .85rem; }
+.anime-member-options { border: 0; margin: 0 0 14px; padding: 0; max-height: 240px; overflow-y: auto; }
+.anime-section-heading { align-items: center; justify-content: flex-start; }
+.anime-view-toggle { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+.anime-view-toggle button { min-height: 40px; padding: 8px 15px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--muted); font-size: .82rem; }
+.anime-view-toggle button:hover { color: var(--text); background: var(--panel-soft); }
+.anime-view-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-dark); font-weight: 600; }
+.anime-card { display: flex; flex-direction: column; min-width: 0; border-radius: 5px; }
+.anime-season-header { display: grid; place-items: center; align-content: center; gap: 3px; height: 88px; padding: 11px 13px; text-align: center; background: var(--panel-soft); }
+.anime-title-english { display: block; color: var(--muted); font-size: .74rem; line-height: 1.4; overflow-wrap: anywhere; }
+.anime-season-header .anime-title-english { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; line-clamp: 1; overflow: hidden; max-width: 100%; }
+.anime-list-title .anime-title-english { margin-top: 4px; }
+.anime-season-header .game-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: .92rem; font-weight: 650; line-height: 1.45; }
+.anime-season-title { color: var(--accent); }
+a.anime-season-title:hover { color: var(--text); text-decoration: underline; }
+.anime-season-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px 0; min-height: 35px; padding: 6px 7px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); color: var(--muted); font-size: .65rem; line-height: 1.5; text-align: center; }
+.anime-season-meta > span { padding-inline: 6px; }
+.anime-season-meta > span + span { border-left: 1px solid var(--border); }
+.anime-season-genres { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 4px; height: 48px; padding: 5px 8px; overflow-y: auto; scrollbar-width: thin; }
+.anime-season-genres .anime-tag { padding: 1px 6px; border: 0; border-radius: 10px; background: var(--panel-soft); font-size: .64rem; line-height: 1.6; }
+.anime-season-genres > .muted { align-self: center; font-size: .7rem; }
+.anime-season-body { display: grid; grid-template-columns: 42% minmax(0, 1fr); height: 252px; border-block: 1px solid var(--border); }
+.anime-card .anime-cover { min-width: 0; min-height: 0; height: 100%; max-height: none; aspect-ratio: auto; border-bottom: 0; border-right: 1px solid var(--border); }
+.anime-card .anime-cover img { object-fit: contain; object-position: top center; }
+.anime-card .anime-season-info { min-width: 0; padding: 11px 12px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.anime-season-info .game-description { display: block; -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; color: var(--text); font-size: .73rem; line-height: 1.65; margin: 0 0 12px; }
+.anime-season-info .game-facts { margin: 12px 0; gap: 8px; font-size: .7rem; }
+.anime-season-info .game-facts > div { grid-template-columns: 1fr; gap: 1px; }
+.anime-season-info .game-facts dt { font-weight: 600; }
+.anime-season-info .game-store-link { font-size: .68rem; }
+.anime-season-info .game-data-date { font-size: .6rem; line-height: 1.5; }
+.anime-season-stats { display: flex; align-items: center; min-height: 59px; padding: 9px 10px; gap: 12px; background: var(--panel-soft); }
+.anime-season-stat { display: grid; flex: 1; gap: 1px; text-align: center; font-variant-numeric: tabular-nums; }
+.anime-season-stat strong { color: var(--text); font-size: .85rem; font-weight: 600; }
+.anime-season-stat > span { color: var(--muted); font-size: .6rem; }
+.anime-season-score strong { color: var(--accent); }
+.anime-card .game-average { white-space: normal; }
+.anime-card .anime-season-members { border-top: 1px solid var(--border); margin: 0; padding: 0; }
+.anime-members-button { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; min-height: 54px; padding: 10px 12px; border: 0; background: transparent; color: var(--text); text-align: left; }
+.anime-members-button:hover { background: var(--panel-soft); }
+.anime-members-button:focus-visible { outline-offset: -3px; }
+.anime-members-button .game-review-avatar { width: 32px; height: 32px; font-size: .75rem; }
+.anime-members-dialog .games-dialog-heading h2 { overflow-wrap: anywhere; }
+.anime-members-dialog .games-dialog-close { flex-shrink: 0; }
+.anime-member-detail-list { display: grid; gap: 0; list-style: none; padding: 0; margin: 24px 0 0; }
+.anime-member-detail { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 12px; padding: 15px 0; }
+.anime-member-detail + .anime-member-detail { border-top: 1px solid var(--border); }
+.anime-member-detail > .game-review-avatar { width: 40px; height: 40px; }
+.anime-member-detail-info { display: grid; min-width: 0; gap: 4px; overflow-wrap: anywhere; }
+.anime-member-detail-name { font-size: .9rem; font-weight: 600; }
+.anime-member-detail-summary { display: flex; align-items: center; gap: 16px; font-size: .82rem; }
+.anime-member-detail-summary > span { white-space: nowrap; }
+.anime-member-detail .anime-review-progress { font-size: .77rem; color: var(--muted); }
+.anime-member-detail-empty { padding: 16px 0; }
+.anime-season-controls { padding: 10px 12px 12px; border-top: 1px solid var(--border); }
+.anime-season-selection { display: flex; flex-wrap: wrap; gap: 6px; }
+.anime-season-selection .button { flex: 1; min-height: 36px; font-size: .72rem; padding: 7px 10px; }
+.anime-season-selection .button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-dark); font-weight: 600; }
+.anime-selection-message { margin: 8px 0 0; font-size: .72rem; }
+.anime-season-controls .game-actions { margin-top: 8px; gap: 6px; justify-content: flex-end; }
+.anime-season-controls .game-actions:empty { display: none; }
+.anime-season-controls .game-actions .button { min-height: 32px; font-size: .65rem; }
+.anime-season-controls .anime-entry-editor { margin-top: 12px; padding-top: 12px; }
+.anime-season-login { display: inline-flex; margin-top: 8px; min-height: 36px; align-items: center; justify-content: center; font-size: .72rem; }
+.anime-season-controls > .anime-season-login { width: 100%; margin: 0; }
+.anime-table .anime-season-selection { margin-top: 12px; }
+.anime-table .anime-season-selection .button { flex: initial; min-height: 32px; }
+.anime-list-view { max-width: 100%; overflow-x: auto; border-radius: 9px; border: 1px solid var(--border); background: var(--panel); }
+.anime-list-view:empty { display: none; }
+.anime-table { width: 100%; min-width: 900px; border-collapse: collapse; table-layout: fixed; text-align: left; font-size: .82rem; }
+.anime-table th, .anime-table td { padding: 14px 12px; vertical-align: top; overflow-wrap: anywhere; }
+.anime-table thead { background: var(--panel-soft); color: var(--muted); }
+.anime-table thead th { font-size: .74rem; font-weight: 600; vertical-align: middle; }
+.anime-table tbody tr + tr { border-top: 1px solid var(--border); }
+.anime-table tbody tr:nth-child(even) { background: #0e1721; }
+.anime-table tbody tr:hover { background: var(--panel-soft); }
+.anime-table .anime-list-index { width: 48px; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
+.anime-table .anime-list-image { width: 84px; }
+.anime-table .anime-list-title { width: 30%; font-weight: 400; }
+.anime-table .anime-list-score { width: 108px; text-align: center; font-variant-numeric: tabular-nums; }
+.anime-table .anime-list-tags { width: 19%; }
+.anime-list-cover { width: 60px; height: 86px; aspect-ratio: auto; border: 0; border-radius: 3px; }
+.anime-list-cover .game-cover-placeholder { padding: 4px; font-size: .6rem; }
+.anime-list-title-link { display: block; color: var(--text); font-size: .9rem; font-weight: 600; line-height: 1.4; }
+.anime-list-title-link:hover { color: var(--accent); text-decoration: underline; }
+.anime-list-meta { display: block; color: var(--muted); font-size: .72rem; margin-top: 6px; }
+.anime-list-score-value { color: var(--accent); font-size: 1rem; font-weight: 600; }
+.anime-list-tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.anime-tag { padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-size: .7rem; line-height: 1.5; }
+.anime-list-member-list { list-style: none; display: grid; gap: 10px; margin: 0; padding: 0; }
+.anime-list-member { display: flex; align-items: center; gap: 9px; }
+.anime-list-member-details { display: grid; min-width: 0; gap: 1px; font-size: .72rem; }
+.anime-list-member-name { color: var(--text); font-weight: 600; }
+.anime-list-member-status, .anime-list-member-progress { color: var(--muted); }
+.anime-table .game-actions { margin-top: 10px; }
+.anime-search-cover { width: 48px; height: 67px; aspect-ratio: auto; }
+.anime-search-cover img { object-fit: cover; }
+.anime-review { grid-template-columns: 34px minmax(0, 1fr) auto; }
+.anime-review-details { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.anime-review-progress { font-size: .73rem; color: var(--text); }
+.anime-entry-options { grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); }
+.anime-entry-options > div { min-width: 0; }
+.anime-entry-options .label { font-size: .75rem; }
+.anime-entry-options .form-control { font-size: .8rem; padding: 9px; }
+#anime-add-member-options { display: grid; max-height: 200px; overflow-y: auto; }
+#anime-search-more { margin-top: 10px; }
+@media (max-width: 620px) {
+  .anime-source-toggle { display: flex; }
+  .anime-source-toggle button { flex: 1 1 160px; padding-inline: 13px; }
+  .anime-section-heading { gap: 12px; }
+  .anime-view-toggle { flex-shrink: 0; }
+  .anime-season-body { height: 240px; }
+}

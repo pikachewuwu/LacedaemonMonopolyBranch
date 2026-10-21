@@ -31,6 +31,24 @@ export async function openPostgres(url) {
         const result = await pool.query(postgresPlaceholders(sql), values);
         return { changes: result.rowCount };
       },
+      async batch(statements) {
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          const results = [];
+          for (const { sql, values = [] } of statements) {
+            const result = await client.query(postgresPlaceholders(sql), values);
+            results.push({ changes: result.rowCount });
+          }
+          await client.query('COMMIT');
+          return results;
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
+      },
       async close() { await pool.end(); },
     };
   } catch (error) {
